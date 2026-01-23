@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Routes, Route, Link, useNavigate } from 'react-router-dom';
+import { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { Home, BookOpen, Gamepad2 } from 'lucide-react';
 import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
@@ -9,7 +9,7 @@ import DifficultySelector from './ui/DifficultySelector';
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
-import shapes from '../data/shapes.jsx';
+import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 
 const categoryData = {
   alphabets: { items: alphabets, title: 'Alphabets' },
@@ -21,7 +21,11 @@ const categoryData = {
 const CategoryPage = ({ category }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
-  const navigate = useNavigate();
+
+  // Generate a random color for shapes (only once when entering the shapes category)
+  const shapeColor = useMemo(() => {
+    return category === 'shapes' ? getRandomShapeColor() : null;
+  }, [category]);
 
   const data = categoryData[category];
   if (!data) {
@@ -114,6 +118,7 @@ const CategoryPage = ({ category }) => {
             items={items}
             category={category}
             objectIcons={icons}
+            shapeColor={shapeColor}
           />
         )}
         {mode === 'tile' && (
@@ -121,6 +126,7 @@ const CategoryPage = ({ category }) => {
             items={items}
             category={category}
             objectIcons={icons}
+            shapeColor={shapeColor}
           />
         )}
         {mode === 'test' && (
@@ -129,6 +135,7 @@ const CategoryPage = ({ category }) => {
             category={category}
             difficulty={difficulty}
             objectIcons={icons}
+            shapeColor={shapeColor}
           />
         )}
       </div>

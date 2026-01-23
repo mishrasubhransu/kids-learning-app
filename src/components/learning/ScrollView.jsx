@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 
-const ScrollView = ({ items, category, objectIcons }) => {
+const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [objectType, setObjectType] = useState('eggs');
   const { speak } = useSpeech();
@@ -128,7 +128,7 @@ const ScrollView = ({ items, category, objectIcons }) => {
         return (
           <div className="flex flex-col items-center gap-6">
             <div className="w-48 h-48 md:w-72 md:h-72">
-              {currentItem.svg()}
+              {currentItem.svg(shapeColor)}
             </div>
             <span className="text-4xl md:text-6xl font-bold text-gray-600">
               {currentItem.name}

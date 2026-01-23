@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import useSpeech from '../../hooks/useSpeech';
 
-const TileView = ({ items, category, objectIcons }) => {
+const TileView = ({ items, category, objectIcons, shapeColor }) => {
   const [activeId, setActiveId] = useState(null);
   const [objectType, setObjectType] = useState('eggs');
   const { speak } = useSpeech();
@@ -95,7 +95,7 @@ const TileView = ({ items, category, objectIcons }) => {
             onClick={() => handleClick(item)}
             className={`${baseClasses} bg-white p-4 md:p-6 flex flex-col items-center justify-center gap-2`}
           >
-            <div className="w-16 h-16 md:w-24 md:h-24">{item.svg()}</div>
+            <div className="w-16 h-16 md:w-24 md:h-24">{item.svg(shapeColor)}</div>
             <span className="text-sm md:text-base font-semibold text-gray-600">
               {item.name}
             </span>

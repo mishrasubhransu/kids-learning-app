@@ -3,7 +3,7 @@ import { ChevronRight, Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import { getRandomPositive, getRandomEncouragement } from '../../utils/feedback';
 
-const TestingMode = ({ items, category, difficulty, objectIcons }) => {
+const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) => {
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -278,7 +278,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons }) => {
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
           >
-            <div className="w-20 h-20 md:w-28 md:h-28">{item.svg()}</div>
+            <div className="w-20 h-20 md:w-28 md:h-28">{item.svg(shapeColor)}</div>
           </button>
         );
 
