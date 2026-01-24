@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard } from 'lucide-react';
 
 const categories = [
   {
@@ -38,6 +38,15 @@ const categories = [
     hoverColor: 'hover:bg-purple-600',
     preview: '⬟',
   },
+  {
+    id: 'typing',
+    name: 'Typing',
+    description: 'Type & hear letters',
+    icon: Keyboard,
+    color: 'bg-orange-500',
+    hoverColor: 'hover:bg-orange-600',
+    preview: '⌨️',
+  },
 ];
 
 const Home = () => {
@@ -50,7 +59,7 @@ const Home = () => {
         Choose what you want to learn today!
       </p>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 max-w-4xl w-full">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
         {categories.map((category) => {
           const IconComponent = category.icon;
           return (
