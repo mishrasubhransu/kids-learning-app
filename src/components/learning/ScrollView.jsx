@@ -49,6 +49,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.repeat) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {

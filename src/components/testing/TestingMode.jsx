@@ -167,6 +167,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
+      if (e.repeat) return;
       if (!hasStarted && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault();
         handleStart();
