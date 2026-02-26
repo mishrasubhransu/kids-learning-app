@@ -27,7 +27,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
   useEffect(() => {
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
       speakCurrent();
-      setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+      if (category === 'alphabets') {
+        setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+      }
     }
     prevIndexRef.current = currentIndex;
   }, [currentIndex, speakCurrent]);
@@ -88,7 +90,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
       case 'numbers':
         return (
           <div className="flex flex-col items-center gap-8">
-            <span className="text-6xl md:text-8xl font-bold text-white/80">
+            <span className="text-6xl md:text-8xl font-bold text-gray-400">
               {currentItem.value}
             </span>
             <div className="grid grid-cols-5 gap-2 md:gap-4 justify-items-center min-h-[7.5rem] md:min-h-[14rem] content-start">
@@ -106,7 +108,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
                 value={objectType}
                 onChange={(e) => setObjectType(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white/20 border-none rounded-md px-3 py-2 text-sm text-white focus:ring-2 focus:ring-white/30 cursor-pointer outline-none"
+                className="bg-gray-100 border-none rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
               >
                 {Object.entries(objectIcons).map(([key, icon]) => (
                   <option key={key} value={key}>
@@ -130,7 +132,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
                   : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
               }}
             />
-            <span className="text-4xl md:text-6xl font-bold text-white">
+            <span className="text-4xl md:text-6xl font-bold text-gray-600">
               {currentItem.name}
             </span>
           </div>
@@ -142,7 +144,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
             <div className="w-48 h-48 md:w-72 md:h-72">
               {currentItem.svg(shapeColor)}
             </div>
-            <span className="text-4xl md:text-6xl font-bold text-white">
+            <span className="text-4xl md:text-6xl font-bold text-gray-600">
               {currentItem.name}
             </span>
           </div>
@@ -153,10 +155,12 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
     }
   };
 
+  const isAlphabets = category === 'alphabets';
+
   return (
     <div
       className="flex-1 flex flex-col items-center justify-center p-4 relative transition-colors duration-300"
-      style={{ backgroundColor: bgColor }}
+      style={isAlphabets ? { backgroundColor: bgColor } : undefined}
     >
       {/* Main display - clickable to speak */}
       <button
@@ -170,7 +174,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
       {/* Speak button hint */}
       <button
         onClick={handleItemClick}
-        className="absolute top-4 right-4 p-3 bg-white/20 text-white rounded-full hover:bg-white/30 transition-colors"
+        className={`absolute top-4 right-4 p-3 rounded-full transition-colors ${
+          isAlphabets
+            ? 'bg-white/20 text-white hover:bg-white/30'
+            : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+        }`}
         aria-label="Speak"
       >
         <Volume2 size={24} />
@@ -180,17 +188,21 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className="pointer-events-auto p-4 rounded-full hover:bg-white/20 transition-colors opacity-40 hover:opacity-100 focus:outline-none"
+          className={`pointer-events-auto p-4 rounded-full transition-colors opacity-40 hover:opacity-100 focus:outline-none ${
+            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+          }`}
           aria-label="Previous"
         >
-          <ChevronLeft size={48} className="text-white" />
+          <ChevronLeft size={48} className={isAlphabets ? 'text-white' : 'text-gray-500'} />
         </button>
         <button
           onClick={goNext}
-          className="pointer-events-auto p-4 rounded-full hover:bg-white/20 transition-colors opacity-40 hover:opacity-100 focus:outline-none"
+          className={`pointer-events-auto p-4 rounded-full transition-colors opacity-40 hover:opacity-100 focus:outline-none ${
+            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+          }`}
           aria-label="Next"
         >
-          <ChevronRight size={48} className="text-white" />
+          <ChevronRight size={48} className={isAlphabets ? 'text-white' : 'text-gray-500'} />
         </button>
       </div>
 
@@ -205,15 +217,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
             }}
             className={`rounded-full transition-all duration-300 ${
               idx === currentIndex
-                ? 'bg-white w-3 h-3'
-                : 'bg-white/40 w-2 h-2 hover:bg-white/60'
+                ? (isAlphabets ? 'bg-white' : 'bg-gray-500') + ' w-3 h-3'
+                : (isAlphabets ? 'bg-white/40 hover:bg-white/60' : 'bg-gray-300 hover:bg-gray-400') + ' w-2 h-2'
             }`}
             aria-label={`Go to item ${idx + 1}`}
           />
         ))}
       </div>
 
-      <div className="absolute bottom-6 text-white/40 text-xs md:text-sm">
+      <div className={`absolute bottom-6 text-xs md:text-sm ${isAlphabets ? 'text-white/40' : 'text-gray-400'}`}>
         Click the letter or use Arrow Keys | Space to hear
       </div>
     </div>
