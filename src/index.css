@@ -1,1 +1,23 @@
 @import "tailwindcss";
+
+/*
+ * Tablet/touch-friendly defaults for young children:
+ * - Prevent pinch-zoom and double-tap zoom
+ * - Suppress long-press context menus and text selection
+ * - Disable iOS callout, text size adjustment, and tap highlight
+ */
+html, body {
+  touch-action: manipulation;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+
+* {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
