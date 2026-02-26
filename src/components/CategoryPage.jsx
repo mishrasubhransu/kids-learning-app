@@ -10,6 +10,7 @@ import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
+import { objectCategories, objectItems } from '../data/objects';
 
 const categoryData = {
   alphabets: { items: alphabets, title: 'Alphabets' },
@@ -18,7 +19,14 @@ const categoryData = {
   shapes: { items: shapes, title: 'Shapes' },
 };
 
-const CategoryPage = ({ category }) => {
+objectCategories.forEach((cat) => {
+  categoryData[`objects-${cat.id}`] = {
+    items: objectItems[cat.id],
+    title: cat.name,
+  };
+});
+
+const CategoryPage = ({ category, backTo = '/' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
 
@@ -42,9 +50,9 @@ const CategoryPage = ({ category }) => {
           {/* Back button and title */}
           <div className="flex items-center gap-4">
             <Link
-              to="/"
+              to={backTo}
               className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Go home"
+              aria-label="Go back"
             >
               <Home size={24} className="text-gray-600" />
             </Link>

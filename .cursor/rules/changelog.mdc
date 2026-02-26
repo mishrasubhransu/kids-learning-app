@@ -1,0 +1,45 @@
+---
+description: Create a changelog entry in changelogs/ for every commit
+alwaysApply: true
+---
+
+# Changelog Convention
+
+Every commit in this project **must** have a corresponding changelog file.
+
+## File location and naming
+
+- Directory: `changelogs/`
+- Filename: `YYYY-MM-DD_HH-mm.md` (UTC timestamp of when the change was made)
+- Example: `changelogs/2026-02-26_17-34.md`
+
+## File format
+
+```markdown
+# <Short title matching the commit message>
+
+**Date:** YYYY-MM-DD HH:mm
+
+## Summary
+
+One-paragraph description of what changed and why.
+
+## Added
+- New features, files, or capabilities
+
+## Changed
+- Modifications to existing files or behavior
+
+## Fixed
+- Bug fixes
+
+## Removed
+- Anything deleted or deprecated
+```
+
+Only include the sections (Added / Changed / Fixed / Removed) that apply.
+
+## When to create
+
+- Create the changelog file **before** making the git commit, so it is included in the same commit.
+- If multiple related changes are committed together, use a single changelog entry.

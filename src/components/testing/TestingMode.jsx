@@ -282,6 +282,27 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
         );
 
       default:
+        if (item.image) {
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleSelect(item)}
+              disabled={selectedAnswer !== null && isCorrect}
+              className={`${baseClasses} p-4 md:p-6 flex flex-col items-center justify-center gap-2`}
+            >
+              <img
+                src={item.image}
+                alt={showResult ? item.name : ''}
+                className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-lg"
+              />
+              {showResult && (
+                <span className="text-sm font-medium text-gray-600">
+                  {item.name}
+                </span>
+              )}
+            </button>
+          );
+        }
         return null;
     }
   };

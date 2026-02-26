@@ -103,6 +103,24 @@ const TileView = ({ items, category, objectIcons, shapeColor }) => {
         );
 
       default:
+        if (item.image) {
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleClick(item)}
+              className={`${baseClasses} bg-white p-3 md:p-4 flex flex-col items-center justify-center gap-2`}
+            >
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-lg"
+              />
+              <span className="text-sm md:text-base font-semibold text-gray-600">
+                {item.name}
+              </span>
+            </button>
+          );
+        }
         return null;
     }
   };
@@ -119,7 +137,7 @@ const TileView = ({ items, category, objectIcons, shapeColor }) => {
       case 'shapes':
         return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5';
       default:
-        return 'grid-cols-4';
+        return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
     }
   };
 

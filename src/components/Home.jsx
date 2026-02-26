@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image } from 'lucide-react';
 
 const categories = [
   {
@@ -37,6 +37,15 @@ const categories = [
     color: 'bg-purple-500',
     hoverColor: 'hover:bg-purple-600',
     preview: '⬟',
+  },
+  {
+    id: 'objects',
+    name: 'Objects',
+    description: 'Learn about objects',
+    icon: Image,
+    color: 'bg-amber-500',
+    hoverColor: 'hover:bg-amber-600',
+    preview: '🦁',
   },
   {
     id: 'typing',

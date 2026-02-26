@@ -151,6 +151,20 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
         );
 
       default:
+        if (currentItem.image) {
+          return (
+            <div className="flex flex-col items-center gap-6">
+              <img
+                src={currentItem.image}
+                alt={currentItem.name}
+                className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain rounded-2xl shadow-lg bg-white"
+              />
+              <span className="text-4xl md:text-6xl font-bold text-gray-600">
+                {currentItem.name}
+              </span>
+            </div>
+          );
+        }
         return null;
     }
   };
