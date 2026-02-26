@@ -23,6 +23,12 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
     }
   }, [currentItem, speak]);
 
+  // Speak the first item when entering the page
+  useEffect(() => {
+    speakCurrent();
+    hasInteracted.current = true;
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Speak and change background when navigating (after user has interacted)
   useEffect(() => {
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
