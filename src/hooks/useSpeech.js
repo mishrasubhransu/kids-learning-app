@@ -1,64 +1,81 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+
+const toAudioKey = (text) => text.toLowerCase().replace(/\s+/g, '-');
 
 export const useSpeech = () => {
   const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const audioManifest = useRef(null);
+  const currentAudio = useRef(null);
 
-  // Wait for voices to be loaded (required for some browsers)
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) {
-        setVoicesLoaded(true);
-      }
+      if (voices.length > 0) setVoicesLoaded(true);
     };
-
-    // Try to load immediately
     loadVoices();
-
-    // Also listen for the voiceschanged event (Chrome needs this)
     window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-
-    return () => {
-      window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-    };
+    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
   }, []);
 
-  const speak = useCallback((text, options = {}) => {
-    if (!text) return;
+  // Load manifest of pre-generated ElevenLabs word clips
+  useEffect(() => {
+    fetch('/audio/words/manifest.json')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) audioManifest.current = new Set(data);
+      })
+      .catch(() => {});
+  }, []);
 
-    // Cancel any ongoing speech
+  const stopCurrent = useCallback(() => {
+    if (currentAudio.current) {
+      currentAudio.current.pause();
+      currentAudio.current.currentTime = 0;
+      currentAudio.current = null;
+    }
     window.speechSynthesis.cancel();
+  }, []);
 
-    // Chrome bug workaround: speech synthesis can get "stuck"
-    // This unsticks it by calling getVoices
+  const speakWithBrowserTTS = useCallback((text, options = {}) => {
     window.speechSynthesis.getVoices();
 
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = options.rate ?? 0.9; // Slower for kids
-    utterance.pitch = options.pitch ?? 1.1; // Cheerful pitch
+    // iOS/iPadOS speech synthesis says "capital A" for single uppercase letters
+    const normalizedText = /^[A-Z]$/.test(text) ? text.toLowerCase() : text;
+
+    const utterance = new SpeechSynthesisUtterance(normalizedText);
+    utterance.rate = options.rate ?? 0.9;
+    utterance.pitch = options.pitch ?? 1.1;
     utterance.volume = options.volume ?? 1;
     utterance.lang = options.lang ?? 'en-US';
 
-    // Try to use a good English voice if available
     const voices = window.speechSynthesis.getVoices();
     const englishVoice = voices.find(
       (v) => v.lang.startsWith('en') && v.localService
     );
-    if (englishVoice) {
-      utterance.voice = englishVoice;
-    }
-
-    // Debug logging (can remove later)
-    console.log('Speaking:', text);
+    if (englishVoice) utterance.voice = englishVoice;
 
     window.speechSynthesis.speak(utterance);
-
-    return utterance;
   }, []);
+
+  const speak = useCallback((text, options = {}) => {
+    if (!text) return;
+    stopCurrent();
+
+    const key = toAudioKey(text);
+
+    if (audioManifest.current?.has(key)) {
+      const audio = new Audio(`/audio/words/${key}.mp3`);
+      currentAudio.current = audio;
+      audio.play().catch(() => speakWithBrowserTTS(text, options));
+      return;
+    }
+
+    speakWithBrowserTTS(text, options);
+  }, [stopCurrent, speakWithBrowserTTS]);
 
   const cancel = useCallback(() => {
-    window.speechSynthesis.cancel();
-  }, []);
+    stopCurrent();
+  }, [stopCurrent]);
 
   return { speak, cancel, voicesLoaded };
 };

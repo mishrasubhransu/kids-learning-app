@@ -1,13 +1,17 @@
 #!/usr/bin/env node
 /**
- * Generates tiered audio clips for test feedback using ElevenLabs TTS API.
+ * Generates ElevenLabs TTS audio clips for the app:
+ *   - Tiered positive/encouragement feedback
+ *   - Individual word pronunciations for all learning items
  *
  * Usage:
  *   ELEVENLABS_API_KEY=sk_... node scripts/generate-audio.mjs
  *
  * Options:
- *   --voice <id>   Voice ID (default: Laura — FGY2WhTYpPnrIDTdsKH5)
- *   --model <id>   Model ID (default: eleven_v3)
+ *   --voice <id>      Voice ID (default: Laura — FGY2WhTYpPnrIDTdsKH5)
+ *   --model <id>      Model ID (default: eleven_v3)
+ *   --words-only      Only generate learning-item word clips
+ *   --feedback-only   Only generate positive/encouragement clips
  */
 
 import { writeFile, mkdir } from 'fs/promises';
@@ -69,6 +73,39 @@ const encouragement = [
   { text: 'Nope! Almost though!', speed: 0.95 },
 ];
 
+// All learning-item words to pre-generate with ElevenLabs voice.
+// Keys become filenames: lowercase, spaces → hyphens.
+const learningWords = [
+  // Alphabets A-Z
+  ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+  // Numbers 1-10
+  ...[...Array(10)].map((_, i) => String(i + 1)),
+  // Colors
+  'Red', 'Green', 'Blue', 'Yellow', 'Pink', 'Purple', 'Black', 'White',
+  // Shapes
+  'Circle', 'Triangle', 'Square', 'Star', 'Plus',
+  // Animals
+  'Lion', 'Tiger', 'Dog', 'Cat', 'Pig', 'Rhino', 'Hippo', 'Horse',
+  'Donkey', 'Zebra', 'Sheep', 'Goat', 'Llama', 'Camel', 'Elephant',
+  'Alligator', 'Gorilla', 'Chimpanzee', 'Orangutan', 'Monkey', 'Deer',
+  // Birds
+  'Peacock', 'Crow', 'Pigeon', 'Hen', 'Rooster', 'Turkey', 'Parrot',
+  'Sparrow', 'Duck', 'Swan', 'Ostrich', 'Eagle', 'Vulture',
+  // Food
+  'Pizza', 'Burger', 'Dosa', 'Vada', 'Rice', 'Ice Cream', 'French Fries',
+  'Fish', 'Pasta', 'Yogurt', 'Soup', 'Kebab',
+  // Transportation
+  'Bicycle', 'Electric Scooter', 'Moped', 'Motorcycle', 'Car', 'Truck',
+  'Bus', 'Train', 'Aeroplane', 'Rocket',
+  // Professions
+  'Doctor', 'Surgeon', 'Software Engineer', 'Scientist', 'Mechanic',
+  'Teacher', 'Pilot', 'Air Hostess', 'Athlete', 'Chauffeur',
+];
+
+function toAudioKey(name) {
+  return name.toLowerCase().replace(/\s+/g, '-');
+}
+
 function getArg(name, fallback) {
   const idx = process.argv.indexOf(`--${name}`);
   return idx !== -1 ? process.argv[idx + 1] : fallback;
@@ -93,22 +130,7 @@ async function generateClip(text, voiceId, model, settings, outputPath) {
   console.log(`  ✓ ${path.relative(PUBLIC_DIR, outputPath)}  "${text}"`);
 }
 
-async function main() {
-  if (!API_KEY) {
-    console.error('Error: Set ELEVENLABS_API_KEY environment variable.');
-    process.exit(1);
-  }
-
-  const voiceId = getArg('voice', DEFAULT_VOICE_ID);
-  const model = getArg('model', DEFAULT_MODEL);
-
-  // v3 uses discrete stability: 0.0 = Creative, 0.5 = Natural, 1.0 = Robust
-  const isV3 = model.includes('v3');
-  const baseStability = isV3 ? 0.0 : 0.15;
-
-  console.log(`\nVoice: ${voiceId} | Model: ${model} | Stability: ${baseStability}\n`);
-
-  // Generate tiered positive clips
+async function generateFeedbackClips(voiceId, model, baseStability) {
   for (let tier = 0; tier < positiveTiers.length; tier++) {
     const tierDir = path.join(PUBLIC_DIR, 'positive', `tier${tier}`);
     await mkdir(tierDir, { recursive: true });
@@ -128,7 +150,6 @@ async function main() {
     console.log('');
   }
 
-  // Generate encouragement clips
   const encDir = path.join(PUBLIC_DIR, 'encouragement');
   await mkdir(encDir, { recursive: true });
   console.log('Encouragement clips:');
@@ -143,6 +164,58 @@ async function main() {
       use_speaker_boost: true,
     };
     await generateClip(text, voiceId, model, settings, path.join(encDir, `${i}.mp3`));
+  }
+}
+
+async function generateWordClips(voiceId, model, baseStability) {
+  const wordsDir = path.join(PUBLIC_DIR, 'words');
+  await mkdir(wordsDir, { recursive: true });
+  console.log('Learning-item word clips:');
+
+  const manifest = [];
+
+  for (const word of learningWords) {
+    const key = toAudioKey(word);
+    manifest.push(key);
+    const settings = {
+      stability: 0.5,
+      similarity_boost: 0.8,
+      style: 0.6,
+      speed: 0.95,
+      use_speaker_boost: true,
+    };
+    await generateClip(word, voiceId, model, settings, path.join(wordsDir, `${key}.mp3`));
+  }
+
+  await writeFile(
+    path.join(wordsDir, 'manifest.json'),
+    JSON.stringify(manifest, null, 2)
+  );
+  console.log(`  ✓ manifest.json  (${manifest.length} words)\n`);
+}
+
+async function main() {
+  if (!API_KEY) {
+    console.error('Error: Set ELEVENLABS_API_KEY environment variable.');
+    process.exit(1);
+  }
+
+  const voiceId = getArg('voice', DEFAULT_VOICE_ID);
+  const model = getArg('model', DEFAULT_MODEL);
+  const wordsOnly = process.argv.includes('--words-only');
+  const feedbackOnly = process.argv.includes('--feedback-only');
+
+  const isV3 = model.includes('v3');
+  const baseStability = isV3 ? 0.0 : 0.15;
+
+  console.log(`\nVoice: ${voiceId} | Model: ${model} | Stability: ${baseStability}`);
+  console.log(`Mode: ${wordsOnly ? 'words only' : feedbackOnly ? 'feedback only' : 'all'}\n`);
+
+  if (!wordsOnly) {
+    await generateFeedbackClips(voiceId, model, baseStability);
+  }
+  if (!feedbackOnly) {
+    await generateWordClips(voiceId, model, baseStability);
   }
 
   console.log('\nDone! Audio files saved to public/audio/');
