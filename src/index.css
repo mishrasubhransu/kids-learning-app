@@ -6,7 +6,9 @@
  * - Suppress long-press context menus and text selection
  * - Disable iOS callout, text size adjustment, and tap highlight
  */
-html, body {
+html, body, #root {
+  height: 100%;
+  overflow: hidden;
   touch-action: manipulation;
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;

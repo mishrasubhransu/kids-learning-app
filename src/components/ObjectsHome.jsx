@@ -4,7 +4,7 @@ import { objectCategories, objectItems } from '../data/objects';
 
 const ObjectsHome = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
+    <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-4">

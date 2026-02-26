@@ -122,7 +122,7 @@ const TypingMode = () => {
 
   return (
     <div
-      className="min-h-screen flex flex-col items-center justify-center transition-colors duration-300 relative"
+      className="h-full flex flex-col items-center justify-center transition-colors duration-300 relative overflow-hidden"
       style={{ backgroundColor: bgColor }}
     >
       {/* Home button */}

@@ -142,7 +142,7 @@ const TileView = ({ items, category, objectIcons, shapeColor }) => {
   };
 
   return (
-    <div className="flex-1 flex flex-col p-4 md:p-8">
+    <div className="flex-1 flex flex-col p-4 md:p-8 overflow-y-auto">
       {/* Object selector for numbers */}
       {category === 'numbers' && objectIcons && (
         <div className="flex justify-center mb-6">

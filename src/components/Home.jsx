@@ -60,7 +60,7 @@ const categories = [
 
 const Home = () => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4">
+    <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4 overflow-hidden">
       <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-4 text-center">
         Toddler Learning App
       </h1>

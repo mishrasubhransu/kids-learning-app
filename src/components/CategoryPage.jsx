@@ -43,7 +43,7 @@ const CategoryPage = ({ category, backTo = '/' }) => {
   const { items, title, objectIcons: icons } = data;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col">
+    <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
