@@ -234,15 +234,12 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
             <span className="text-4xl md:text-6xl font-bold text-gray-500">
               {item.value}
             </span>
-            <div className="flex flex-wrap justify-center gap-1">
-              {Array.from({ length: Math.min(item.value, 5) }).map((_, i) => (
+            <div className="grid grid-cols-5 justify-items-center gap-1">
+              {Array.from({ length: item.value }).map((_, i) => (
                 <span key={i} className="text-2xl">
                   {objectIcons?.[objectType] || '🥚'}
                 </span>
               ))}
-              {item.value > 5 && (
-                <span className="text-sm text-gray-400">+{item.value - 5}</span>
-              )}
             </div>
           </button>
         );
