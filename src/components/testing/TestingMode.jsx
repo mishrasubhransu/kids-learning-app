@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronRight, Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
-import { getRandomPositive, getRandomEncouragement } from '../../utils/feedback';
+import useAudioFeedback from '../../hooks/useAudioFeedback';
 
 const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) => {
   const [options, setOptions] = useState([]);
@@ -11,7 +11,9 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
   const [hasStarted, setHasStarted] = useState(false);
   const [countdown, setCountdown] = useState(null);
   const [objectType] = useState('eggs');
+  const [correctCount, setCorrectCount] = useState(0);
   const { speak } = useSpeech();
+  const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
 
@@ -132,10 +134,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     setTimeout(() => {
       if (item.id === correctAnswer.id) {
         setIsCorrect(true);
-        const feedback = getRandomPositive();
-        speak(feedback);
+        const newCount = correctCount + 1;
+        setCorrectCount(newCount);
+        playPositive(newCount);
 
-        // Start countdown for auto-advance
         let secondsLeft = 2;
         setCountdown(secondsLeft);
 
@@ -147,15 +149,14 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           }
         }, 1000);
 
-        // Auto-advance after 3 seconds
         autoAdvanceTimerRef.current = setTimeout(() => {
           nextQuestion();
         }, 3000);
       } else {
         setIsCorrect(false);
-        const feedback = `${getRandomEncouragement()} That was ${item.name}. Try to find ${correctAnswer.name}.`;
-        speak(feedback);
-        // Reset selection after feedback
+        playEncouragement().then(() => {
+          speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
+        });
         setTimeout(() => {
           setSelectedAnswer(null);
           setIsCorrect(null);
