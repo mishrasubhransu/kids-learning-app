@@ -14,7 +14,7 @@
  *   --feedback-only   Only generate positive/encouragement clips
  */
 
-import { writeFile, mkdir } from 'fs/promises';
+import { writeFile, mkdir, access } from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -73,9 +73,8 @@ const encouragement = [
   { text: 'Nope! Almost though!', speed: 0.95 },
 ];
 
-// All learning-item words to pre-generate with ElevenLabs voice.
-// Keys become filenames: lowercase, spaces → hyphens.
-const learningWords = [
+// Individual item names — used for pronunciation clips and to build questions.
+const itemWords = [
   // Alphabets A-Z
   ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
   // Numbers 1-10
@@ -102,8 +101,16 @@ const learningWords = [
   'Teacher', 'Pilot', 'Air Hostess', 'Athlete', 'Chauffeur',
 ];
 
+const learningWords = [
+  ...itemWords,
+  // Phrase fragments for wrong-answer feedback sequences
+  'That was', 'Try to find',
+  // Full test-mode questions (natural question intonation)
+  ...itemWords.map((w) => `Which one is ${w}?`),
+];
+
 function toAudioKey(name) {
-  return name.toLowerCase().replace(/\s+/g, '-');
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 function getArg(name, fallback) {
@@ -174,9 +181,18 @@ async function generateWordClips(voiceId, model, baseStability) {
 
   const manifest = [];
 
+  let skipped = 0;
   for (const word of learningWords) {
     const key = toAudioKey(word);
     manifest.push(key);
+    const outPath = path.join(wordsDir, `${key}.mp3`);
+
+    try {
+      await access(outPath);
+      skipped++;
+      continue;
+    } catch {}
+
     const settings = {
       stability: 0.5,
       similarity_boost: 0.8,
@@ -184,8 +200,9 @@ async function generateWordClips(voiceId, model, baseStability) {
       speed: 0.95,
       use_speaker_boost: true,
     };
-    await generateClip(word, voiceId, model, settings, path.join(wordsDir, `${key}.mp3`));
+    await generateClip(word, voiceId, model, settings, outPath);
   }
+  if (skipped) console.log(`  ⏭ ${skipped} existing clips skipped`);
 
   await writeFile(
     path.join(wordsDir, 'manifest.json'),

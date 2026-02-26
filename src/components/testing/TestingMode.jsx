@@ -12,7 +12,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
   const [countdown, setCountdown] = useState(null);
   const [objectType] = useState('eggs');
   const [correctCount, setCorrectCount] = useState(0);
-  const { speak } = useSpeech();
+  const { speak, speakSequence } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
@@ -83,14 +83,12 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     };
   }, []);
 
-  // Speak the question - uses current correctAnswer state
   const askQuestion = useCallback(() => {
     if (correctAnswer) {
       speak(`Which one is ${correctAnswer.name}?`);
     }
   }, [correctAnswer, speak]);
 
-  // Speak question for a specific answer (used after generating new question)
   const askQuestionFor = useCallback((answer) => {
     if (answer) {
       speak(`Which one is ${answer.name}?`);
@@ -155,7 +153,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
       } else {
         setIsCorrect(false);
         playEncouragement().then(() => {
-          speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
+          speakSequence(['That was', item.name, 'Try to find', correctAnswer.name]);
         });
         setTimeout(() => {
           setSelectedAnswer(null);
