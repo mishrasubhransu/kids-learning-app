@@ -1,25 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 
 const toAudioKey = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
 export const useSpeech = () => {
-  const [voicesLoaded, setVoicesLoaded] = useState(false);
   const audioManifest = useRef(null);
   const currentAudio = useRef(null);
   const sequenceAbort = useRef(null);
+  const manifestReady = useRef(null);
 
   useEffect(() => {
-    const loadVoices = () => {
-      const voices = window.speechSynthesis.getVoices();
-      if (voices.length > 0) setVoicesLoaded(true);
-    };
-    loadVoices();
-    window.speechSynthesis.addEventListener('voiceschanged', loadVoices);
-    return () => window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
-  }, []);
-
-  useEffect(() => {
-    fetch('/audio/words/manifest.json')
+    manifestReady.current = fetch('/audio/words/manifest.json')
       .then((res) => (res.ok ? res.json() : null))
       .then((data) => {
         if (data) audioManifest.current = new Set(data);
@@ -37,7 +27,6 @@ export const useSpeech = () => {
       currentAudio.current.currentTime = 0;
       currentAudio.current = null;
     }
-    window.speechSynthesis.cancel();
   }, []);
 
   const playClip = useCallback((key) => {
@@ -50,28 +39,11 @@ export const useSpeech = () => {
     });
   }, []);
 
-  const speakBrowserTTS = useCallback((text) => {
-    return new Promise((resolve) => {
-      window.speechSynthesis.getVoices();
-      const normalizedText = /^[A-Z]$/.test(text) ? text.toLowerCase() : text;
-      const utterance = new SpeechSynthesisUtterance(normalizedText);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1;
-      utterance.lang = 'en-US';
-      const voices = window.speechSynthesis.getVoices();
-      const englishVoice = voices.find((v) => v.lang.startsWith('en') && v.localService);
-      if (englishVoice) utterance.voice = englishVoice;
-      utterance.onend = resolve;
-      utterance.onerror = resolve;
-      window.speechSynthesis.speak(utterance);
-    });
-  }, []);
-
-  const playOne = useCallback((text) => {
+  const playOne = useCallback(async (text) => {
+    if (manifestReady.current) await manifestReady.current;
     const key = toAudioKey(text);
     if (audioManifest.current?.has(key)) return playClip(key);
-    return speakBrowserTTS(text);
-  }, [playClip, speakBrowserTTS]);
+  }, [playClip]);
 
   const speak = useCallback((text) => {
     if (!text) return;
@@ -79,7 +51,6 @@ export const useSpeech = () => {
     playOne(text);
   }, [stopCurrent, playOne]);
 
-  // Play an array of text parts back-to-back, e.g. ['Which one is', 'Lion']
   const speakSequence = useCallback((parts) => {
     if (!parts?.length) return;
     stopCurrent();
@@ -99,7 +70,7 @@ export const useSpeech = () => {
     stopCurrent();
   }, [stopCurrent]);
 
-  return { speak, speakSequence, cancel, voicesLoaded };
+  return { speak, speakSequence, cancel };
 };
 
 export default useSpeech;
