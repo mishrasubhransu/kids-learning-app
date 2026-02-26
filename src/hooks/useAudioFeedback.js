@@ -11,10 +11,24 @@ const ENCOURAGEMENT_COUNT = encouragement.length;
  * Positive clips are tiered by correct-answer count — excitement escalates.
  * Falls back to Web Speech API if clips aren't available.
  */
+const pickAvoiding = (count, recent) => {
+  let idx;
+  let attempts = 0;
+  do {
+    idx = Math.floor(Math.random() * count);
+    attempts++;
+  } while (recent.includes(idx) && attempts < 10);
+  recent.push(idx);
+  if (recent.length > 2) recent.shift();
+  return idx;
+};
+
 const useAudioFeedback = () => {
   const positiveAudio = useRef([]);
   const encouragementAudio = useRef([]);
   const audioAvailable = useRef(false);
+  const recentPositive = useRef([]);
+  const recentEncouragement = useRef([]);
   const { speak } = useSpeech();
 
   useEffect(() => {
@@ -61,7 +75,7 @@ const useAudioFeedback = () => {
 
   const playPositive = useCallback((correctCount = 1) => {
     const tier = getTierForCount(correctCount);
-    const idx = Math.floor(Math.random() * PHRASES_PER_TIER);
+    const idx = pickAvoiding(PHRASES_PER_TIER, recentPositive.current);
 
     if (audioAvailable.current && positiveAudio.current[tier]?.[idx]) {
       return playClip(positiveAudio.current[tier][idx]);
@@ -71,7 +85,7 @@ const useAudioFeedback = () => {
   }, [playClip, speak]);
 
   const playEncouragement = useCallback(() => {
-    const idx = Math.floor(Math.random() * ENCOURAGEMENT_COUNT);
+    const idx = pickAvoiding(ENCOURAGEMENT_COUNT, recentEncouragement.current);
     if (audioAvailable.current && encouragementAudio.current[idx]) {
       return playClip(encouragementAudio.current[idx]);
     }
