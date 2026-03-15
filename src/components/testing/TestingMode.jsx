@@ -12,10 +12,12 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
   const [countdown, setCountdown] = useState(null);
   const [objectType] = useState('eggs');
   const [correctCount, setCorrectCount] = useState(0);
+  const [testComplete, setTestComplete] = useState(false);
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
+  const askedIdsRef = useRef(new Set());
 
   // Get number of options based on difficulty
   const getOptionCount = useCallback(() => {
@@ -41,12 +43,24 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     return shuffled;
   };
 
-  // Generate new question and return the correct answer
+  // Generate new question and return the correct answer (random without replacement)
   const generateQuestion = useCallback(() => {
+    // Check if all items have been asked
+    const remaining = items.filter((item) => !askedIdsRef.current.has(item.id));
+    if (remaining.length === 0) {
+      setTestComplete(true);
+      return null;
+    }
+
     const count = getOptionCount();
-    const shuffledItems = shuffle(items);
-    const selectedOptions = shuffledItems.slice(0, count);
-    const correct = selectedOptions[Math.floor(Math.random() * selectedOptions.length)];
+
+    // Pick correct answer from remaining (not yet asked) items
+    const correct = remaining[Math.floor(Math.random() * remaining.length)];
+    askedIdsRef.current.add(correct.id);
+
+    // Build options: correct answer + random others from all items
+    const others = shuffle(items.filter((item) => item.id !== correct.id));
+    const selectedOptions = [correct, ...others.slice(0, count - 1)];
 
     setOptions(shuffle(selectedOptions));
     setCorrectAnswer(correct);
@@ -67,6 +81,8 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
 
   // Initialize on mount and difficulty change
   useEffect(() => {
+    askedIdsRef.current = new Set();
+    setTestComplete(false);
     generateQuestion();
     setHasStarted(false);
   }, [generateQuestion, difficulty]);
@@ -103,6 +119,17 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     setTimeout(() => {
       askQuestion();
     }, 100);
+  };
+
+  // Restart the test
+  const handleRestart = () => {
+    askedIdsRef.current = new Set();
+    setTestComplete(false);
+    setCorrectCount(0);
+    const newCorrect = generateQuestion();
+    setTimeout(() => {
+      askQuestionFor(newCorrect);
+    }, 400);
   };
 
   // Next question with proper timing
@@ -288,15 +315,15 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
               key={item.id}
               onClick={() => handleSelect(item)}
               disabled={selectedAnswer !== null && isCorrect}
-              className={`${baseClasses} p-4 md:p-6 flex flex-col items-center justify-center gap-2`}
+              className={`${baseClasses} p-1 flex flex-col items-center justify-center gap-1`}
             >
               <img
                 src={item.image}
                 alt={showResult ? item.name : ''}
-                className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-lg"
+                className="w-full aspect-square object-contain rounded-lg"
               />
               {showResult && (
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-base md:text-lg font-medium text-gray-600">
                   {item.name}
                 </span>
               )}
@@ -314,6 +341,30 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     if (count <= 6) return 'grid-cols-2 md:grid-cols-3';
     return 'grid-cols-3 md:grid-cols-4';
   };
+
+  // Test complete screen
+  if (testComplete) {
+    return (
+      <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+        <div className="text-center">
+          <div className="text-6xl md:text-8xl mb-6">🏆</div>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">
+            Test Complete!
+          </h2>
+          <p className="text-lg md:text-xl text-gray-500 mb-8">
+            You went through all {items.length} items. Great job!
+          </p>
+          <button
+            onClick={handleRestart}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
+          >
+            <Play size={28} />
+            Start Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Start screen
   if (!hasStarted) {
@@ -357,7 +408,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
       </div>
 
       {/* Options grid */}
-      <div className={`grid ${getGridCols()} gap-4 md:gap-6 max-w-3xl w-full mb-8`}>
+      <div className={`grid ${getGridCols()} gap-4 md:gap-6 max-w-5xl w-full mb-8`}>
         {options.map((item) => renderOption(item))}
       </div>
 
