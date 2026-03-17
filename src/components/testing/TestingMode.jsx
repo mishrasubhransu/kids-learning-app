@@ -18,6 +18,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
   const autoAdvanceTimerRef = useRef(null);
   const countdownTimerRef = useRef(null);
   const askedIdsRef = useRef(new Set());
+  const touchStartRef = useRef(null);
 
   // Get number of options based on difficulty
   const getOptionCount = useCallback(() => {
@@ -192,6 +193,37 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     }, 50);
   };
 
+  // Touch handlers for long-press support on mobile
+  const handleTouchStart = useCallback((e) => {
+    const preventContextMenu = (ev) => ev.preventDefault();
+    e.target.addEventListener('contextmenu', preventContextMenu, { once: true });
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+  }, []);
+
+  const handleSelectRef = useRef(handleSelect);
+  handleSelectRef.current = handleSelect;
+
+  const createTouchEndHandler = useCallback((item) => (e) => {
+    if (!touchStartRef.current) return;
+    const touch = e.changedTouches[0];
+    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
+    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
+    if (dx < 10 && dy < 10) {
+      e.preventDefault();
+      handleSelectRef.current(item);
+    }
+    touchStartRef.current = null;
+  }, []);
+
+  const touchProps = useCallback((item) => ({
+    onTouchStart: handleTouchStart,
+    onTouchEnd: createTouchEndHandler(item),
+    onContextMenu: (e) => e.preventDefault(),
+  }), [handleTouchStart, createTouchEndHandler]);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -231,7 +263,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
     }
 
     const baseClasses = `
-      rounded-2xl shadow-lg cursor-pointer transition-all duration-200
+      rounded-2xl shadow-lg cursor-pointer transition-all duration-200 select-none
       ${bgClass} ${borderClass}
       ${selectedAnswer === null ? 'hover:scale-105 hover:shadow-xl' : ''}
     `;
@@ -242,6 +274,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           <button
             key={item.id}
             onClick={() => handleSelect(item)}
+            {...touchProps(item)}
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
           >
@@ -256,6 +289,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           <button
             key={item.id}
             onClick={() => handleSelect(item)}
+            {...touchProps(item)}
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-6 md:p-8 flex flex-col items-center justify-center gap-3`}
           >
@@ -277,6 +311,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           <button
             key={item.id}
             onClick={() => handleSelect(item)}
+            {...touchProps(item)}
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-4 aspect-square flex items-center justify-center`}
             style={{
@@ -301,6 +336,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           <button
             key={item.id}
             onClick={() => handleSelect(item)}
+            {...touchProps(item)}
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
           >
@@ -314,6 +350,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
             <button
               key={item.id}
               onClick={() => handleSelect(item)}
+              {...touchProps(item)}
               disabled={selectedAnswer !== null && isCorrect}
               className={`${baseClasses} p-1 flex flex-col items-center justify-center gap-1`}
             >
