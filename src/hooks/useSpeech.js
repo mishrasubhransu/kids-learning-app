@@ -1,14 +1,29 @@
 import { useCallback, useEffect, useState } from 'react';
 
+const VOICE_STORAGE_KEY = 'preferred-voice-uri';
+
 export const useSpeech = () => {
   const [voicesLoaded, setVoicesLoaded] = useState(false);
+  const [availableVoices, setAvailableVoices] = useState([]);
+  const [selectedVoiceURI, setSelectedVoiceURIState] = useState(
+    () => localStorage.getItem(VOICE_STORAGE_KEY) || ''
+  );
 
   // Wait for voices to be loaded (required for some browsers)
   useEffect(() => {
     const loadVoices = () => {
       const voices = window.speechSynthesis.getVoices();
       if (voices.length > 0) {
+        const englishVoices = voices.filter((v) => v.lang.startsWith('en'));
+        setAvailableVoices(englishVoices);
         setVoicesLoaded(true);
+
+        // Validate stored preference still exists
+        const stored = localStorage.getItem(VOICE_STORAGE_KEY);
+        if (stored && !voices.find((v) => v.voiceURI === stored)) {
+          localStorage.removeItem(VOICE_STORAGE_KEY);
+          setSelectedVoiceURIState('');
+        }
       }
     };
 
@@ -21,6 +36,15 @@ export const useSpeech = () => {
     return () => {
       window.speechSynthesis.removeEventListener('voiceschanged', loadVoices);
     };
+  }, []);
+
+  const setSelectedVoiceURI = useCallback((uri) => {
+    if (uri) {
+      localStorage.setItem(VOICE_STORAGE_KEY, uri);
+    } else {
+      localStorage.removeItem(VOICE_STORAGE_KEY);
+    }
+    setSelectedVoiceURIState(uri);
   }, []);
 
   const speak = useCallback((text, options = {}) => {
@@ -39,13 +63,22 @@ export const useSpeech = () => {
     utterance.volume = options.volume ?? 1;
     utterance.lang = options.lang ?? 'en-US';
 
-    // Try to use a good English voice if available
+    // Try to use the user-selected voice, or fall back to auto-select
     const voices = window.speechSynthesis.getVoices();
-    const englishVoice = voices.find(
-      (v) => v.lang.startsWith('en') && v.localService
-    );
-    if (englishVoice) {
-      utterance.voice = englishVoice;
+    const storedURI = localStorage.getItem(VOICE_STORAGE_KEY);
+
+    if (storedURI) {
+      const preferred = voices.find((v) => v.voiceURI === storedURI);
+      if (preferred) {
+        utterance.voice = preferred;
+      }
+    } else {
+      const englishVoice = voices.find(
+        (v) => v.lang.startsWith('en') && v.localService
+      );
+      if (englishVoice) {
+        utterance.voice = englishVoice;
+      }
     }
 
     // Debug logging (can remove later)
@@ -60,7 +93,14 @@ export const useSpeech = () => {
     window.speechSynthesis.cancel();
   }, []);
 
-  return { speak, cancel, voicesLoaded };
+  return {
+    speak,
+    cancel,
+    voicesLoaded,
+    availableVoices,
+    selectedVoiceURI,
+    setSelectedVoiceURI,
+  };
 };
 
 export default useSpeech;

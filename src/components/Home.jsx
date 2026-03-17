@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { BookOpen, Hash, Palette, Shapes, Keyboard, Image } from 'lucide-react';
+import VoiceSelector from './ui/VoiceSelector';
 
 const categories = [
   {
@@ -92,8 +93,11 @@ const Home = () => {
         })}
       </div>
 
-      <div className="mt-12 text-gray-500 text-sm">
-        Use arrow keys or tap to navigate
+      <div className="mt-12 flex flex-col items-center gap-3">
+        <VoiceSelector />
+        <span className="text-gray-500 text-sm">
+          Use arrow keys or tap to navigate
+        </span>
       </div>
     </div>
   );
