@@ -3,14 +3,13 @@ import { ChevronRight, Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 
-const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) => {
+const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
   const [countdown, setCountdown] = useState(null);
-  const [objectType] = useState('eggs');
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const { speak } = useSpeech();
@@ -435,13 +434,29 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor }) =
           Which one is{' '}
           <span className="text-blue-600">{correctAnswer?.name}</span>?
         </h2>
-        <button
-          onClick={askQuestion}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-        >
-          <Volume2 size={20} />
-          Repeat question
-        </button>
+        <div className="flex items-center gap-3 justify-center">
+          <button
+            onClick={askQuestion}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          >
+            <Volume2 size={20} />
+            Repeat question
+          </button>
+          {category === 'numbers' && objectIcons && (
+            <select
+              value={objectType}
+              onChange={(e) => onObjectTypeChange(e.target.value)}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
+            >
+              {Object.entries(objectIcons).map(([key, icon]) => (
+                <option key={key} value={key}>
+                  {key.charAt(0).toUpperCase() + key.slice(1)} {icon}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
       </div>
 
       {/* Options grid */}

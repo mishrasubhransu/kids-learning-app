@@ -29,6 +29,7 @@ objectCategories.forEach((cat) => {
 const CategoryPage = ({ category, backTo = '/' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
+  const [objectType, setObjectType] = useState('eggs');
 
   // Generate a random color for shapes (only once when entering the shapes category)
   const shapeColor = useMemo(() => {
@@ -127,6 +128,8 @@ const CategoryPage = ({ category, backTo = '/' }) => {
             category={category}
             objectIcons={icons}
             shapeColor={shapeColor}
+            objectType={objectType}
+            onObjectTypeChange={setObjectType}
           />
         )}
         {mode === 'tile' && (
@@ -135,6 +138,8 @@ const CategoryPage = ({ category, backTo = '/' }) => {
             category={category}
             objectIcons={icons}
             shapeColor={shapeColor}
+            objectType={objectType}
+            onObjectTypeChange={setObjectType}
           />
         )}
         {mode === 'test' && (
@@ -144,6 +149,8 @@ const CategoryPage = ({ category, backTo = '/' }) => {
             difficulty={difficulty}
             objectIcons={icons}
             shapeColor={shapeColor}
+            objectType={objectType}
+            onObjectTypeChange={setObjectType}
           />
         )}
       </div>

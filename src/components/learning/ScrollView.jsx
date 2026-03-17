@@ -7,9 +7,8 @@ const bgColors = [
   '#f1c40f', '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
 
-const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
+const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [objectType, setObjectType] = useState('eggs');
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useSpeech();
@@ -128,7 +127,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
             {objectIcons && (
               <select
                 value={objectType}
-                onChange={(e) => setObjectType(e.target.value)}
+                onChange={(e) => onObjectTypeChange(e.target.value)}
                 onClick={(e) => e.stopPropagation()}
                 className="bg-gray-100 border-none rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
               >

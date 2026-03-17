@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import useSpeech from '../../hooks/useSpeech';
 
-const TileView = ({ items, category, objectIcons, shapeColor }) => {
+const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
   const [activeId, setActiveId] = useState(null);
-  const [objectType, setObjectType] = useState('eggs');
   const { speak } = useSpeech();
 
   const handleClick = (item) => {
@@ -148,7 +147,7 @@ const TileView = ({ items, category, objectIcons, shapeColor }) => {
         <div className="flex justify-center mb-6">
           <select
             value={objectType}
-            onChange={(e) => setObjectType(e.target.value)}
+            onChange={(e) => onObjectTypeChange(e.target.value)}
             className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-200 cursor-pointer outline-none shadow-sm"
           >
             {Object.entries(objectIcons).map(([key, icon]) => (
