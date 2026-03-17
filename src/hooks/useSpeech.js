@@ -57,7 +57,7 @@ export const useSpeech = () => {
     // This unsticks it by calling getVoices
     window.speechSynthesis.getVoices();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(text.toLowerCase());
     utterance.rate = options.rate ?? 0.9; // Slower for kids
     utterance.pitch = options.pitch ?? 1.1; // Cheerful pitch
     utterance.volume = options.volume ?? 1;
