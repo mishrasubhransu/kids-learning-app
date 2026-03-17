@@ -4,6 +4,7 @@ export const objectCategories = [
   { id: 'food', name: 'Food', emoji: '🍕', color: 'bg-red-500', hoverColor: 'hover:bg-red-600' },
   { id: 'transportation', name: 'Transportation', emoji: '🚗', color: 'bg-indigo-500', hoverColor: 'hover:bg-indigo-600' },
   { id: 'profession', name: 'Professions', emoji: '👨‍⚕️', color: 'bg-teal-500', hoverColor: 'hover:bg-teal-600' },
+  { id: 'fruits', name: 'Fruits', emoji: '🍎', color: 'bg-lime-500', hoverColor: 'hover:bg-lime-600' },
 ];
 
 export const objectItems = {
@@ -82,5 +83,22 @@ export const objectItems = {
     { id: 7, name: 'Air Hostess', image: '/objects/profession/air-hostess.webp' },
     { id: 8, name: 'Athlete', image: '/objects/profession/athlete.webp' },
     { id: 9, name: 'Chauffeur', image: '/objects/profession/chauffeur.webp' },
+  ],
+  fruits: [
+    { id: 0, name: 'Apple', image: '/objects/fruits/apple.webp' },
+    { id: 1, name: 'Banana', image: '/objects/fruits/banana.webp' },
+    { id: 2, name: 'Orange', image: '/objects/fruits/orange.webp' },
+    { id: 3, name: 'Grapes', image: '/objects/fruits/grapes.webp' },
+    { id: 4, name: 'Strawberry', image: '/objects/fruits/strawberry.webp' },
+    { id: 5, name: 'Watermelon', image: '/objects/fruits/watermelon.webp' },
+    { id: 6, name: 'Mango', image: '/objects/fruits/mango.webp' },
+    { id: 7, name: 'Pineapple', image: '/objects/fruits/pineapple.webp' },
+    { id: 8, name: 'Cherry', image: '/objects/fruits/cherry.webp' },
+    { id: 9, name: 'Peach', image: '/objects/fruits/peach.webp' },
+    { id: 10, name: 'Pear', image: '/objects/fruits/pear.webp' },
+    { id: 11, name: 'Kiwi', image: '/objects/fruits/kiwi.webp' },
+    { id: 12, name: 'Blueberry', image: '/objects/fruits/blueberry.webp' },
+    { id: 13, name: 'Lemon', image: '/objects/fruits/lemon.webp' },
+    { id: 14, name: 'Coconut', image: '/objects/fruits/coconut.webp' },
   ],
 };

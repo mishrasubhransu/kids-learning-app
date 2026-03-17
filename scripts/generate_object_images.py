@@ -75,6 +75,14 @@ STYLE_PROMPTS = {
         "Sharp focus, cinematic quality, warm and inviting mood. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "fruits": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid natural colors, soft studio lighting, "
+        "and a clean, slightly blurred white or pastel background. Centered and clearly visible. "
+        "Professional food photography style, fresh and appetizing appearance. "
+        "Sharp focus on the fruit, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -154,6 +162,23 @@ ITEMS = {
         "air-hostess": "a smiling flight attendant in uniform serving food trays to passengers inside an airplane cabin",
         "athlete": "an athlete in sportswear sprinting on a running track in a stadium",
         "chauffeur": "a professional chauffeur in a dark suit and cap driving a luxury sedan, viewed from inside the car",
+    },
+    "fruits": {
+        "apple": "a shiny red apple with a small green leaf on the stem",
+        "banana": "a ripe yellow banana, slightly curved",
+        "orange": "a bright orange citrus fruit, whole and round",
+        "grapes": "a bunch of purple grapes on a small vine stem",
+        "strawberry": "a fresh red strawberry with green leaves on top",
+        "watermelon": "a slice of watermelon showing red flesh and green rind",
+        "mango": "a ripe yellow-orange mango, whole fruit",
+        "pineapple": "a whole pineapple with its spiky green crown",
+        "cherry": "a pair of red cherries with stems and a green leaf",
+        "peach": "a ripe fuzzy peach with a small leaf, warm pink-orange color",
+        "pear": "a green pear standing upright",
+        "kiwi": "a kiwi fruit cut in half showing green flesh and black seeds",
+        "blueberry": "a small pile of fresh blueberries, deep blue-purple color",
+        "lemon": "a bright yellow lemon, whole fruit",
+        "coconut": "a whole brown coconut and a half showing white flesh inside",
     },
 }
 
