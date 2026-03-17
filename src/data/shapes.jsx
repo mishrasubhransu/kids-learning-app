@@ -102,7 +102,7 @@ export const shapes = [
     display: 'Rhombus',
     svg: (color = '#3B82F6') => (
       <svg viewBox="0 0 100 100" className="w-full h-full">
-        <polygon points="50,5 95,50 50,95 5,50" fill={color} />
+        <polygon points="50,10 73,50 50,90 27,50" fill={color} />
       </svg>
     ),
   },
@@ -121,16 +121,6 @@ export const shapes = [
   },
   {
     id: 11,
-    name: 'Oval',
-    display: 'Oval',
-    svg: (color = '#3B82F6') => (
-      <svg viewBox="0 0 100 100" className="w-full h-full">
-        <ellipse cx="50" cy="50" rx="45" ry="30" fill={color} />
-      </svg>
-    ),
-  },
-  {
-    id: 12,
     name: 'Ellipse',
     display: 'Ellipse',
     svg: (color = '#3B82F6') => (
@@ -140,7 +130,7 @@ export const shapes = [
     ),
   },
   {
-    id: 13,
+    id: 12,
     name: 'Crescent',
     display: 'Crescent',
     svg: (color = '#3B82F6') => (
@@ -153,13 +143,23 @@ export const shapes = [
     ),
   },
   {
-    id: 14,
+    id: 13,
     name: 'Ring',
     display: 'Ring',
     svg: (color = '#3B82F6') => (
       <svg viewBox="0 0 100 100" className="w-full h-full">
         <circle cx="50" cy="50" r="45" fill={color} />
-        <circle cx="50" cy="50" r="25" fill="white" />
+        <circle cx="50" cy="50" r="33" fill="white" />
+      </svg>
+    ),
+  },
+  {
+    id: 14,
+    name: 'Semicircle',
+    display: 'Semicircle',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path d="M5,60 A45,45 0 0,1 95,60 Z" fill={color} />
       </svg>
     ),
   },
