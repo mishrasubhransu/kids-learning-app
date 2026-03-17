@@ -56,6 +56,46 @@ export const shapes = [
       </svg>
     ),
   },
+  {
+    id: 5,
+    name: 'Rectangle',
+    display: 'Rectangle',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <rect x="5" y="20" width="90" height="60" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 6,
+    name: 'Trapezoid',
+    display: 'Trapezoid',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="25,20 75,20 95,80 5,80" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 7,
+    name: 'Pentagon',
+    display: 'Pentagon',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="50,5 97,36 79,91 21,91 3,36" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 8,
+    name: 'Hexagon',
+    display: 'Hexagon',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="50,5 93,27 93,73 50,95 7,73 7,27" fill={color} />
+      </svg>
+    ),
+  },
 ];
 
 // Nice colors for shapes
