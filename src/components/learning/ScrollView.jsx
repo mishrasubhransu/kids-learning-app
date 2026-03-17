@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 
 const bgColors = [
@@ -7,10 +7,11 @@ const bgColors = [
   '#f1c40f', '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
 
-const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
+const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange, onAutoplayComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
+  const [isAutoplay, setIsAutoplay] = useState(false);
   const { speak } = useSpeech();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
@@ -25,14 +26,27 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
     }
   }, [currentItem, speak]);
 
+  const stopAutoplay = useCallback(() => {
+    setIsAutoplay(false);
+  }, []);
+
+  const startAutoplay = useCallback(() => {
+    setCurrentIndex(0);
+    setIsAutoplay(true);
+    hasInteracted.current = true;
+  }, []);
+
   // Speak the first item when entering the page
   useEffect(() => {
-    speakCurrent();
-    hasInteracted.current = true;
+    if (!isAutoplay) {
+      speakCurrent();
+      hasInteracted.current = true;
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Speak and change background when navigating (after user has interacted)
+  // Speak and change background when navigating manually (non-autoplay)
   useEffect(() => {
+    if (isAutoplay) return;
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
       speakCurrent();
       if (category === 'alphabets') {
@@ -40,7 +54,49 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       }
     }
     prevIndexRef.current = currentIndex;
-  }, [currentIndex, speakCurrent]);
+  }, [currentIndex, speakCurrent, isAutoplay, category]);
+
+  // Autoplay effect: speak current item, then advance after speech ends
+  useEffect(() => {
+    if (!isAutoplay) return;
+
+    let advanceTimer;
+    let fallbackTimer;
+    let cancelled = false;
+
+    const utterance = speak(currentItem.name);
+    if (category === 'alphabets') {
+      setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+    }
+
+    const advance = () => {
+      if (cancelled) return;
+      clearTimeout(fallbackTimer);
+      clearTimeout(advanceTimer);
+      if (currentIndex >= items.length - 1) {
+        setIsAutoplay(false);
+        onAutoplayComplete?.();
+      } else {
+        setCurrentIndex(prev => prev + 1);
+      }
+    };
+
+    if (utterance) {
+      utterance.onend = () => {
+        if (cancelled) return;
+        advanceTimer = setTimeout(advance, 1500);
+      };
+    }
+
+    // Fallback in case onend doesn't fire
+    fallbackTimer = setTimeout(advance, 5000);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(advanceTimer);
+      clearTimeout(fallbackTimer);
+    };
+  }, [isAutoplay, currentIndex, speak, currentItem, category, items.length, onAutoplayComplete]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -54,19 +110,22 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
   const goNext = useCallback(() => {
     if (isCoolingDownRef.current) return;
+    stopAutoplay();
     hasInteracted.current = true;
     setCurrentIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
     startCooldown();
-  }, [items.length, startCooldown]);
+  }, [items.length, startCooldown, stopAutoplay]);
 
   const goPrev = useCallback(() => {
     if (isCoolingDownRef.current) return;
+    stopAutoplay();
     hasInteracted.current = true;
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
     startCooldown();
-  }, [items.length, startCooldown]);
+  }, [items.length, startCooldown, stopAutoplay]);
 
   const handleItemClick = () => {
+    stopAutoplay();
     hasInteracted.current = true;
     speakCurrent();
   };
@@ -81,6 +140,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
         goPrev();
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
+        stopAutoplay();
         hasInteracted.current = true;
         speakCurrent();
       }
@@ -88,7 +148,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goNext, goPrev, speakCurrent]);
+  }, [goNext, goPrev, speakCurrent, stopAutoplay]);
 
   // Cleanup cooldown timer on unmount
   useEffect(() => {
@@ -206,18 +266,33 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
         {renderItem()}
       </button>
 
-      {/* Speak button hint */}
-      <button
-        onClick={handleItemClick}
-        className={`absolute top-4 right-4 p-3 rounded-full transition-colors ${
-          isAlphabets
-            ? 'bg-white/20 text-white hover:bg-white/30'
-            : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
-        }`}
-        aria-label="Speak"
-      >
-        <Volume2 size={24} />
-      </button>
+      {/* Top-right controls */}
+      <div className="absolute top-4 right-4 flex items-center gap-2">
+        <button
+          onClick={() => isAutoplay ? stopAutoplay() : startAutoplay()}
+          className={`p-3 rounded-full transition-colors ${
+            isAutoplay
+              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+              : isAlphabets
+                ? 'bg-white/20 text-white hover:bg-white/30'
+                : 'bg-green-100 text-green-600 hover:bg-green-200'
+          }`}
+          aria-label={isAutoplay ? 'Stop autoplay' : 'Start autoplay'}
+        >
+          {isAutoplay ? <Square size={24} /> : <Play size={24} />}
+        </button>
+        <button
+          onClick={handleItemClick}
+          className={`p-3 rounded-full transition-colors ${
+            isAlphabets
+              ? 'bg-white/20 text-white hover:bg-white/30'
+              : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
+          }`}
+          aria-label="Speak"
+        >
+          <Volume2 size={24} />
+        </button>
+      </div>
 
       {/* Navigation arrows */}
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
@@ -253,6 +328,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
           <button
             key={idx}
             onClick={() => {
+              stopAutoplay();
               hasInteracted.current = true;
               setCurrentIndex(idx);
             }}
@@ -267,7 +343,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       </div>
 
       <div className={`absolute bottom-6 text-xs md:text-sm ${isAlphabets ? 'text-white/40' : 'text-gray-400'}`}>
-        Click the letter or use Arrow Keys | Space to hear
+        {isAutoplay
+          ? `Autoplay: ${currentIndex + 1} / ${items.length}`
+          : 'Click the letter or use Arrow Keys | Space to hear'}
       </div>
     </div>
   );

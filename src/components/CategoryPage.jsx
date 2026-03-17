@@ -130,6 +130,7 @@ const CategoryPage = ({ category, backTo = '/' }) => {
             shapeColor={shapeColor}
             objectType={objectType}
             onObjectTypeChange={setObjectType}
+            onAutoplayComplete={() => setMode('test')}
           />
         )}
         {mode === 'tile' && (
