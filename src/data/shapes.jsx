@@ -135,10 +135,8 @@ export const shapes = [
     display: 'Crescent',
     svg: (color = '#3B82F6') => (
       <svg viewBox="0 0 100 100" className="w-full h-full">
-        <path
-          d="M50,5 A45,45 0 1,1 50,95 A30,30 0 1,0 50,5Z"
-          fill={color}
-        />
+        <circle cx="45" cy="50" r="40" fill={color} />
+        <circle cx="62" cy="50" r="35" fill="white" />
       </svg>
     ),
   },
