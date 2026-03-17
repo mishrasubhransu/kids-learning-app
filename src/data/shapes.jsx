@@ -96,6 +96,73 @@ export const shapes = [
       </svg>
     ),
   },
+  {
+    id: 9,
+    name: 'Rhombus',
+    display: 'Rhombus',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <polygon points="50,5 95,50 50,95 5,50" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 10,
+    name: 'Heart',
+    display: 'Heart',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path
+          d="M50,88 C25,65 5,50 5,30 C5,15 17,5 30,5 C40,5 47,10 50,18 C53,10 60,5 70,5 C83,5 95,15 95,30 C95,50 75,65 50,88Z"
+          fill={color}
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 11,
+    name: 'Oval',
+    display: 'Oval',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <ellipse cx="50" cy="50" rx="45" ry="30" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 12,
+    name: 'Ellipse',
+    display: 'Ellipse',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <ellipse cx="50" cy="50" rx="30" ry="45" fill={color} />
+      </svg>
+    ),
+  },
+  {
+    id: 13,
+    name: 'Crescent',
+    display: 'Crescent',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path
+          d="M50,5 A45,45 0 1,1 50,95 A30,30 0 1,0 50,5Z"
+          fill={color}
+        />
+      </svg>
+    ),
+  },
+  {
+    id: 14,
+    name: 'Ring',
+    display: 'Ring',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <circle cx="50" cy="50" r="45" fill={color} />
+        <circle cx="50" cy="50" r="25" fill="white" />
+      </svg>
+    ),
+  },
 ];
 
 // Nice colors for shapes
