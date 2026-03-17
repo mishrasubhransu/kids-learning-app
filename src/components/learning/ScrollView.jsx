@@ -11,9 +11,12 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [objectType, setObjectType] = useState('eggs');
   const [bgColor, setBgColor] = useState('#2c3e50');
+  const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useSpeech();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
+  const isCoolingDownRef = useRef(false);
+  const cooldownTimerRef = useRef(null);
 
   const currentItem = items[currentIndex];
 
@@ -40,21 +43,29 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
     prevIndexRef.current = currentIndex;
   }, [currentIndex, speakCurrent]);
 
+  const startCooldown = useCallback(() => {
+    isCoolingDownRef.current = true;
+    setIsCoolingDown(true);
+    clearTimeout(cooldownTimerRef.current);
+    cooldownTimerRef.current = setTimeout(() => {
+      isCoolingDownRef.current = false;
+      setIsCoolingDown(false);
+    }, 1000);
+  }, []);
+
   const goNext = useCallback(() => {
+    if (isCoolingDownRef.current) return;
     hasInteracted.current = true;
-    setCurrentIndex((prev) => {
-      const next = prev < items.length - 1 ? prev + 1 : 0;
-      return next;
-    });
-  }, [items.length]);
+    setCurrentIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
+    startCooldown();
+  }, [items.length, startCooldown]);
 
   const goPrev = useCallback(() => {
+    if (isCoolingDownRef.current) return;
     hasInteracted.current = true;
-    setCurrentIndex((prev) => {
-      const next = prev > 0 ? prev - 1 : items.length - 1;
-      return next;
-    });
-  }, [items.length]);
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
+    startCooldown();
+  }, [items.length, startCooldown]);
 
   const handleItemClick = () => {
     hasInteracted.current = true;
@@ -79,6 +90,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goNext, goPrev, speakCurrent]);
+
+  // Cleanup cooldown timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(cooldownTimerRef.current);
+  }, []);
 
   const renderItem = () => {
     switch (category) {
@@ -208,8 +224,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className={`pointer-events-auto p-4 rounded-full transition-colors opacity-40 hover:opacity-100 focus:outline-none ${
-            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+          disabled={isCoolingDown}
+          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
+            isCoolingDown
+              ? 'opacity-15 cursor-not-allowed'
+              : `opacity-40 hover:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
           }`}
           aria-label="Previous"
         >
@@ -217,8 +236,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor }) => {
         </button>
         <button
           onClick={goNext}
-          className={`pointer-events-auto p-4 rounded-full transition-colors opacity-40 hover:opacity-100 focus:outline-none ${
-            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+          disabled={isCoolingDown}
+          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
+            isCoolingDown
+              ? 'opacity-15 cursor-not-allowed'
+              : `opacity-40 hover:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
           }`}
           aria-label="Next"
         >
