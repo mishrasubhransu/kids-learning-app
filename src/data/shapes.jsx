@@ -135,8 +135,13 @@ export const shapes = [
     display: 'Crescent',
     svg: (color = '#3B82F6') => (
       <svg viewBox="0 0 100 100" className="w-full h-full">
-        <circle cx="45" cy="50" r="40" fill={color} />
-        <circle cx="62" cy="50" r="35" fill="white" />
+        <defs>
+          <mask id="crescent-mask">
+            <rect width="100" height="100" fill="white" />
+            <circle cx="62" cy="50" r="35" fill="black" />
+          </mask>
+        </defs>
+        <circle cx="45" cy="50" r="40" fill={color} mask="url(#crescent-mask)" />
       </svg>
     ),
   },
@@ -146,8 +151,13 @@ export const shapes = [
     display: 'Ring',
     svg: (color = '#3B82F6') => (
       <svg viewBox="0 0 100 100" className="w-full h-full">
-        <circle cx="50" cy="50" r="45" fill={color} />
-        <circle cx="50" cy="50" r="33" fill="white" />
+        <defs>
+          <mask id="ring-mask">
+            <rect width="100" height="100" fill="white" />
+            <circle cx="50" cy="50" r="33" fill="black" />
+          </mask>
+        </defs>
+        <circle cx="50" cy="50" r="45" fill={color} mask="url(#ring-mask)" />
       </svg>
     ),
   },
