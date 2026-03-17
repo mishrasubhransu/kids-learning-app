@@ -5,6 +5,7 @@ export const objectCategories = [
   { id: 'transportation', name: 'Transportation', emoji: '🚗', color: 'bg-indigo-500', hoverColor: 'hover:bg-indigo-600' },
   { id: 'profession', name: 'Professions', emoji: '👨‍⚕️', color: 'bg-teal-500', hoverColor: 'hover:bg-teal-600' },
   { id: 'fruits', name: 'Fruits', emoji: '🍎', color: 'bg-lime-500', hoverColor: 'hover:bg-lime-600' },
+  { id: 'vegetables', name: 'Vegetables', emoji: '🥕', color: 'bg-emerald-500', hoverColor: 'hover:bg-emerald-600' },
 ];
 
 export const objectItems = {
@@ -100,5 +101,22 @@ export const objectItems = {
     { id: 12, name: 'Blueberry', image: '/objects/fruits/blueberry.webp' },
     { id: 13, name: 'Lemon', image: '/objects/fruits/lemon.webp' },
     { id: 14, name: 'Coconut', image: '/objects/fruits/coconut.webp' },
+  ],
+  vegetables: [
+    { id: 0, name: 'Carrot', image: '/objects/vegetables/carrot.webp' },
+    { id: 1, name: 'Tomato', image: '/objects/vegetables/tomato.webp' },
+    { id: 2, name: 'Potato', image: '/objects/vegetables/potato.webp' },
+    { id: 3, name: 'Onion', image: '/objects/vegetables/onion.webp' },
+    { id: 4, name: 'Broccoli', image: '/objects/vegetables/broccoli.webp' },
+    { id: 5, name: 'Corn', image: '/objects/vegetables/corn.webp' },
+    { id: 6, name: 'Peas', image: '/objects/vegetables/peas.webp' },
+    { id: 7, name: 'Cucumber', image: '/objects/vegetables/cucumber.webp' },
+    { id: 8, name: 'Bell Pepper', image: '/objects/vegetables/bell-pepper.webp' },
+    { id: 9, name: 'Spinach', image: '/objects/vegetables/spinach.webp' },
+    { id: 10, name: 'Cauliflower', image: '/objects/vegetables/cauliflower.webp' },
+    { id: 11, name: 'Pumpkin', image: '/objects/vegetables/pumpkin.webp' },
+    { id: 12, name: 'Eggplant', image: '/objects/vegetables/eggplant.webp' },
+    { id: 13, name: 'Cabbage', image: '/objects/vegetables/cabbage.webp' },
+    { id: 14, name: 'Mushroom', image: '/objects/vegetables/mushroom.webp' },
   ],
 };

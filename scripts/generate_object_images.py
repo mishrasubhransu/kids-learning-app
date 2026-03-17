@@ -83,6 +83,14 @@ STYLE_PROMPTS = {
         "Sharp focus on the fruit, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "vegetables": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid natural colors, soft studio lighting, "
+        "and a clean, slightly blurred white or pastel background. Centered and clearly visible. "
+        "Professional food photography style, fresh and appetizing appearance. "
+        "Sharp focus on the vegetable, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -179,6 +187,23 @@ ITEMS = {
         "blueberry": "a small pile of fresh blueberries, deep blue-purple color",
         "lemon": "a bright yellow lemon, whole fruit",
         "coconut": "a whole brown coconut and a half showing white flesh inside",
+    },
+    "vegetables": {
+        "carrot": "a fresh orange carrot with green leafy top",
+        "tomato": "a ripe red tomato with a small green stem, round and shiny",
+        "potato": "a whole russet potato, brown skin with natural texture",
+        "onion": "a whole yellow onion with papery golden skin",
+        "broccoli": "a fresh green broccoli floret with thick stem",
+        "corn": "a fresh ear of corn with bright yellow kernels and green husk pulled back",
+        "peas": "an open green pea pod showing round green peas inside",
+        "cucumber": "a fresh whole green cucumber with small bumps on skin",
+        "bell-pepper": "a vibrant red bell pepper, whole and shiny",
+        "spinach": "a bunch of fresh green spinach leaves",
+        "cauliflower": "a whole white cauliflower head with green leaves around the base",
+        "pumpkin": "a round orange pumpkin with a green stem on top",
+        "eggplant": "a glossy dark purple eggplant with green stem cap",
+        "cabbage": "a whole green cabbage head with layered leaves",
+        "mushroom": "a fresh white button mushroom with smooth round cap and short stem",
     },
 }
 
