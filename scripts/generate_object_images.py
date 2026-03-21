@@ -91,6 +91,14 @@ STYLE_PROMPTS = {
         "Sharp focus on the vegetable, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "tools": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid colors, soft studio lighting, "
+        "and a clean, slightly blurred white or light grey background. Centered and clearly visible. "
+        "Professional product photography style, clean and well-lit. "
+        "Sharp focus on the tool, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -204,6 +212,23 @@ ITEMS = {
         "eggplant": "a glossy dark purple eggplant with green stem cap",
         "cabbage": "a whole green cabbage head with layered leaves",
         "mushroom": "a fresh white button mushroom with smooth round cap and short stem",
+    },
+    "tools": {
+        "nail": "a single steel nail with a flat head and pointed tip, side view",
+        "hammer": "a classic claw hammer with a wooden handle and steel head",
+        "screw": "a single steel Phillips head screw, side view showing the threads",
+        "screwdriver": "a Phillips head screwdriver with a yellow and black handle",
+        "bolt": "a single steel hex bolt with visible threads, side view",
+        "nut": "a single steel hexagonal nut, three-quarter view showing the hex shape and threaded hole",
+        "spanner": "a chrome open-end combination spanner wrench, side view",
+        "pliers": "a pair of combination pliers with red and black rubber handles",
+        "grip-pliers": "a pair of locking grip pliers (vise-grips) with curved jaws and lever release",
+        "pipe-wrench": "a heavy-duty pipe wrench with adjustable jaw and red handle",
+        "wood-saw": "a hand wood saw with a wooden handle and large toothed blade",
+        "hacksaw": "a hacksaw with a metal frame, blue handle, and thin blade for cutting metal",
+        "electric-drill": "a cordless electric drill with a yellow and black body, chuck, and drill bit attached",
+        "tape-measure": "a retractable yellow tape measure with the tape partially extended",
+        "safety-goggles": "a pair of clear safety goggles with adjustable strap",
     },
 }
 

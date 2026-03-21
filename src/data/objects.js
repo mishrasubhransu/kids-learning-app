@@ -6,6 +6,7 @@ export const objectCategories = [
   { id: 'profession', name: 'Professions', emoji: '👨‍⚕️', color: 'bg-teal-500', hoverColor: 'hover:bg-teal-600' },
   { id: 'fruits', name: 'Fruits', emoji: '🍎', color: 'bg-lime-500', hoverColor: 'hover:bg-lime-600' },
   { id: 'vegetables', name: 'Vegetables', emoji: '🥕', color: 'bg-emerald-500', hoverColor: 'hover:bg-emerald-600' },
+  { id: 'tools', name: 'Tools', emoji: '🔨', color: 'bg-orange-500', hoverColor: 'hover:bg-orange-600' },
 ];
 
 export const objectItems = {
@@ -118,5 +119,22 @@ export const objectItems = {
     { id: 12, name: 'Eggplant', image: '/objects/vegetables/eggplant.webp' },
     { id: 13, name: 'Cabbage', image: '/objects/vegetables/cabbage.webp' },
     { id: 14, name: 'Mushroom', image: '/objects/vegetables/mushroom.webp' },
+  ],
+  tools: [
+    { id: 0, name: 'Nail', image: '/objects/tools/nail.webp' },
+    { id: 1, name: 'Hammer', image: '/objects/tools/hammer.webp' },
+    { id: 2, name: 'Screw', image: '/objects/tools/screw.webp' },
+    { id: 3, name: 'Screwdriver', image: '/objects/tools/screwdriver.webp' },
+    { id: 4, name: 'Bolt', image: '/objects/tools/bolt.webp' },
+    { id: 5, name: 'Nut', image: '/objects/tools/nut.webp' },
+    { id: 6, name: 'Spanner', image: '/objects/tools/spanner.webp' },
+    { id: 7, name: 'Pliers', image: '/objects/tools/pliers.webp' },
+    { id: 8, name: 'Grip Pliers', image: '/objects/tools/grip-pliers.webp' },
+    { id: 9, name: 'Pipe Wrench', image: '/objects/tools/pipe-wrench.webp' },
+    { id: 10, name: 'Wood Saw', image: '/objects/tools/wood-saw.webp' },
+    { id: 11, name: 'Hacksaw', image: '/objects/tools/hacksaw.webp' },
+    { id: 12, name: 'Electric Drill', image: '/objects/tools/electric-drill.webp' },
+    { id: 13, name: 'Tape Measure', image: '/objects/tools/tape-measure.webp' },
+    { id: 14, name: 'Safety Goggles', image: '/objects/tools/safety-goggles.webp' },
   ],
 };
