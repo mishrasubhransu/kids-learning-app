@@ -186,7 +186,7 @@ ITEMS = {
         "grapes": "a bunch of purple grapes on a small vine stem",
         "strawberry": "a fresh red strawberry with green leaves on top",
         "watermelon": "a slice of watermelon showing red flesh and green rind",
-        "mango": "a ripe yellow-orange mango, whole fruit",
+        "mango": "a single ripe Alphonso mango with the classic curved kidney shape, golden yellow skin with a slight orange-red blush, small stem with a green leaf visible at the top",
         "pineapple": "a whole pineapple with its spiky green crown",
         "cherry": "a pair of red cherries with stems and a green leaf",
         "peach": "a ripe fuzzy peach with a small leaf, warm pink-orange color",
