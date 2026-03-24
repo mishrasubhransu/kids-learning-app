@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 
@@ -7,7 +7,22 @@ const bgColors = [
   '#f1c40f', '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
 
+const orderedCategories = ['alphabets', 'numbers'];
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange, onAutoplayComplete }) => {
+  const displayItems = useMemo(
+    () => orderedCategories.includes(category) ? items : shuffle(items),
+    [items, category]
+  );
   const [currentIndex, setCurrentIndex] = useState(0);
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
@@ -18,7 +33,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
   const isCoolingDownRef = useRef(false);
   const cooldownTimerRef = useRef(null);
 
-  const currentItem = items[currentIndex];
+  const currentItem = displayItems[currentIndex];
 
   const speakCurrent = useCallback(() => {
     if (currentItem) {
@@ -73,7 +88,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       if (cancelled) return;
       clearTimeout(fallbackTimer);
       clearTimeout(advanceTimer);
-      if (currentIndex >= items.length - 1) {
+      if (currentIndex >= displayItems.length - 1) {
         setIsAutoplay(false);
         onAutoplayComplete?.();
       } else {
@@ -96,7 +111,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       clearTimeout(advanceTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [isAutoplay, currentIndex, speak, currentItem, category, items.length, onAutoplayComplete]);
+  }, [isAutoplay, currentIndex, speak, currentItem, category, displayItems.length, onAutoplayComplete]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -112,17 +127,17 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
     if (isCoolingDownRef.current) return;
     stopAutoplay();
     hasInteracted.current = true;
-    setCurrentIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
+    setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
     startCooldown();
-  }, [items.length, startCooldown, stopAutoplay]);
+  }, [displayItems.length, startCooldown, stopAutoplay]);
 
   const goPrev = useCallback(() => {
     if (isCoolingDownRef.current) return;
     stopAutoplay();
     hasInteracted.current = true;
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
     startCooldown();
-  }, [items.length, startCooldown, stopAutoplay]);
+  }, [displayItems.length, startCooldown, stopAutoplay]);
 
   const handleItemClick = () => {
     stopAutoplay();
@@ -324,7 +339,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
       {/* Progress indicators */}
       <div className="absolute bottom-16 flex flex-wrap justify-center gap-2 max-w-[90%]">
-        {items.map((_, idx) => (
+        {displayItems.map((_, idx) => (
           <button
             key={idx}
             onClick={() => {
@@ -344,7 +359,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
       <div className={`absolute bottom-6 text-xs md:text-sm ${isAlphabets ? 'text-white/40' : 'text-gray-400'}`}>
         {isAutoplay
-          ? `Autoplay: ${currentIndex + 1} / ${items.length}`
+          ? `Autoplay: ${currentIndex + 1} / ${displayItems.length}`
           : 'Click the letter or use Arrow Keys | Space to hear'}
       </div>
     </div>
