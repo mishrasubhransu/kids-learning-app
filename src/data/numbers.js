@@ -6,7 +6,7 @@ export const objectIcons = {
   stars: '⭐',
 };
 
-export const numbers = Array.from({ length: 10 }, (_, i) => ({
+export const numbers = Array.from({ length: 20 }, (_, i) => ({
   id: i,
   name: String(i + 1),
   display: String(i + 1),

@@ -41,7 +41,10 @@ const CategoryPage = ({ category, backTo = '/' }) => {
     return <div>Category not found</div>;
   }
 
-  const { items, title, objectIcons: icons } = data;
+  const { items: rawItems, title, objectIcons: icons } = data;
+  const items = category === 'numbers'
+    ? rawItems.slice(0, Number(localStorage.getItem('numberMax') || '10'))
+    : rawItems;
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Hash, Palette, Shapes, Keyboard, Image } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
@@ -15,7 +16,6 @@ const categories = [
   {
     id: 'numbers',
     name: 'Numbers',
-    description: 'Learn 1 to 10',
     icon: Hash,
     color: 'bg-green-500',
     hoverColor: 'hover:bg-green-600',
@@ -60,6 +60,18 @@ const categories = [
 ];
 
 const Home = () => {
+  const [numberMax, setNumberMax] = useState(() => {
+    return localStorage.getItem('numberMax') || '10';
+  });
+
+  const toggleNumberMax = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const next = numberMax === '10' ? '20' : '10';
+    setNumberMax(next);
+    localStorage.setItem('numberMax', next);
+  };
+
   return (
     <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center p-4 overflow-hidden">
       <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-4 text-center">
@@ -85,9 +97,18 @@ const Home = () => {
               <span className="text-lg md:text-xl font-semibold">
                 {category.name}
               </span>
-              <span className="text-sm opacity-80 hidden md:block">
-                {category.description}
-              </span>
+              {category.id === 'numbers' ? (
+                <button
+                  onClick={toggleNumberMax}
+                  className="text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors"
+                >
+                  1–{numberMax}
+                </button>
+              ) : category.description ? (
+                <span className="text-sm opacity-80 hidden md:block">
+                  {category.description}
+                </span>
+              ) : null}
             </Link>
           );
         })}
