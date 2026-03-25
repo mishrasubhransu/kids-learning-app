@@ -9,13 +9,11 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [isCorrect, setIsCorrect] = useState(null);
   const [hasStarted, setHasStarted] = useState(false);
-  const [countdown, setCountdown] = useState(null);
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
-  const countdownTimerRef = useRef(null);
   const askedIdsRef = useRef(new Set());
   const touchStartRef = useRef(null);
 
@@ -66,14 +64,9 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     setCorrectAnswer(correct);
     setSelectedAnswer(null);
     setIsCorrect(null);
-    setCountdown(null);
-
     // Clear any pending timers
     if (autoAdvanceTimerRef.current) {
       clearTimeout(autoAdvanceTimerRef.current);
-    }
-    if (countdownTimerRef.current) {
-      clearInterval(countdownTimerRef.current);
     }
 
     return correct; // Return the new correct answer
@@ -92,9 +85,6 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     return () => {
       if (autoAdvanceTimerRef.current) {
         clearTimeout(autoAdvanceTimerRef.current);
-      }
-      if (countdownTimerRef.current) {
-        clearInterval(countdownTimerRef.current);
       }
     };
   }, []);
@@ -138,10 +128,6 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     if (autoAdvanceTimerRef.current) {
       clearTimeout(autoAdvanceTimerRef.current);
     }
-    if (countdownTimerRef.current) {
-      clearInterval(countdownTimerRef.current);
-    }
-    setCountdown(null);
 
     // Generate new question and get the new correct answer
     const newCorrect = generateQuestion();
@@ -163,22 +149,13 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         setIsCorrect(true);
         const newCount = correctCount + 1;
         setCorrectCount(newCount);
-        playPositive(newCount);
 
-        let secondsLeft = 2;
-        setCountdown(secondsLeft);
-
-        countdownTimerRef.current = setInterval(() => {
-          secondsLeft -= 1;
-          setCountdown(secondsLeft);
-          if (secondsLeft <= 0) {
-            clearInterval(countdownTimerRef.current);
-          }
-        }, 1000);
-
-        autoAdvanceTimerRef.current = setTimeout(() => {
-          nextQuestion();
-        }, 3000);
+        // Play praise, then wait a beat before advancing
+        playPositive(newCount).then(() => {
+          autoAdvanceTimerRef.current = setTimeout(() => {
+            nextQuestion();
+          }, 800);
+        });
       } else {
         setIsCorrect(false);
         playEncouragement().then(() => {
@@ -472,12 +449,9 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
             onClick={nextQuestion}
             className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-xl font-semibold text-lg hover:bg-green-600 transition-colors shadow-lg"
           >
-            Next {countdown !== null && countdown > 0 && `(${countdown})`}
+            Next
             <ChevronRight size={24} />
           </button>
-          <span className="text-gray-400 text-sm">
-            Auto-advancing in {countdown}s or press Right Arrow
-          </span>
         </div>
       )}
 
