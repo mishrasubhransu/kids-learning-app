@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
+import { useAuth } from '../context/AuthContext';
 
 const categories = [
   {
@@ -60,6 +61,7 @@ const categories = [
 ];
 
 const Home = () => {
+  const { signOut } = useAuth();
   const [numberMax, setNumberMax] = useState(() => {
     return localStorage.getItem('numberMax') || '10';
   });
@@ -119,6 +121,13 @@ const Home = () => {
         <span className="text-gray-500 text-sm">
           Use arrow keys or tap to navigate
         </span>
+        <button
+          onClick={signOut}
+          className="mt-2 flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
+        >
+          <LogOut size={16} />
+          Sign Out
+        </button>
       </div>
     </div>
   );
