@@ -210,7 +210,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     const touch = e.changedTouches[0];
     const dx = Math.abs(touch.clientX - touchStartRef.current.x);
     const dy = Math.abs(touch.clientY - touchStartRef.current.y);
-    if (dx < 30 && dy < 30) {
+    if (dx < 50 && dy < 50) {
       e.preventDefault();
       handleSelectRef.current(item);
     }
