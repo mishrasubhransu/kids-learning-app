@@ -26,7 +26,7 @@ objectCategories.forEach((cat) => {
   };
 });
 
-const CategoryPage = ({ category, backTo = '/' }) => {
+const CategoryPage = ({ category, backTo = '/home' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
   const [objectType, setObjectType] = useState('eggs');

@@ -260,7 +260,7 @@ const TypingMode = () => {
     >
       {/* Home button */}
       <Link
-        to="/"
+        to="/home"
         className="absolute top-4 left-4 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
         aria-label="Go home"
       >

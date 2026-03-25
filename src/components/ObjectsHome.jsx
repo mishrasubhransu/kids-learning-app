@@ -9,7 +9,7 @@ const ObjectsHome = () => {
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <Link
-            to="/"
+            to="/home"
             className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
             aria-label="Go home"
           >
