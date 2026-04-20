@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Generate photorealistic images for the Kids Learning App objects section.
+Generate photorealistic images for the Kids Learning App.
 
 Uses Google Gemini image generation with a consistent photorealistic style.
-Images are saved to public/objects/<category>/<name>.png
+Images are saved to public/<output_dir>/<name>.webp
 
 Usage:
     # Generate all images
@@ -11,6 +11,8 @@ Usage:
 
     # Generate a specific category
     python scripts/generate_object_images.py --category animals
+    python scripts/generate_object_images.py --category emotions
+    python scripts/generate_object_images.py --category opposites
 
     # Generate a specific item
     python scripts/generate_object_images.py --category animals --item lion
@@ -33,6 +35,7 @@ client = genai.Client(
 )
 
 MODEL = "gemini-3-pro-image-preview"
+#MODEL = "gemini-3.1-flash-image-preview"  # cheaper
 
 # Category-specific style prompts for consistent, high-quality output
 STYLE_PROMPTS = {
@@ -97,6 +100,36 @@ STYLE_PROMPTS = {
         "and a clean, slightly blurred white or light grey background. Centered and clearly visible. "
         "Professional product photography style, clean and well-lit. "
         "Sharp focus on the tool, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "bodyparts": (
+        "A high-quality, photorealistic photograph focusing on {subject}. "
+        "Sharp focus on the body part with a very shallow depth of field, "
+        "blurring everything else in the background. "
+        "Soft natural lighting, warm tones, clean and simple composition. "
+        "Professional portrait/medical photography style. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "emotions": (
+        "A cute, child-friendly cartoon illustration of a child showing the emotion: {subject}. "
+        "Simple, colorful cartoon style with expressive face, bright cheerful colors, "
+        "and a plain soft pastel background. The emotion should be immediately obvious "
+        "from the facial expression and body language. "
+        "Friendly and approachable style suitable for toddlers. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "opposites": (
+        "A clear, child-friendly cartoon illustration showing {subject}. "
+        "Simple, colorful cartoon style with bright cheerful colors "
+        "and a plain soft pastel background. The concept should be immediately obvious. "
+        "Friendly and approachable style suitable for toddlers. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "opposites-scenes": (
+        "A child-friendly cartoon illustration showing a scene with {subject}. "
+        "Simple, colorful cartoon style with bright cheerful colors "
+        "and a clean, simple background. Both concepts should be clearly visible "
+        "side by side for comparison. Friendly style suitable for toddlers. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
 }
@@ -235,19 +268,115 @@ ITEMS = {
         "tape-measure": "a retractable yellow tape measure with the tape partially extended",
         "safety-goggles": "a pair of clear safety goggles with adjustable strap",
     },
+    "bodyparts": {
+        "head": "a child's head from the side view, focused on the head shape with the background blurred",
+        "hair": "a child's hair, camera focused tightly on the hair with the rest of the head softly blurred",
+        "face": "a child's face from the front, focused on the facial features with background blurred",
+        "eyes": "a child's eyes, camera focused on the eyes with the rest of the face softly blurred",
+        "eyebrows": "a child's eyebrows, camera focused on the eyebrow area with the rest of the face softly blurred",
+        "nose": "a child's nose, camera focused on the nose with the rest of the face softly blurred",
+        "ear": "a child's ear from the side, camera focused on the ear with everything else blurred",
+        "lips": "a child's lips, camera focused on the lips with the rest of the face softly blurred",
+        "teeth": "a child smiling showing teeth, camera focused on the teeth with the rest blurred",
+        "tongue": "a child playfully sticking out their tongue, focused on the tongue with the rest blurred",
+        "chin": "a child's chin, camera focused on the chin and jawline with the rest blurred",
+        "cheeks": "a child's cheeks, camera focused on the rosy cheek area with the rest blurred",
+        "shoulders": "a child's shoulders from the front, camera focused on the shoulders with the rest blurred",
+        "arm": "a child's outstretched arm, camera focused on the arm with everything else blurred",
+        "hand": "a child's open hand with fingers spread, focused on the hand with the rest blurred",
+        "fingers": "a child's fingers spread apart, camera focused on the fingers with the rest blurred",
+        "belly": "a child's belly or tummy, camera focused on the belly with everything else blurred",
+        "foot": "a child's bare foot, camera focused on the foot with the background blurred",
+        "toes": "a child's bare toes, camera focused tightly on the toes with the rest blurred",
+    },
+    "emotions": {
+        "happy": "happy, with a big bright smile and sparkling eyes",
+        "sad": "sad, with a frown, droopy eyes, and a tear on the cheek",
+        "angry": "angry, with furrowed brows, a frown, and clenched fists",
+        "surprised": "surprised, with wide open eyes, raised eyebrows, and an open mouth",
+        "scared": "scared, with wide fearful eyes, raised shoulders, and hands near the face",
+        "excited": "excited, jumping with arms raised, huge smile, and sparkling eyes",
+        "tired": "tired, yawning with droopy eyes and stretching arms",
+        "confused": "confused, with a tilted head, one raised eyebrow, and a puzzled expression",
+        "proud": "proud, standing tall with hands on hips and a confident smile",
+        "shy": "shy, hiding partially behind their hands with a small smile and blushing cheeks",
+        "love": "feeling love, hugging a big red heart with closed happy eyes",
+        "silly": "being silly, making a funny face with tongue out and crossed eyes",
+    },
+    "opposites": {
+        "big": "something very big — a large elephant next to a tiny mouse for scale",
+        "small": "something very small — a tiny mouse next to a large shoe for scale",
+        "hot": "something hot — a steaming cup of hot cocoa with visible steam rising",
+        "cold": "something cold — an ice cube or snowman in a winter scene",
+        "up": "the concept of up — a balloon floating up into the sky with an arrow pointing up",
+        "down": "the concept of down — a ball falling down to the ground with an arrow pointing down",
+        "fast": "something fast — a cheetah or race car zooming with speed lines",
+        "slow": "something slow — a turtle walking slowly on a path",
+        "happy": "a happy face — a bright smiling sun with a cheerful expression",
+        "sad": "a sad face — a cloud with rain drops and a sad expression",
+        "light": "something light and bright — a room full of sunshine through a window",
+        "dark": "something dark — a nighttime scene with stars and a crescent moon",
+        "open": "something open — an open door or open book",
+        "close": "something closed — a closed door or closed book",
+        "full": "something full — a glass completely full of orange juice",
+        "empty": "something empty — an empty glass with nothing inside",
+        "wet": "something wet — a puppy soaking wet after a bath with water droplets",
+        "dry": "something dry — a fluffy dry towel in the sunshine",
+        "long": "something long — a very long snake or long scarf",
+        "short": "something short — a short pencil stub or a short worm",
+        "loud": "something loud — a drum being hit with visible sound waves",
+        "quiet": "something quiet — a sleeping baby with a finger over lips in a shh gesture",
+        "soft": "something soft — a fluffy stuffed teddy bear or soft pillow",
+        "hard": "something hard — a solid rock or brick",
+        "clean": "something clean — a sparkling clean room or shiny clean plate",
+        "dirty": "something dirty — a muddy puppy with mud splatters",
+        "old": "something old — an old worn-out shoe with patches",
+        "new": "something new — a brand new shiny shoe in a box",
+        "day": "daytime — a bright sunny day with blue sky, sunshine, and green grass",
+        "night": "nighttime — a dark sky with glowing moon, stars, and a sleeping village",
+    },
+    "opposites-scenes": {
+        "big-small-scene": "a big elephant standing next to a small mouse, both clearly visible side by side for size comparison",
+        "hot-cold-scene": "one side showing a hot sunny desert with a thermometer, the other side showing a cold snowy landscape",
+        "up-down-scene": "a balloon floating up in the sky on one side, and a ball falling down on the other side",
+        "fast-slow-scene": "a fast race car zooming on one side, and a slow turtle walking on the other side",
+        "happy-sad-scene": "a happy smiling child on one side, and a sad crying child on the other side",
+        "light-dark-scene": "a bright sunny daytime room on one side, and a dark nighttime room on the other side",
+        "open-close-scene": "an open door on one side, and a closed door on the other side",
+        "full-empty-scene": "a full glass of juice on one side, and an empty glass on the other side",
+        "wet-dry-scene": "a wet rainy scene with puddles on one side, and a dry sunny scene on the other side",
+        "long-short-scene": "a long snake on one side, and a short worm on the other side",
+        "loud-quiet-scene": "a loud drum being played on one side, and a quiet sleeping baby on the other side",
+        "soft-hard-scene": "a soft fluffy pillow on one side, and a hard rock on the other side",
+        "clean-dirty-scene": "a clean sparkling puppy on one side, and a muddy dirty puppy on the other side",
+        "old-new-scene": "an old worn-out teddy bear on one side, and a brand new teddy bear on the other side",
+        "day-night-scene": "a bright sunny daytime scene on one side, and a dark starry nighttime scene on the other side",
+    },
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "objects")
 
+# Custom output directories for non-object categories
+# Categories not listed here default to public/objects/<category>/
+OUTPUT_DIRS = {
+    "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
+    "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
+    "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
+}
 
 WEBP_SIZE = 1024
 WEBP_QUALITY = 80
 
 
+def get_output_dir(category):
+    """Get the output directory for a category."""
+    return OUTPUT_DIRS.get(category, os.path.join(OUTPUT_BASE, category))
+
+
 def generate_image(category, item_name, subject_desc, force=False):
     """Generate and save a single image as compressed WebP. Returns True on success."""
-    output_dir = os.path.join(OUTPUT_BASE, category)
+    output_dir = get_output_dir(category)
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{item_name}.webp")
 
@@ -294,8 +423,8 @@ def generate_image(category, item_name, subject_desc, force=False):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Generate object images for Kids Learning App")
-    parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, birds, food, transportation, profession)")
+    parser = argparse.ArgumentParser(description="Generate images for Kids Learning App")
+    parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, bodyparts, emotions, opposites, opposites-scenes)")
     parser.add_argument("--item", type=str, help="Generate only this item (requires --category)")
     parser.add_argument("--force", action="store_true", help="Overwrite existing images")
     args = parser.parse_args()
@@ -320,7 +449,7 @@ def main():
         target_items = {args.item: items[args.item]} if args.item else items
 
         for item_name, subject_desc in target_items.items():
-            output_path = os.path.join(OUTPUT_BASE, category, f"{item_name}.webp")
+            output_path = os.path.join(get_output_dir(category), f"{item_name}.webp")
             if os.path.exists(output_path) and not args.force:
                 skipped += 1
                 print(f"  ⏭  Skipping {category}/{item_name} (exists)")

@@ -7,6 +7,7 @@ export const objectCategories = [
   { id: 'fruits', name: 'Fruits', emoji: '🍎', color: 'bg-lime-500', hoverColor: 'hover:bg-lime-600' },
   { id: 'vegetables', name: 'Vegetables', emoji: '🥕', color: 'bg-emerald-500', hoverColor: 'hover:bg-emerald-600' },
   { id: 'tools', name: 'Tools', emoji: '🔨', color: 'bg-orange-500', hoverColor: 'hover:bg-orange-600' },
+  { id: 'bodyparts', name: 'Body Parts', emoji: '🦴', color: 'bg-rose-500', hoverColor: 'hover:bg-rose-600' },
 ];
 
 export const objectItems = {
@@ -141,5 +142,27 @@ export const objectItems = {
     { id: 12, name: 'Electric Drill', image: '/objects/tools/electric-drill.webp' },
     { id: 13, name: 'Tape Measure', image: '/objects/tools/tape-measure.webp' },
     { id: 14, name: 'Safety Goggles', image: '/objects/tools/safety-goggles.webp' },
+  ],
+  bodyparts: [
+    { id: 0, name: 'Head', image: '/objects/bodyparts/head.webp' },
+    { id: 1, name: 'Hair', image: '/objects/bodyparts/hair.webp' },
+    { id: 2, name: 'Face', image: '/objects/bodyparts/face.webp' },
+    { id: 3, name: 'Eyes', image: '/objects/bodyparts/eyes.webp' },
+    { id: 4, name: 'Eyebrows', image: '/objects/bodyparts/eyebrows.webp' },
+    { id: 5, name: 'Nose', image: '/objects/bodyparts/nose.webp' },
+    { id: 6, name: 'Ear', image: '/objects/bodyparts/ear.webp' },
+    { id: 7, name: 'Mouth', image: '/objects/bodyparts/mouth.webp' },
+    { id: 8, name: 'Lips', image: '/objects/bodyparts/lips.webp' },
+    { id: 9, name: 'Teeth', image: '/objects/bodyparts/teeth.webp' },
+    { id: 10, name: 'Tongue', image: '/objects/bodyparts/tongue.webp' },
+    { id: 11, name: 'Chin', image: '/objects/bodyparts/chin.webp' },
+    { id: 12, name: 'Cheeks', image: '/objects/bodyparts/cheeks.webp' },
+    { id: 13, name: 'Shoulders', image: '/objects/bodyparts/shoulders.webp' },
+    { id: 14, name: 'Arm', image: '/objects/bodyparts/arm.webp' },
+    { id: 15, name: 'Hand', image: '/objects/bodyparts/hand.webp' },
+    { id: 16, name: 'Fingers', image: '/objects/bodyparts/fingers.webp' },
+    { id: 17, name: 'Belly', image: '/objects/bodyparts/belly.webp' },
+    { id: 18, name: 'Foot', image: '/objects/bodyparts/foot.webp' },
+    { id: 19, name: 'Toes', image: '/objects/bodyparts/toes.webp' },
   ],
 };
