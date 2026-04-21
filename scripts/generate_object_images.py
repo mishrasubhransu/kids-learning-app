@@ -118,19 +118,13 @@ STYLE_PROMPTS = {
         "Friendly and approachable style suitable for toddlers. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
-    "opposites": (
-        "A clear, child-friendly cartoon illustration showing {subject}. "
-        "Simple, colorful cartoon style with bright cheerful colors "
-        "and a plain soft pastel background. The concept should be immediately obvious. "
-        "Friendly and approachable style suitable for toddlers. "
-        "No text, no labels, no watermarks. Square 1:1 composition."
-    ),
-    "opposites-scenes": (
-        "A child-friendly cartoon illustration showing a scene with {subject}. "
-        "Simple, colorful cartoon style with bright cheerful colors "
-        "and a clean, simple background. Both concepts should be clearly visible "
-        "side by side for comparison. Friendly style suitable for toddlers. "
-        "No text, no labels, no watermarks. Square 1:1 composition."
+    "opposites-pairs": (
+        "A child-friendly illustration showing {subject}. "
+        "The left half of the image shows one concept, the right half shows the opposite. "
+        "A clear visual divide between left and right. "
+        "Simple, colorful style with bright cheerful colors and clean backgrounds. "
+        "Both concepts should be immediately obvious and easy for a toddler to understand. "
+        "No text, no labels, no watermarks. Wide 2:1 landscape composition."
     ),
 }
 
@@ -302,54 +296,21 @@ ITEMS = {
         "love": "feeling love, hugging a big red heart with closed happy eyes",
         "silly": "being silly, making a funny face with tongue out and crossed eyes",
     },
-    "opposites": {
-        "big": "something very big — a large elephant next to a tiny mouse for scale",
-        "small": "something very small — a tiny mouse next to a large shoe for scale",
-        "hot": "something hot — a steaming cup of hot cocoa with visible steam rising",
-        "cold": "something cold — an ice cube or snowman in a winter scene",
-        "up": "the concept of up — a balloon floating up into the sky with an arrow pointing up",
-        "down": "the concept of down — a ball falling down to the ground with an arrow pointing down",
-        "fast": "something fast — a cheetah or race car zooming with speed lines",
-        "slow": "something slow — a turtle walking slowly on a path",
-        "happy": "a happy face — a bright smiling sun with a cheerful expression",
-        "sad": "a sad face — a cloud with rain drops and a sad expression",
-        "light": "something light and bright — a room full of sunshine through a window",
-        "dark": "something dark — a nighttime scene with stars and a crescent moon",
-        "open": "something open — an open door or open book",
-        "close": "something closed — a closed door or closed book",
-        "full": "something full — a glass completely full of orange juice",
-        "empty": "something empty — an empty glass with nothing inside",
-        "wet": "something wet — a puppy soaking wet after a bath with water droplets",
-        "dry": "something dry — a fluffy dry towel in the sunshine",
-        "long": "something long — a very long snake or long scarf",
-        "short": "something short — a short pencil stub or a short worm",
-        "loud": "something loud — a drum being hit with visible sound waves",
-        "quiet": "something quiet — a sleeping baby with a finger over lips in a shh gesture",
-        "soft": "something soft — a fluffy stuffed teddy bear or soft pillow",
-        "hard": "something hard — a solid rock or brick",
-        "clean": "something clean — a sparkling clean room or shiny clean plate",
-        "dirty": "something dirty — a muddy puppy with mud splatters",
-        "old": "something old — an old worn-out shoe with patches",
-        "new": "something new — a brand new shiny shoe in a box",
-        "day": "daytime — a bright sunny day with blue sky, sunshine, and green grass",
-        "night": "nighttime — a dark sky with glowing moon, stars, and a sleeping village",
-    },
-    "opposites-scenes": {
-        "big-small-scene": "a big elephant standing next to a small mouse, both clearly visible side by side for size comparison",
-        "hot-cold-scene": "one side showing a hot sunny desert with a thermometer, the other side showing a cold snowy landscape",
-        "up-down-scene": "a balloon floating up in the sky on one side, and a ball falling down on the other side",
-        "fast-slow-scene": "a fast race car zooming on one side, and a slow turtle walking on the other side",
-        "happy-sad-scene": "a happy smiling child on one side, and a sad crying child on the other side",
-        "light-dark-scene": "a bright sunny daytime room on one side, and a dark nighttime room on the other side",
-        "open-close-scene": "an open door on one side, and a closed door on the other side",
-        "full-empty-scene": "a full glass of juice on one side, and an empty glass on the other side",
-        "wet-dry-scene": "a wet rainy scene with puddles on one side, and a dry sunny scene on the other side",
-        "long-short-scene": "a long snake on one side, and a short worm on the other side",
-        "loud-quiet-scene": "a loud drum being played on one side, and a quiet sleeping baby on the other side",
-        "soft-hard-scene": "a soft fluffy pillow on one side, and a hard rock on the other side",
-        "clean-dirty-scene": "a clean sparkling puppy on one side, and a muddy dirty puppy on the other side",
-        "old-new-scene": "an old worn-out teddy bear on one side, and a brand new teddy bear on the other side",
-        "day-night-scene": "a bright sunny daytime scene on one side, and a dark starry nighttime scene on the other side",
+    "opposites-pairs": {
+        "big-small": "LEFT: a very large elephant. RIGHT: a tiny mouse. Emphasize the size difference",
+        "hot-cold": "LEFT: a steaming hot cup of cocoa with visible steam. RIGHT: a frozen snowman in snow",
+        "up-down": "LEFT: a cat sitting on top of a refrigerator looking down. RIGHT: the same cat sitting on the kitchen floor looking up",
+        "happy-sad": "LEFT: a close-up of a child's face with a big happy smile. RIGHT: the same child's face looking sad with a tear",
+        "light-dark": "LEFT: a cozy room with all lights on, bright and warm. RIGHT: the same room with only a candle lit, dim and shadowy",
+        "open-close": "LEFT: an open wooden door. RIGHT: the same wooden door closed shut",
+        "full-empty": "LEFT: a glass completely full of orange juice. RIGHT: the same glass completely empty",
+        "wet-dry": "LEFT: a golden retriever puppy soaking wet with water droplets. RIGHT: the same puppy dry and fluffy in sunshine",
+        "long-short": "A split image with a clear vertical line dividing left and right. LEFT SIDE ONLY: a long yellow pencil standing vertically, tall and full-length. RIGHT SIDE ONLY: a very short stubby yellow pencil nub, same style but tiny. Both on the same plain white background. Each pencil stays entirely within its own half",
+        "loud-quiet": "LEFT: a child banging a drum loudly with visible sound waves. RIGHT: a baby sleeping peacefully with a finger on lips",
+        "soft-hard": "LEFT: a fluffy soft teddy bear. RIGHT: a solid hard rock",
+        "clean-dirty": "LEFT: a cute white puppy perfectly clean and groomed. RIGHT: the same puppy covered in mud and dirt",
+        "old-new": "LEFT: an old worn-out shoe with patches and holes. RIGHT: a brand new shiny shoe in a box",
+        "day-night": "LEFT: a quaint village street in bright daytime with blue sky. RIGHT: the same village street at night with moon and stars",
     },
 }
 
@@ -360,8 +321,7 @@ OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "objects")
 # Categories not listed here default to public/objects/<category>/
 OUTPUT_DIRS = {
     "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
-    "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
-    "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
+    "opposites-pairs": os.path.join(PROJECT_ROOT, "public", "opposites"),
 }
 
 WEBP_SIZE = 1024
@@ -421,6 +381,64 @@ def generate_image(category, item_name, subject_desc, force=False):
         return False
 
 
+def generate_opposite_pair(pair_name, subject_desc, force=False):
+    """Generate a wide 2:1 image and split into left/right halves."""
+    output_dir = get_output_dir("opposites-pairs")
+    os.makedirs(output_dir, exist_ok=True)
+
+    left_name, right_name = pair_name.split("-")
+    left_path = os.path.join(output_dir, f"{left_name}.webp")
+    right_path = os.path.join(output_dir, f"{right_name}.webp")
+
+    if os.path.exists(left_path) and os.path.exists(right_path) and not force:
+        print(f"  ⏭  Skipping opposites-pairs/{pair_name} (already exists)")
+        return True
+
+    style = STYLE_PROMPTS["opposites-pairs"]
+    prompt = style.format(subject=subject_desc)
+
+    print(f"  🎨 Generating opposites-pairs/{pair_name}...")
+
+    try:
+        response = client.models.generate_content(
+            model=MODEL,
+            contents=[prompt],
+            config=types.GenerateContentConfig(
+                response_modalities=["Text", "Image"],
+                image_config=types.ImageConfig(
+                    aspect_ratio="16:9",
+                ),
+            ),
+        )
+
+        for part in response.candidates[0].content.parts:
+            if part.inline_data is not None:
+                image = Image.open(BytesIO(part.inline_data.data))
+                w, h = image.size
+                mid = w // 2
+
+                # Split into left and right halves, resize each to 512x512
+                left_img = image.crop((0, 0, mid, h)).resize((512, 512), Image.LANCZOS)
+                right_img = image.crop((mid, 0, w, h)).resize((512, 512), Image.LANCZOS)
+
+                left_img.save(left_path, "WEBP", quality=WEBP_QUALITY)
+                right_img.save(right_path, "WEBP", quality=WEBP_QUALITY)
+
+                left_kb = os.path.getsize(left_path) // 1024
+                right_kb = os.path.getsize(right_path) // 1024
+                print(f"  ✅ Split: {left_name}.webp ({left_kb}KB) + {right_name}.webp ({right_kb}KB)")
+                return True
+            elif part.text is not None:
+                print(f"  ℹ  Model note: {part.text[:100]}")
+
+        print(f"  ❌ No image returned for opposites-pairs/{pair_name}")
+        return False
+
+    except Exception as e:
+        print(f"  ❌ Error generating opposites-pairs/{pair_name}: {e}")
+        return False
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate images for Kids Learning App")
     parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, bodyparts, emotions, opposites, opposites-scenes)")
@@ -448,13 +466,16 @@ def main():
         target_items = {args.item: items[args.item]} if args.item else items
 
         for item_name, subject_desc in target_items.items():
-            output_path = os.path.join(get_output_dir(category), f"{item_name}.webp")
-            if os.path.exists(output_path) and not args.force:
-                skipped += 1
-                print(f"  ⏭  Skipping {category}/{item_name} (exists)")
-                continue
+            if category == "opposites-pairs":
+                ok = generate_opposite_pair(item_name, subject_desc, force=args.force)
+            else:
+                output_path = os.path.join(get_output_dir(category), f"{item_name}.webp")
+                if os.path.exists(output_path) and not args.force:
+                    skipped += 1
+                    print(f"  ⏭  Skipping {category}/{item_name} (exists)")
+                    continue
+                ok = generate_image(category, item_name, subject_desc, force=args.force)
 
-            ok = generate_image(category, item_name, subject_desc, force=args.force)
             if ok:
                 success += 1
             else:
