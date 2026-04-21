@@ -246,6 +246,38 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
           </div>
         );
 
+      case 'opposites':
+        return (
+          <div className="flex flex-col items-center gap-6">
+            <div className="flex items-center gap-4 md:gap-8">
+              <div className="flex flex-col items-center gap-2">
+                <img
+                  src={currentItem.images[currentItem.pair[0]]}
+                  alt={currentItem.pair[0]}
+                  className="w-32 h-32 md:w-48 md:h-48 lg:w-56 lg:h-56 object-contain rounded-2xl shadow-lg bg-white"
+                />
+                <span className="text-2xl md:text-3xl font-bold text-gray-600">
+                  {currentItem.pair[0]}
+                </span>
+              </div>
+              <span className="text-3xl md:text-5xl font-bold text-gray-300">&</span>
+              <div className="flex flex-col items-center gap-2">
+                <img
+                  src={currentItem.images[currentItem.pair[1]]}
+                  alt={currentItem.pair[1]}
+                  className="w-32 h-32 md:w-48 md:h-48 lg:w-56 lg:h-56 object-contain rounded-2xl shadow-lg bg-white"
+                />
+                <span className="text-2xl md:text-3xl font-bold text-gray-600">
+                  {currentItem.pair[1]}
+                </span>
+              </div>
+            </div>
+            <span className="text-3xl md:text-4xl font-bold text-gray-500">
+              {currentItem.name}
+            </span>
+          </div>
+        );
+
       default:
         if (currentItem.image) {
           return (

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
 import { useAuth } from '../context/AuthContext';
 
@@ -48,6 +48,22 @@ const categories = [
     color: 'bg-amber-500',
     hoverColor: 'hover:bg-amber-600',
     preview: '🦁',
+  },
+  {
+    id: 'opposites',
+    name: 'Opposites',
+    icon: ArrowLeftRight,
+    color: 'bg-cyan-500',
+    hoverColor: 'hover:bg-cyan-600',
+    preview: '↔️',
+  },
+  {
+    id: 'emotions',
+    name: 'Emotions',
+    icon: Smile,
+    color: 'bg-yellow-500',
+    hoverColor: 'hover:bg-yellow-600',
+    preview: '😊',
   },
   {
     id: 'typing',

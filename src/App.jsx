@@ -22,6 +22,8 @@ const App = () => {
         <Route path="/shapes/*" element={<ProtectedRoute><CategoryPage category="shapes" /></ProtectedRoute>} />
         <Route path="/objects" element={<ProtectedRoute><ObjectsHome /></ProtectedRoute>} />
         <Route path="/objects/:subcategory/*" element={<ProtectedRoute><ObjectsCategoryPage /></ProtectedRoute>} />
+        <Route path="/opposites/*" element={<ProtectedRoute><CategoryPage category="opposites" /></ProtectedRoute>} />
+        <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
       </Routes>
       <FeedbackButton />

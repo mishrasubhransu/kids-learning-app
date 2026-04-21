@@ -1,9 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Home, BookOpen, Gamepad2 } from 'lucide-react';
+import { Home, BookOpen, Gamepad2, Pencil } from 'lucide-react';
 import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
+import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
+import OppositesTestingMode from './testing/OppositesTestingMode';
 import DifficultySelector from './ui/DifficultySelector';
 
 import alphabets from '../data/alphabets';
@@ -11,12 +13,16 @@ import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { objectCategories, objectItems } from '../data/objects';
+import opposites from '../data/opposites';
+import emotions from '../data/emotions';
 
 const categoryData = {
   alphabets: { items: alphabets, title: 'Alphabets' },
   numbers: { items: numbers, title: 'Numbers', objectIcons },
   colors: { items: colors, title: 'Colors' },
   shapes: { items: shapes, title: 'Shapes' },
+  opposites: { items: opposites, title: 'Opposites' },
+  emotions: { items: emotions, title: 'Emotions' },
 };
 
 objectCategories.forEach((cat) => {
@@ -100,6 +106,19 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
                 </svg>
                 Tiles
               </button>
+              {(category === 'alphabets' || category === 'numbers') && (
+                <button
+                  onClick={() => setMode('trace')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                    mode === 'trace'
+                      ? 'bg-white text-gray-800 shadow-sm'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  <Pencil size={16} />
+                  Trace
+                </button>
+              )}
               <button
                 onClick={() => setMode('test')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
@@ -146,7 +165,13 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             onObjectTypeChange={setObjectType}
           />
         )}
-        {mode === 'test' && (
+        {mode === 'trace' && (
+          <TracingMode items={items} category={category} />
+        )}
+        {mode === 'test' && category === 'opposites' && (
+          <OppositesTestingMode items={items} difficulty={difficulty} />
+        )}
+        {mode === 'test' && category !== 'opposites' && (
           <TestingMode
             items={items}
             category={category}

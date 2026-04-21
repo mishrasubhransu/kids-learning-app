@@ -101,6 +101,31 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
           </button>
         );
 
+      case 'opposites':
+        return (
+          <button
+            key={item.id}
+            onClick={() => handleClick(item)}
+            className={`${baseClasses} bg-white p-3 md:p-4 flex flex-col items-center justify-center gap-2`}
+          >
+            <div className="flex items-center gap-2">
+              <img
+                src={item.images[item.pair[0]]}
+                alt={item.pair[0]}
+                className="w-12 h-12 md:w-16 md:h-16 object-contain rounded-lg"
+              />
+              <img
+                src={item.images[item.pair[1]]}
+                alt={item.pair[1]}
+                className="w-12 h-12 md:w-16 md:h-16 object-contain rounded-lg"
+              />
+            </div>
+            <span className="text-sm md:text-base font-semibold text-gray-600">
+              {item.pair[0]} / {item.pair[1]}
+            </span>
+          </button>
+        );
+
       default:
         if (item.image) {
           return (
@@ -135,6 +160,8 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
         return 'grid-cols-2 md:grid-cols-4';
       case 'shapes':
         return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5';
+      case 'opposites':
+        return 'grid-cols-2 md:grid-cols-3';
       default:
         return 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4';
     }
