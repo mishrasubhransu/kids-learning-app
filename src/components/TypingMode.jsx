@@ -178,7 +178,7 @@ const TypingMode = () => {
         setTestResult('wrong');
         setBgColor('#e74c3c');
         playEncouragement().then(() => {
-          speak(`That was ${char}. Try to find ${testTarget}.`);
+          speak(`That was ${char}, try to find ${testTarget}.`);
         });
 
         clearTimeout(testResultTimerRef.current);
