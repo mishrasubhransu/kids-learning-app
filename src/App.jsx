@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
@@ -10,6 +11,12 @@ import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';
 
 const App = () => {
+  useEffect(() => {
+    const handler = (e) => e.preventDefault();
+    document.addEventListener('contextmenu', handler);
+    return () => document.removeEventListener('contextmenu', handler);
+  }, []);
+
   return (
     <>
       <Routes>
