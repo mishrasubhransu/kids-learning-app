@@ -63,6 +63,8 @@ const TypingMode = () => {
   const [testOrder, setTestOrder] = useState('random'); // 'random' | 'sequential'
   const [testIndex, setTestIndex] = useState(0);
   const [testCorrectCount, setTestCorrectCount] = useState(0);
+  const [testComplete, setTestComplete] = useState(false);
+  const [testSeenLetters, setTestSeenLetters] = useState(() => new Set());
   const testResultTimerRef = useRef(null);
 
   // Initialize audio context on first interaction
@@ -114,6 +116,8 @@ const TypingMode = () => {
     setTestCorrectCount(0);
     setTestIndex(0);
     setTestResult(null);
+    setTestComplete(false);
+    setTestSeenLetters(new Set());
     generateTestTarget(testOrder, 0);
   }, [testOrder, generateTestTarget]);
 
@@ -124,6 +128,8 @@ const TypingMode = () => {
       setTestResult(null);
       setTestCorrectCount(0);
       setTestIndex(0);
+      setTestComplete(false);
+      setTestSeenLetters(new Set());
       clearTimeout(testResultTimerRef.current);
     }
   }, [mode]);
@@ -144,7 +150,7 @@ const TypingMode = () => {
 
     // Test mode handling
     if (mode === 'test') {
-      if (!testTarget || testResult !== null) return;
+      if (!testTarget || testResult !== null || testComplete) return;
 
       if (char === testTarget) {
         setTestResult('correct');
@@ -156,9 +162,17 @@ const TypingMode = () => {
         clearTimeout(testResultTimerRef.current);
         testResultTimerRef.current = setTimeout(() => {
           const nextIndex = testIndex + 1;
+          const nextSeen = new Set(testSeenLetters);
+          nextSeen.add(testTarget);
+          setTestSeenLetters(nextSeen);
           setTestIndex(nextIndex);
           setBgColor('#2c3e50');
-          generateTestTarget(testOrder, nextIndex);
+          if (nextSeen.size >= allLetters.length) {
+            setTestComplete(true);
+            setTestTarget(null);
+          } else {
+            generateTestTarget(testOrder, nextIndex);
+          }
         }, 1500);
       } else {
         setTestResult('wrong');
@@ -187,7 +201,7 @@ const TypingMode = () => {
     } else {
       speak(char);
     }
-  }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, speak, playTone, playPositive, playEncouragement, generateTestTarget]);
+  }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, testComplete, testSeenLetters, speak, playTone, playPositive, playEncouragement, generateTestTarget]);
 
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
@@ -203,6 +217,25 @@ const TypingMode = () => {
 
   // Render test mode content
   const renderTestContent = () => {
+    if (testComplete) {
+      return (
+        <div className="text-center">
+          <div className="text-6xl md:text-8xl mb-6">🏆</div>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">Test Complete!</h2>
+          <p className="text-xl text-white/70 mb-8">
+            You typed all {allLetters.length} letters. Great job!
+          </p>
+          <button
+            onClick={startTest}
+            className="inline-flex items-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-xl font-semibold text-xl transition-colors"
+          >
+            <Play size={28} />
+            Start Again
+          </button>
+        </div>
+      );
+    }
+
     if (!testTarget) {
       // Start screen
       return (
