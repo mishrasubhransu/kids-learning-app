@@ -23,6 +23,7 @@ Usage:
 
 import os
 import sys
+import base64
 import argparse
 import time
 from google import genai
@@ -36,6 +37,18 @@ client = genai.Client(
 
 MODEL = "gemini-3-pro-image-preview"
 #MODEL = "gemini-3.1-flash-image-preview"  # cheaper
+
+OPENAI_MODEL = "gpt-image-2"
+
+_openai_client = None
+
+
+def get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        from openai import OpenAI
+        _openai_client = OpenAI()
+    return _openai_client
 
 # Category-specific style prompts for consistent, high-quality output
 STYLE_PROMPTS = {
@@ -125,6 +138,14 @@ STYLE_PROMPTS = {
         "Simple, colorful style with bright cheerful colors and clean backgrounds. "
         "Both concepts should be immediately obvious and easy for a toddler to understand. "
         "No text, no labels, no watermarks. Wide 2:1 landscape composition."
+    ),
+    "household": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid natural colors, soft studio lighting, "
+        "and a clean, slightly blurred white or light grey background. Centered and clearly visible. "
+        "Professional product photography style, clean and well-lit. "
+        "Sharp focus on the object, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
     ),
 }
 
@@ -296,6 +317,39 @@ ITEMS = {
         "love": "feeling love, hugging a big red heart with closed happy eyes",
         "silly": "being silly, making a funny face with tongue out and crossed eyes",
     },
+    "household": {
+        "cup": "a single ceramic coffee mug with a handle, side view",
+        "plate": "a single round white ceramic dinner plate, top-down view",
+        "bowl": "a single white ceramic bowl, three-quarter view",
+        "frying-pan": "a black non-stick frying pan with a handle, three-quarter view",
+        "cookies": "a small stack of round chocolate chip cookies",
+        "spatula": "a kitchen spatula with a black handle and silicone head, side view",
+        "spoon": "a single stainless steel dinner spoon, top-down view",
+        "fork": "a single stainless steel dinner fork, top-down view",
+        "toothbrush": "a single colorful toothbrush with bristles, side view",
+        "toothpaste": "a tube of white and blue toothpaste lying on its side, cap on",
+        "computer": "a desktop computer with a monitor, keyboard, and mouse on a desk, three-quarter view",
+        "laptop": "a modern silver laptop computer, open with screen on, three-quarter view",
+        "standing-fan": "a tall white pedestal standing fan, full body visible, front view",
+        "tv": "a flat screen television on a TV stand, screen displaying a colorful nature scene, front view",
+        "christmas-tree": "a beautifully decorated Christmas tree with colorful ornaments, lights, and a star on top, full tree visible",
+        "dining-table": "a wooden dining table with four matching chairs around it, three-quarter view",
+        "mirror": "a rectangular wall mirror with a simple wooden frame, hanging on a plain wall",
+        "table": "a simple wooden study table with four legs, three-quarter view",
+        "chair": "a single wooden dining chair, three-quarter view",
+        "bed": "a neatly made double bed with white sheets, fluffy pillows, and a soft blanket, three-quarter view",
+        "toys": "a colorful pile of children's toys including a fluffy brown teddy bear, a wooden toy train, and a stack of colorful building blocks, on a clean floor",
+        "phone": "a modern smartphone lying flat on a clean surface with a colorful home screen visible, top-down view",
+        "washing-machine": "a white front-loading washing machine, full appliance visible, front view",
+        "fridge": "a tall double-door stainless steel refrigerator, full appliance visible, front view",
+        "lamp": "a table lamp with a fabric shade and warm glowing bulb, on a small side table",
+        "door": "a closed wooden front door with a brass doorknob, front view",
+        "keys": "a small bunch of metal house keys on a simple keyring",
+        "shoes": "a pair of children's sneakers placed side by side, three-quarter view",
+        "jacket": "a child's cozy winter jacket with a hood, hanging on a hanger or laid flat",
+        "shoe-stand": "a wooden shoe rack with several pairs of shoes neatly arranged on its shelves, three-quarter view",
+        "umbrella": "an open colorful umbrella with a curved handle, three-quarter view",
+    },
     "opposites-pairs": {
         "big-small": "LEFT: a very large elephant. RIGHT: a tiny mouse. Emphasize the size difference",
         "hot-cold": "LEFT: a steaming hot cup of cocoa with visible steam. RIGHT: a frozen snowman in snow",
@@ -333,7 +387,52 @@ def get_output_dir(category):
     return OUTPUT_DIRS.get(category, os.path.join(OUTPUT_BASE, category))
 
 
-def generate_image(category, item_name, subject_desc, force=False):
+def _save_webp(image, output_path):
+    if image.size != (WEBP_SIZE, WEBP_SIZE):
+        image = image.resize((WEBP_SIZE, WEBP_SIZE), Image.LANCZOS)
+    image.save(output_path, "WEBP", quality=WEBP_QUALITY)
+    return os.path.getsize(output_path) // 1024
+
+
+def _generate_gemini(prompt, output_path):
+    response = client.models.generate_content(
+        model=MODEL,
+        contents=[prompt],
+        config=types.GenerateContentConfig(
+            response_modalities=["Text", "Image"],
+            image_config=types.ImageConfig(
+                aspect_ratio="1:1",
+                image_size="1K",
+            ),
+        ),
+    )
+
+    for part in response.candidates[0].content.parts:
+        if part.inline_data is not None:
+            image = Image.open(BytesIO(part.inline_data.data))
+            size_kb = _save_webp(image, output_path)
+            print(f"  ✅ Saved: {output_path} ({WEBP_SIZE}x{WEBP_SIZE}, {size_kb}KB)")
+            return True
+        elif part.text is not None:
+            print(f"  ℹ  Model note: {part.text[:100]}")
+    return False
+
+
+def _generate_openai(prompt, output_path):
+    result = get_openai_client().images.generate(
+        model=OPENAI_MODEL,
+        prompt=prompt,
+        size="1024x1024",
+        quality="medium",
+    )
+    image_bytes = base64.b64decode(result.data[0].b64_json)
+    image = Image.open(BytesIO(image_bytes))
+    size_kb = _save_webp(image, output_path)
+    print(f"  ✅ Saved: {output_path} ({WEBP_SIZE}x{WEBP_SIZE}, {size_kb}KB)")
+    return True
+
+
+def generate_image(category, item_name, subject_desc, force=False, provider="gemini"):
     """Generate and save a single image as compressed WebP. Returns True on success."""
     output_dir = get_output_dir(category)
     os.makedirs(output_dir, exist_ok=True)
@@ -346,35 +445,16 @@ def generate_image(category, item_name, subject_desc, force=False):
     style = STYLE_PROMPTS.get(category, STYLE_PROMPTS["animals"])
     prompt = style.format(subject=subject_desc)
 
-    print(f"  🎨 Generating {category}/{item_name}...")
+    print(f"  🎨 Generating {category}/{item_name} via {provider}...")
 
     try:
-        response = client.models.generate_content(
-            model=MODEL,
-            contents=[prompt],
-            config=types.GenerateContentConfig(
-                response_modalities=["Text", "Image"],
-                image_config=types.ImageConfig(
-                    aspect_ratio="1:1",
-                    image_size="1K",
-                ),
-            ),
-        )
-
-        for part in response.candidates[0].content.parts:
-            if part.inline_data is not None:
-                image = Image.open(BytesIO(part.inline_data.data))
-                if image.size != (WEBP_SIZE, WEBP_SIZE):
-                    image = image.resize((WEBP_SIZE, WEBP_SIZE), Image.LANCZOS)
-                image.save(output_path, "WEBP", quality=WEBP_QUALITY)
-                size_kb = os.path.getsize(output_path) // 1024
-                print(f"  ✅ Saved: {output_path} ({WEBP_SIZE}x{WEBP_SIZE}, {size_kb}KB)")
-                return True
-            elif part.text is not None:
-                print(f"  ℹ  Model note: {part.text[:100]}")
-
-        print(f"  ❌ No image returned for {category}/{item_name}")
-        return False
+        if provider == "openai":
+            return _generate_openai(prompt, output_path)
+        else:
+            ok = _generate_gemini(prompt, output_path)
+            if not ok:
+                print(f"  ❌ No image returned for {category}/{item_name}")
+            return ok
 
     except Exception as e:
         print(f"  ❌ Error generating {category}/{item_name}: {e}")
@@ -444,6 +524,8 @@ def main():
     parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, bodyparts, emotions, opposites, opposites-scenes)")
     parser.add_argument("--item", type=str, help="Generate only this item (requires --category)")
     parser.add_argument("--force", action="store_true", help="Overwrite existing images")
+    parser.add_argument("--provider", choices=["gemini", "openai"], default="gemini", help="Image generation provider")
+    parser.add_argument("--limit", type=int, help="Limit to first N items per category (useful for testing)")
     args = parser.parse_args()
 
     if args.item and not args.category:
@@ -464,6 +546,8 @@ def main():
         print(f"{'='*50}")
 
         target_items = {args.item: items[args.item]} if args.item else items
+        if args.limit:
+            target_items = dict(list(target_items.items())[:args.limit])
 
         for item_name, subject_desc in target_items.items():
             if category == "opposites-pairs":
@@ -474,7 +558,7 @@ def main():
                     skipped += 1
                     print(f"  ⏭  Skipping {category}/{item_name} (exists)")
                     continue
-                ok = generate_image(category, item_name, subject_desc, force=args.force)
+                ok = generate_image(category, item_name, subject_desc, force=args.force, provider=args.provider)
 
             if ok:
                 success += 1
