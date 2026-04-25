@@ -9,6 +9,7 @@ export const objectCategories = [
   { id: 'tools', name: 'Tools', emoji: '🔨', color: 'bg-orange-500', hoverColor: 'hover:bg-orange-600' },
   { id: 'bodyparts', name: 'Body Parts', emoji: '🦴', color: 'bg-rose-500', hoverColor: 'hover:bg-rose-600' },
   { id: 'household', name: 'Household', emoji: '🏠', color: 'bg-purple-500', hoverColor: 'hover:bg-purple-600' },
+  { id: 'sea-creatures', name: 'Sea Creatures', emoji: '🐠', color: 'bg-cyan-500', hoverColor: 'hover:bg-cyan-600' },
 ];
 
 export const objectItems = {
@@ -198,5 +199,20 @@ export const objectItems = {
     { id: 28, name: 'Jacket', image: '/objects/household/jacket.webp' },
     { id: 29, name: 'Shoe Stand', image: '/objects/household/shoe-stand.webp' },
     { id: 30, name: 'Umbrella', image: '/objects/household/umbrella.webp' },
+  ],
+  'sea-creatures': [
+    { id: 0, name: 'Fish', image: '/objects/sea-creatures/fish.webp' },
+    { id: 1, name: 'Sea Horse', image: '/objects/sea-creatures/sea-horse.webp' },
+    { id: 2, name: 'Octopus', image: '/objects/sea-creatures/octopus.webp' },
+    { id: 3, name: 'Dolphin', image: '/objects/sea-creatures/dolphin.webp' },
+    { id: 4, name: 'Whale', image: '/objects/sea-creatures/whale.webp' },
+    { id: 5, name: 'Shark', image: '/objects/sea-creatures/shark.webp' },
+    { id: 6, name: 'Crab', image: '/objects/sea-creatures/crab.webp' },
+    { id: 7, name: 'Lobster', image: '/objects/sea-creatures/lobster.webp' },
+    { id: 8, name: 'Shrimp', image: '/objects/sea-creatures/shrimp.webp' },
+    { id: 9, name: 'Jellyfish', image: '/objects/sea-creatures/jellyfish.webp' },
+    { id: 10, name: 'Oyster', image: '/objects/sea-creatures/oyster.webp' },
+    { id: 11, name: 'Mussels', image: '/objects/sea-creatures/mussels.webp' },
+    { id: 12, name: 'Coral', image: '/objects/sea-creatures/coral.webp' },
   ],
 };

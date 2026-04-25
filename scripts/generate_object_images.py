@@ -147,6 +147,14 @@ STYLE_PROMPTS = {
         "Sharp focus on the object, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "sea-creatures": (
+        "A beautiful, high-quality underwater photograph of {subject}. "
+        "Photorealistic with vivid natural colors, soft underwater lighting filtering down from the surface, "
+        "and a clean, slightly blurred ocean blue background. Centered and clearly visible. "
+        "Captured as if by a professional underwater wildlife photographer. "
+        "Sharp focus on the subject, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -349,6 +357,21 @@ ITEMS = {
         "jacket": "a child's cozy winter jacket with a hood, hanging on a hanger or laid flat",
         "shoe-stand": "a wooden shoe rack with several pairs of shoes neatly arranged on its shelves, three-quarter view",
         "umbrella": "an open colorful umbrella with a curved handle, three-quarter view",
+    },
+    "sea-creatures": {
+        "fish": "a colorful tropical clownfish with bright orange and white stripes, swimming gracefully, full body visible",
+        "sea-horse": "a small bright yellow seahorse with a curled tail, side view, full body visible",
+        "octopus": "a reddish-purple octopus with tentacles spread out, full body visible",
+        "dolphin": "a friendly bottlenose dolphin swimming, full body visible from the side",
+        "whale": "a majestic humpback whale swimming, full body visible from the side",
+        "shark": "a great white shark swimming, full body visible from the side",
+        "crab": "a bright red crab with claws raised, on the sandy ocean floor, full body visible from above",
+        "lobster": "a bright red lobster with large claws, on the sandy ocean floor, full body visible",
+        "shrimp": "a fresh pink shrimp curled, full body visible from the side",
+        "jellyfish": "a translucent moon jellyfish with long flowing tentacles, floating in clear blue water, full body visible",
+        "oyster": "an open oyster shell on the sandy ocean floor, showing the pearl-like inside",
+        "mussels": "a small cluster of dark blue-black mussel shells, partially open, on a rocky surface",
+        "coral": "a vibrant cluster of colorful coral reef with branching shapes in pink, orange, and purple",
     },
     "opposites-pairs": {
         "big-small": "LEFT: a very large elephant. RIGHT: a tiny mouse. Emphasize the size difference",
