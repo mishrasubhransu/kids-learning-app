@@ -93,6 +93,12 @@ export const objectItems = {
     { id: 12, name: 'Construction Worker', image: '/objects/profession/construction-worker.webp' },
     { id: 13, name: 'Artist', image: '/objects/profession/artist.webp' },
     { id: 14, name: 'Musician', image: '/objects/profession/musician.webp' },
+    { id: 15, name: 'Postman', image: '/objects/profession/postman.webp' },
+    { id: 16, name: 'Dentist', image: '/objects/profession/dentist.webp' },
+    { id: 17, name: 'Veterinarian', image: '/objects/profession/veterinarian.webp' },
+    { id: 18, name: 'Baker', image: '/objects/profession/baker.webp' },
+    { id: 19, name: 'Mechanic', image: '/objects/profession/mechanic.webp' },
+    { id: 20, name: 'Magician', image: '/objects/profession/magician.webp' },
   ],
   fruits: [
     { id: 0, name: 'Apple', image: '/objects/fruits/apple.webp' },
