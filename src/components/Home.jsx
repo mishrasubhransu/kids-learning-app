@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile, Volume2 } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
 import { useAuth } from '../context/AuthContext';
 
@@ -64,6 +64,15 @@ const categories = [
     color: 'bg-yellow-500',
     hoverColor: 'hover:bg-yellow-600',
     preview: '😊',
+  },
+  {
+    id: 'phonics',
+    name: 'Phonics',
+    description: 'Learn 3-letter words',
+    icon: Volume2,
+    color: 'bg-indigo-500',
+    hoverColor: 'hover:bg-indigo-600',
+    preview: '🔤',
   },
   {
     id: 'typing',

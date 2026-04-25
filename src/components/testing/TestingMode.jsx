@@ -321,6 +321,22 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         );
 
       default:
+        if (category?.startsWith('phonics-')) {
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleSelect(item)}
+              {...touchProps(item)}
+              disabled={selectedAnswer !== null && isCorrect}
+              className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
+            >
+              <span className="text-4xl md:text-6xl font-bold tracking-wide uppercase">
+                <span className="text-gray-700">{item.onset}</span>
+                <span className="text-orange-500">{item.rime}</span>
+              </span>
+            </button>
+          );
+        }
         if (item.image) {
           return (
             <button
@@ -409,7 +425,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
       <div className="mb-8 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-4">
           Which one is{' '}
-          <span className="text-blue-600">{correctAnswer?.name}</span>?
+          <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>?
         </h2>
         <div className="flex items-center gap-3 justify-center">
           <button

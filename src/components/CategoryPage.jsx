@@ -15,6 +15,7 @@ import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { objectCategories, objectItems } from '../data/objects';
 import opposites from '../data/opposites';
 import emotions from '../data/emotions';
+import { phonicsFamilies, phonicsWords } from '../data/phonics';
 
 const categoryData = {
   alphabets: { items: alphabets, title: 'Alphabets' },
@@ -29,6 +30,13 @@ objectCategories.forEach((cat) => {
   categoryData[`objects-${cat.id}`] = {
     items: objectItems[cat.id],
     title: cat.name,
+  };
+});
+
+phonicsFamilies.forEach((family) => {
+  categoryData[`phonics-${family.id}`] = {
+    items: phonicsWords[family.id],
+    title: family.name,
   };
 });
 

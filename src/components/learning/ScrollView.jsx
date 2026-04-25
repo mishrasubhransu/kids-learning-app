@@ -279,6 +279,22 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
         );
 
       default:
+        if (category?.startsWith('phonics-')) {
+          return (
+            <div className="flex flex-col items-center gap-4">
+              <span
+                className="font-bold leading-none select-none tracking-wide uppercase"
+                style={{
+                  fontSize: 'min(22vw, 32vh)',
+                  fontFamily: 'Arial, sans-serif',
+                }}
+              >
+                <span className="text-gray-700">{currentItem.onset}</span>
+                <span className="text-orange-500">{currentItem.rime}</span>
+              </span>
+            </div>
+          );
+        }
         if (currentItem.image) {
           return (
             <div className="flex flex-col items-center gap-6">

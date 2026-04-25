@@ -5,6 +5,8 @@ import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
 import ObjectsHome from './components/ObjectsHome';
 import ObjectsCategoryPage from './components/ObjectsCategoryPage';
+import PhonicsHome from './components/PhonicsHome';
+import PhonicsCategoryPage from './components/PhonicsCategoryPage';
 import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -29,6 +31,8 @@ const App = () => {
         <Route path="/shapes/*" element={<ProtectedRoute><CategoryPage category="shapes" /></ProtectedRoute>} />
         <Route path="/objects" element={<ProtectedRoute><ObjectsHome /></ProtectedRoute>} />
         <Route path="/objects/:subcategory/*" element={<ProtectedRoute><ObjectsCategoryPage /></ProtectedRoute>} />
+        <Route path="/phonics" element={<ProtectedRoute><PhonicsHome /></ProtectedRoute>} />
+        <Route path="/phonics/:family/*" element={<ProtectedRoute><PhonicsCategoryPage /></ProtectedRoute>} />
         <Route path="/opposites/*" element={<ProtectedRoute><CategoryPage category="opposites" /></ProtectedRoute>} />
         <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />

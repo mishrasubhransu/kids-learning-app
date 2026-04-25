@@ -127,6 +127,20 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
         );
 
       default:
+        if (category?.startsWith('phonics-')) {
+          return (
+            <button
+              key={item.id}
+              onClick={() => handleClick(item)}
+              className={`${baseClasses} bg-white p-6 md:p-8 flex items-center justify-center`}
+            >
+              <span className="text-4xl md:text-6xl font-bold tracking-wide uppercase">
+                <span className="text-gray-700">{item.onset}</span>
+                <span className="text-orange-500">{item.rime}</span>
+              </span>
+            </button>
+          );
+        }
         if (item.image) {
           return (
             <button
