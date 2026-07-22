@@ -10,6 +10,7 @@ export const objectCategories = [
   { id: 'bodyparts', name: 'Body Parts', emoji: '🦴', color: 'bg-rose-500', hoverColor: 'hover:bg-rose-600' },
   { id: 'household', name: 'Household', emoji: '🏠', color: 'bg-purple-500', hoverColor: 'hover:bg-purple-600' },
   { id: 'sea-creatures', name: 'Sea Creatures', emoji: '🐠', color: 'bg-cyan-500', hoverColor: 'hover:bg-cyan-600' },
+  { id: 'traffic', name: 'Traffic', emoji: '🚦', color: 'bg-yellow-500', hoverColor: 'hover:bg-yellow-600' },
 ];
 
 export const objectItems = {
@@ -220,5 +221,25 @@ export const objectItems = {
     { id: 10, name: 'Oyster', image: '/objects/sea-creatures/oyster.webp' },
     { id: 11, name: 'Mussels', image: '/objects/sea-creatures/mussels.webp' },
     { id: 12, name: 'Coral', image: '/objects/sea-creatures/coral.webp' },
+  ],
+  traffic: [
+    { id: 0, name: 'Traffic Light', image: '/objects/traffic/traffic-light.webp' },
+    { id: 1, name: 'Red Light', image: '/objects/traffic/red-light.webp' },
+    { id: 2, name: 'Yellow Light', image: '/objects/traffic/yellow-light.webp' },
+    { id: 3, name: 'Green Light', image: '/objects/traffic/green-light.webp' },
+    { id: 4, name: 'Stop Sign', image: '/objects/traffic/stop-sign.webp' },
+    { id: 5, name: 'Yield Sign', image: '/objects/traffic/yield-sign.webp' },
+    { id: 6, name: 'Crosswalk', image: '/objects/traffic/crosswalk.webp' },
+    { id: 7, name: 'Traffic Cone', image: '/objects/traffic/traffic-cone.webp' },
+    { id: 8, name: 'Speed Bump', image: '/objects/traffic/speed-bump.webp' },
+    { id: 9, name: 'Railroad Crossing', image: '/objects/traffic/railroad-crossing.webp' },
+    { id: 10, name: 'Bus Stop', image: '/objects/traffic/bus-stop.webp' },
+    { id: 11, name: 'Sidewalk', image: '/objects/traffic/sidewalk.webp' },
+    { id: 12, name: 'Roundabout', image: '/objects/traffic/roundabout.webp' },
+    { id: 13, name: 'Do Not Enter', image: '/objects/traffic/do-not-enter.webp' },
+    { id: 14, name: 'Walk Signal', image: '/objects/traffic/walk-signal.webp' },
+    { id: 15, name: 'Crossing Guard', image: '/objects/traffic/crossing-guard.webp' },
+    { id: 16, name: 'One Way', image: '/objects/traffic/one-way.webp' },
+    { id: 17, name: 'School Crossing', image: '/objects/traffic/school-crossing.webp' },
   ],
 };

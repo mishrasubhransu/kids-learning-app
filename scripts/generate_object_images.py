@@ -155,6 +155,15 @@ STYLE_PROMPTS = {
         "Sharp focus on the subject, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "traffic": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid colors and bright natural outdoor daylight, "
+        "and a clean, slightly blurred street background. Centered and clearly visible. "
+        "Professional photography, sharp focus on the subject, shallow depth of field. "
+        "Any standard wording or symbols that belong on the sign or signal should be "
+        "accurate, correctly spelled, and clearly legible. "
+        "No extra labels, no captions, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -395,6 +404,26 @@ ITEMS = {
         "old-new": "LEFT: an old worn-out shoe with patches and holes. RIGHT: a brand new shiny shoe in a box",
         "day-night": "LEFT: a quaint village street in bright daytime with blue sky. RIGHT: the same village street at night with moon and stars",
     },
+    "traffic": {
+        "traffic-light": "a standard three-light traffic signal on a pole, with the red, amber yellow, and green lights all clearly visible from top to bottom, against a clear blue sky",
+        "red-light": "a traffic signal with only the red light at the top glowing brightly, the yellow and green lights dark, against a clear blue sky",
+        "yellow-light": "a traffic signal with only the amber yellow light in the middle glowing brightly, the red and green lights dark, against a clear blue sky",
+        "green-light": "a traffic signal with only the green light at the bottom glowing brightly, the red and yellow lights dark, against a clear blue sky",
+        "stop-sign": "a red octagonal STOP sign on a post, with the white word STOP large and clearly legible",
+        "yield-sign": "a downward-pointing triangular YIELD sign with a red border and white center, the word YIELD legible, on a post",
+        "crosswalk": "a pedestrian crosswalk with bold bright white painted zebra stripes across a clean city street",
+        "traffic-cone": "a single bright orange traffic safety cone with a reflective white band, standing on a road",
+        "speed-bump": "a yellow and black striped speed bump raised across a paved road",
+        "railroad-crossing": "a railroad crossing with a white X-shaped crossbuck sign and round red warning lights beside train tracks",
+        "bus-stop": "a city bus stop with a clear bus-stop sign and a small shelter beside a street",
+        "sidewalk": "a clean paved sidewalk running alongside a quiet street, clearly showing the pedestrian walking path",
+        "roundabout": "a blue circular roundabout road sign with three curved white arrows forming a ring, on a post against a clear sky",
+        "do-not-enter": "a round red Do Not Enter traffic sign with a horizontal white bar in the center, on a post against a clear sky",
+        "walk-signal": "a pedestrian crossing signal box showing a glowing white walking-person WALK symbol",
+        "crossing-guard": "a friendly crossing guard wearing a bright high-visibility vest, holding up a handheld STOP paddle sign at a street corner",
+        "one-way": "a black and white rectangular ONE WAY traffic sign with a large arrow, on a post against a clear sky",
+        "school-crossing": "a fluorescent yellow-green pentagon school-crossing sign showing two children walking, on a post against a clear sky",
+    },
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -553,7 +582,7 @@ def main():
     parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, bodyparts, emotions, opposites, opposites-scenes)")
     parser.add_argument("--item", type=str, help="Generate only this item (requires --category)")
     parser.add_argument("--force", action="store_true", help="Overwrite existing images")
-    parser.add_argument("--provider", choices=["gemini", "openai"], default="gemini", help="Image generation provider")
+    parser.add_argument("--provider", choices=["gemini", "openai"], default="openai", help="Image generation provider")
     parser.add_argument("--limit", type=int, help="Limit to first N items per category (useful for testing)")
     args = parser.parse_args()
 
