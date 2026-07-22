@@ -23,3 +23,52 @@ html, body, #root {
   user-select: none;
   -webkit-tap-highlight-color: transparent;
 }
+
+/*
+ * Opposites learn view: a pulsing glow that pulls the eye
+ * to whichever card of the pair is currently highlighted.
+ */
+@keyframes opposites-spotlight {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--spotlight-color) 55%, transparent); }
+  50% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--spotlight-color) 0%, transparent); }
+}
+
+.opposites-spotlight {
+  animation: opposites-spotlight 1.6s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opposites-spotlight {
+    animation: none;
+  }
+}
+
+/* Gentle shake for wrong answers in the opposites games */
+@keyframes opposites-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px); }
+  40% { transform: translateX(8px); }
+  60% { transform: translateX(-5px); }
+  80% { transform: translateX(5px); }
+}
+
+.opposites-shake {
+  animation: opposites-shake 0.4s ease-in-out;
+}
+
+@keyframes opposites-pop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+.opposites-pop {
+  animation: opposites-pop 0.45s ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .opposites-shake,
+  .opposites-pop {
+    animation: none;
+  }
+}

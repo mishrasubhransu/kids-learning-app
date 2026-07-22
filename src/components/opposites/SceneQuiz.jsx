@@ -3,7 +3,7 @@ import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 
-const OppositesTestingMode = ({ items, difficulty }) => {
+const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -14,9 +14,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
-  const touchStartRef = useRef(null);
 
-  // Build question pool based on difficulty
   const buildQuestions = useCallback(() => {
     let pairCount;
     switch (difficulty) {
@@ -28,7 +26,6 @@ const OppositesTestingMode = ({ items, difficulty }) => {
     const allTests = selected.flatMap((pair) =>
       pair.tests.map((t) => ({ ...t, pair: pair.pair, images: pair.images }))
     );
-    // Shuffle
     for (let i = allTests.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [allTests[i], allTests[j]] = [allTests[j], allTests[i]];
@@ -37,8 +34,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
   }, [items, difficulty]);
 
   useEffect(() => {
-    const q = buildQuestions();
-    setQuestions(q);
+    setQuestions(buildQuestions());
     setCurrentIdx(0);
     setCorrectCount(0);
     setTestComplete(false);
@@ -48,9 +44,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
   }, [buildQuestions]);
 
   useEffect(() => {
-    return () => {
-      if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
-    };
+    return () => clearTimeout(autoAdvanceTimerRef.current);
   }, []);
 
   const current = questions[currentIdx];
@@ -78,7 +72,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
   };
 
   const nextQuestion = useCallback(() => {
-    if (autoAdvanceTimerRef.current) clearTimeout(autoAdvanceTimerRef.current);
+    clearTimeout(autoAdvanceTimerRef.current);
     if (currentIdx >= questions.length - 1) {
       setTestComplete(true);
       return;
@@ -96,49 +90,25 @@ const OppositesTestingMode = ({ items, difficulty }) => {
     if (selectedAnswer !== null) return;
     setSelectedAnswer(word);
 
-    setTimeout(() => {
-      if (word === current.correctAnswer) {
-        setIsCorrect(true);
-        const newCount = correctCount + 1;
-        setCorrectCount(newCount);
-        playPositive(newCount).then(() => {
-          autoAdvanceTimerRef.current = setTimeout(() => nextQuestion(), 800);
-        });
-      } else {
-        setIsCorrect(false);
-        playEncouragement().then(() => {
-          speak(`That was ${word}. The answer is ${current.correctAnswer}.`);
-        });
-        setTimeout(() => {
-          setSelectedAnswer(null);
-          setIsCorrect(null);
-        }, 3000);
-      }
-    }, 50);
+    if (word === current.correctAnswer) {
+      setIsCorrect(true);
+      const newCount = correctCount + 1;
+      setCorrectCount(newCount);
+      playPositive(newCount).then(() => {
+        autoAdvanceTimerRef.current = setTimeout(() => nextQuestion(), 800);
+      });
+    } else {
+      setIsCorrect(false);
+      playEncouragement().then(() => {
+        speak(`That was ${word}. The answer is ${current.correctAnswer}.`);
+      });
+      setTimeout(() => {
+        setSelectedAnswer(null);
+        setIsCorrect(null);
+      }, 3000);
+    }
   };
 
-  const handleTouchStart = useCallback((e) => {
-    const preventContextMenu = (ev) => ev.preventDefault();
-    e.target.addEventListener('contextmenu', preventContextMenu, { once: true });
-    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-  }, []);
-
-  const handleSelectRef = useRef(handleSelect);
-  handleSelectRef.current = handleSelect;
-
-  const createTouchEndHandler = useCallback((word) => (e) => {
-    if (!touchStartRef.current) return;
-    const touch = e.changedTouches[0];
-    const dx = Math.abs(touch.clientX - touchStartRef.current.x);
-    const dy = Math.abs(touch.clientY - touchStartRef.current.y);
-    if (dx < 50 && dy < 50) {
-      e.preventDefault();
-      handleSelectRef.current(word);
-    }
-    touchStartRef.current = null;
-  }, []);
-
-  // Keyboard
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.repeat) return;
@@ -151,6 +121,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasStarted, askQuestion]);
 
   if (testComplete) {
@@ -158,7 +129,7 @@ const OppositesTestingMode = ({ items, difficulty }) => {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">Test Complete!</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">Quiz Complete!</h2>
           <p className="text-lg md:text-xl text-gray-500 mb-8">
             You answered {questions.length} questions. Great job!
           </p>
@@ -178,16 +149,16 @@ const OppositesTestingMode = ({ items, difficulty }) => {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">Ready to Test?</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">Ready for the Quiz?</h2>
           <p className="text-lg text-gray-500 mb-8">
-            Listen to the question and pick the right answer!
+            Look at the picture, listen, and tap the right answer!
           </p>
           <button
             onClick={handleStart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start Test
+            Start Quiz
           </button>
           <p className="text-gray-400 text-sm mt-4">or press Space / Enter</p>
         </div>
@@ -197,34 +168,40 @@ const OppositesTestingMode = ({ items, difficulty }) => {
 
   if (!current) return null;
 
-  // Randomize button order per question
   const buttonOrder = currentIdx % 2 === 0 ? current.pair : [...current.pair].reverse();
 
   const getButtonStyle = (word) => {
-    if (selectedAnswer === null) return 'bg-white hover:bg-gray-50 border-2 border-transparent hover:scale-105';
+    if (selectedAnswer === null) {
+      return 'bg-white border-4 border-transparent hover:border-blue-200 hover:scale-105';
+    }
     if (selectedAnswer === word) {
       return isCorrect
-        ? 'bg-green-100 border-2 border-green-500'
-        : 'bg-red-100 border-2 border-red-500';
+        ? 'bg-green-50 border-4 border-green-500 opposites-pop'
+        : 'bg-red-50 border-4 border-red-400 opposites-shake';
     }
     if (!isCorrect && word === current.correctAnswer) {
-      return 'bg-white border-2 border-green-500 border-dashed';
+      return 'bg-white border-4 border-green-500 border-dashed';
     }
-    return 'bg-white border-2 border-transparent';
+    return 'bg-white border-4 border-transparent opacity-60';
   };
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
+    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-6 relative">
+      {/* Progress */}
+      <div className="absolute top-3 right-4 text-sm md:text-base text-gray-400 font-medium">
+        {currentIdx + 1} / {questions.length}
+      </div>
+
       {/* Question */}
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-4">
+      <div className="mb-4 text-center">
+        <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-3">
           {current.question}
         </h2>
         <button
           onClick={askQuestion}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm md:text-base"
         >
-          <Volume2 size={20} />
+          <Volume2 size={18} />
           Repeat question
         </button>
       </div>
@@ -233,39 +210,43 @@ const OppositesTestingMode = ({ items, difficulty }) => {
       <img
         src={current.sceneImage}
         alt="scene"
-        className="w-64 h-64 md:w-80 md:h-80 object-contain rounded-2xl shadow-lg bg-white mb-8"
+        className="w-56 h-56 md:w-72 md:h-72 object-contain rounded-2xl shadow-lg bg-white mb-6"
+        draggable={false}
       />
 
-      {/* Two answer buttons */}
-      <div className="flex gap-4 md:gap-8 mb-8">
+      {/* Image answer buttons */}
+      <div className="flex gap-4 md:gap-8">
         {buttonOrder.map((word) => (
           <button
             key={word}
             onClick={() => handleSelect(word)}
-            onTouchStart={handleTouchStart}
-            onTouchEnd={createTouchEndHandler(word)}
-            onContextMenu={(e) => e.preventDefault()}
             disabled={selectedAnswer !== null && isCorrect}
-            className={`${getButtonStyle(word)} rounded-2xl shadow-lg px-8 py-6 md:px-12 md:py-8 transition-all duration-200 cursor-pointer select-none`}
+            className={`${getButtonStyle(word)} rounded-2xl shadow-lg p-3 md:p-4 flex flex-col items-center gap-1 transition-all duration-200 cursor-pointer select-none`}
           >
-            <span className="text-2xl md:text-4xl font-bold text-gray-700">{word}</span>
+            <img
+              src={current.images[word]}
+              alt={word}
+              className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-xl pointer-events-none"
+              draggable={false}
+            />
+            <span className="text-xl md:text-3xl font-bold text-gray-700">{word}</span>
           </button>
         ))}
       </div>
 
       {/* Feedback */}
-      {isCorrect === true && <div className="text-4xl md:text-6xl">🎉</div>}
-      {isCorrect === false && (
-        <span className="text-xl text-orange-600 font-medium">
-          Try again!
-        </span>
-      )}
+      <div className="h-12 md:h-14 flex items-center justify-center mt-3">
+        {isCorrect === true && <div className="text-4xl md:text-5xl">🎉</div>}
+        {isCorrect === false && (
+          <span className="text-xl text-orange-600 font-medium">Try again!</span>
+        )}
+      </div>
 
-      <div className="absolute bottom-6 text-gray-400 text-xs md:text-sm text-center">
+      <div className="absolute bottom-3 text-gray-400 text-xs md:text-sm">
         Press R to repeat the question
       </div>
     </div>
   );
 };
 
-export default OppositesTestingMode;
+export default SceneQuiz;

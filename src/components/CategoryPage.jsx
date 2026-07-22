@@ -5,7 +5,6 @@ import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
 import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
-import OppositesTestingMode from './testing/OppositesTestingMode';
 import DifficultySelector from './ui/DifficultySelector';
 
 import alphabets from '../data/alphabets';
@@ -13,7 +12,6 @@ import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { objectCategories, objectItems } from '../data/objects';
-import opposites from '../data/opposites';
 import emotions from '../data/emotions';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 
@@ -22,7 +20,6 @@ const categoryData = {
   numbers: { items: numbers, title: 'Numbers', objectIcons },
   colors: { items: colors, title: 'Colors' },
   shapes: { items: shapes, title: 'Shapes' },
-  opposites: { items: opposites, title: 'Opposites' },
   emotions: { items: emotions, title: 'Emotions' },
 };
 
@@ -176,10 +173,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
         {mode === 'trace' && (
           <TracingMode items={items} category={category} />
         )}
-        {mode === 'test' && category === 'opposites' && (
-          <OppositesTestingMode items={items} difficulty={difficulty} />
-        )}
-        {mode === 'test' && category !== 'opposites' && (
+        {mode === 'test' && (
           <TestingMode
             items={items}
             category={category}

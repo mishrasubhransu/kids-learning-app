@@ -1,0 +1,167 @@
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
+import useSpeech from '../../hooks/useSpeech';
+
+// The two poles of every pair: warm for the first word, cool for its opposite.
+const POLES = [
+  { accent: '#FF7A59', tint: '#FFF4EC' },
+  { accent: '#3B9EFF', tint: '#EEF6FF' },
+];
+
+// One linear sequence: pair 0 word 0, pair 0 word 1, pair 1 word 0, ...
+// The right arrow always means "what comes next".
+const PairLearnView = ({ items }) => {
+  const [step, setStep] = useState(0);
+  const { speak } = useSpeech();
+  const prevStepRef = useRef(null);
+
+  const totalSteps = items.length * 2;
+  const pairIndex = Math.floor(step / 2);
+  const side = step % 2;
+  const currentItem = items[pairIndex];
+  const activeWord = currentItem.pair[side];
+  const pole = POLES[side];
+
+  // Speak whenever the highlight moves (and once on mount)
+  useEffect(() => {
+    if (prevStepRef.current !== step) {
+      speak(items[Math.floor(step / 2)].pair[step % 2]);
+      prevStepRef.current = step;
+    }
+  }, [step, items, speak]);
+
+  const goNext = useCallback(() => {
+    setStep((prev) => (prev + 1) % totalSteps);
+  }, [totalSteps]);
+
+  const goPrev = useCallback(() => {
+    setStep((prev) => (prev - 1 + totalSteps) % totalSteps);
+  }, [totalSteps]);
+
+  const handleCardTap = (tappedSide) => {
+    const tappedStep = pairIndex * 2 + tappedSide;
+    if (tappedStep === step) {
+      speak(activeWord); // same card: just say it again
+    } else {
+      setStep(tappedStep);
+    }
+  };
+
+  // Keyboard: right = next, left = back, space/enter = repeat
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.repeat) return;
+      if (e.key === 'ArrowRight') {
+        goNext();
+      } else if (e.key === 'ArrowLeft') {
+        goPrev();
+      } else if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        speak(activeWord);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [goNext, goPrev, speak, activeWord]);
+
+  const renderCard = (cardSide) => {
+    const word = currentItem.pair[cardSide];
+    const cardPole = POLES[cardSide];
+    const isActive = cardSide === side;
+
+    return (
+      <button
+        onClick={() => handleCardTap(cardSide)}
+        className={`rounded-3xl bg-white p-4 md:p-6 flex flex-col items-center gap-3 transition-all duration-300 focus:outline-none cursor-pointer ${
+          isActive
+            ? 'opposites-spotlight scale-100 shadow-2xl'
+            : 'scale-90 opacity-50 shadow-md grayscale-[30%]'
+        }`}
+        style={{
+          border: '8px solid',
+          borderColor: isActive ? cardPole.accent : 'transparent',
+          '--spotlight-color': cardPole.accent,
+        }}
+        aria-label={isActive ? `${word}, say it again` : `Show ${word}`}
+      >
+        <img
+          src={currentItem.images[word]}
+          alt={word}
+          className="w-[min(34vw,16rem)] h-[min(34vw,16rem)] md:w-[min(30vw,20rem)] md:h-[min(30vw,20rem)] object-contain rounded-2xl pointer-events-none"
+          draggable={false}
+        />
+        <span
+          className="text-3xl md:text-5xl font-black tracking-wide uppercase transition-colors duration-300"
+          style={{ color: isActive ? cardPole.accent : '#9CA3AF' }}
+        >
+          {word}
+        </span>
+      </button>
+    );
+  };
+
+  return (
+    <div
+      className="flex-1 flex flex-col items-center justify-center p-4 relative transition-colors duration-500"
+      style={{ backgroundColor: pole.tint }}
+    >
+      {/* The pair, side by side */}
+      <div className="flex items-center justify-center gap-4 md:gap-10">
+        {renderCard(0)}
+        {renderCard(1)}
+      </div>
+
+      {/* Repeat word */}
+      <div className="absolute top-4 right-4">
+        <button
+          onClick={() => speak(activeWord)}
+          className="p-3 rounded-full bg-white/70 text-gray-600 hover:bg-white transition-colors shadow"
+          aria-label={`Say ${activeWord} again`}
+        >
+          <Volume2 size={24} />
+        </button>
+      </div>
+
+      {/* Navigation arrows */}
+      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 md:px-6 pointer-events-none">
+        <button
+          onClick={goPrev}
+          className="pointer-events-auto p-3 md:p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-white/60 transition-all focus:outline-none"
+          aria-label="Back"
+        >
+          <ChevronLeft size={44} className="text-gray-500" />
+        </button>
+        <button
+          onClick={goNext}
+          className="pointer-events-auto p-3 md:p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-white/60 transition-all focus:outline-none"
+          aria-label="Next"
+        >
+          <ChevronRight size={44} className="text-gray-500" />
+        </button>
+      </div>
+
+      {/* Pair dots */}
+      <div className="absolute bottom-16 flex flex-wrap justify-center gap-2 max-w-[90%]">
+        {items.map((item, idx) => (
+          <button
+            key={item.id}
+            onClick={() => setStep(idx * 2)}
+            className={`rounded-full transition-all duration-300 ${
+              idx === pairIndex
+                ? 'w-3 h-3'
+                : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
+            }`}
+            style={idx === pairIndex ? { backgroundColor: pole.accent } : undefined}
+            aria-label={`Go to ${item.name}`}
+          />
+        ))}
+      </div>
+
+      <div className="absolute bottom-6 text-xs md:text-sm text-gray-400">
+        Press the right arrow to keep going
+      </div>
+    </div>
+  );
+};
+
+export default PairLearnView;

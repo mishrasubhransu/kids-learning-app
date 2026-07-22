@@ -131,13 +131,20 @@ STYLE_PROMPTS = {
         "Friendly and approachable style suitable for toddlers. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
-    "opposites-pairs": (
-        "A child-friendly illustration showing {subject}. "
-        "The left half of the image shows one concept, the right half shows the opposite. "
-        "A clear visual divide between left and right. "
-        "Simple, colorful style with bright cheerful colors and clean backgrounds. "
-        "Both concepts should be immediately obvious and easy for a toddler to understand. "
-        "No text, no labels, no watermarks. Wide 2:1 landscape composition."
+    "opposites": (
+        "A delightful 3D-rendered cartoon illustration of {subject}. "
+        "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
+        "like a still from a modern animated children's film. "
+        "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
+        "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
+    ),
+    "opposites-scenes": (
+        "A delightful 3D-rendered cartoon illustration showing {subject}. "
+        "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
+        "like a still from a modern animated children's film. "
+        "The two contrasting things are equally prominent and instantly easy to tell apart at a glance. "
+        "Simple pastel backdrop with no clutter. "
+        "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
     ),
     "household": (
         "A beautiful, high-quality photograph of {subject}. "
@@ -388,21 +395,51 @@ ITEMS = {
         "mussels": "a small cluster of dark blue-black mussel shells, partially open, on a rocky surface",
         "coral": "a vibrant cluster of colorful coral reef with branching shapes in pink, orange, and purple",
     },
-    "opposites-pairs": {
-        "big-small": "LEFT: a very large elephant. RIGHT: a tiny mouse. Emphasize the size difference",
-        "hot-cold": "LEFT: a steaming hot cup of cocoa with visible steam. RIGHT: a frozen snowman in snow",
-        "up-down": "LEFT: a cat sitting on top of a refrigerator looking down. RIGHT: the same cat sitting on the kitchen floor looking up",
-        "happy-sad": "LEFT: a close-up of a child's face with a big happy smile. RIGHT: the same child's face looking sad with a tear",
-        "light-dark": "LEFT: a cozy room with all lights on, bright and warm. RIGHT: the same room with only a candle lit, dim and shadowy",
-        "open-close": "LEFT: an open wooden door. RIGHT: the same wooden door closed shut",
-        "full-empty": "LEFT: a glass completely full of orange juice. RIGHT: the same glass completely empty",
-        "wet-dry": "LEFT: a golden retriever puppy soaking wet with water droplets. RIGHT: the same puppy dry and fluffy in sunshine",
-        "long-short": "A split image with a clear vertical line dividing left and right. LEFT SIDE ONLY: a long yellow pencil standing vertically, tall and full-length. RIGHT SIDE ONLY: a very short stubby yellow pencil nub, same style but tiny. Both on the same plain white background. Each pencil stays entirely within its own half",
-        "loud-quiet": "LEFT: a child banging a drum loudly with visible sound waves. RIGHT: a baby sleeping peacefully with a finger on lips",
-        "soft-hard": "LEFT: a fluffy soft teddy bear. RIGHT: a solid hard rock",
-        "clean-dirty": "LEFT: a cute white puppy perfectly clean and groomed. RIGHT: the same puppy covered in mud and dirt",
-        "old-new": "LEFT: an old worn-out shoe with patches and holes. RIGHT: a brand new shiny shoe in a box",
-        "day-night": "LEFT: a quaint village street in bright daytime with blue sky. RIGHT: the same village street at night with moon and stars",
+    "opposites": {
+        "big": "a gigantic friendly green dinosaur towering so tall it nearly fills the whole frame",
+        "small": "a teeny-tiny red ladybug sitting on a wide green leaf, lots of open space around it to show how little it is",
+        "hot": "a glowing campfire with dancing orange flames and a marshmallow toasting on a stick beside it",
+        "cold": "an ice-cream cone stacked with frosty scoops, sparkling snowflakes and a light dusting of frost around it",
+        "up": "a red diamond kite soaring high into the sky, ribbons on its tail rippling upward, viewed from below",
+        "down": "a golden autumn leaf drifting gently down from a branch toward the ground, a soft falling motion trail behind it",
+        "happy": "a bouncing golden puppy mid-leap with a huge doggy grin, ears flying and tail wagging",
+        "sad": "a droopy-eared puppy sitting with big watery eyes and one single tear rolling down its cheek",
+        "light": "the inside of a cozy children's bedroom in the evening with the ceiling light and bedside lamp switched on, the whole room bright and warm, toys and bed clearly visible",
+        "dark": "the same cozy children's bedroom at night with the main lights switched off, only a small bedside lamp glowing dimly with a soft warm halo, the rest of the room in deep blue shadow but the bed and toys still gently visible",
+        "open": "a big storybook lying with its covers spread wide open, pages fanned out",
+        "close": "the same big storybook shut tight, cover closed flat with nothing peeking out",
+        "full": "a toy box packed all the way to the top with colorful balls, blocks, and stuffed animals spilling over the rim",
+        "empty": "the same toy box with absolutely nothing inside, just its bare walls and floor showing",
+        "wet": "a child in a yellow raincoat and boots splashing through a rain puddle, raindrops and splashes flying",
+        "dry": "a child in a sun hat standing on warm dry sand under a bright sun, not a drop of water anywhere",
+        "long": "a toy train with a very long line of colorful cars stretching all the way across the picture",
+        "short": "a toy train with only one little car behind the engine, small and compact in the center",
+        "loud": "a roaring lion with its mouth wide open and big bold colorful sound waves bursting out",
+        "quiet": "a little kitten sleeping curled in a ball, soft z's floating gently above it",
+        "soft": "an extra-woolly fluffy white sheep that looks like a walking cloud, squishy and cuddly",
+        "hard": "a sturdy tortoise with a thick solid shell, patting the tough shell surface into focus",
+        "clean": "a shiny red toy car gleaming after a wash, sparkle glints and a few soap bubbles floating around",
+        "dirty": "the same red toy car splattered all over with brown mud, mud dripping off the wheels",
+        "old": "a rusty old bicycle with faded paint, a bent basket, and creaky worn wheels",
+        "new": "a brand-new shiny bicycle with sparkling paint, gleaming spokes, and a red gift bow on the handlebars",
+        "day": "a sunny little farm under a bright blue sky, big cheerful sun, cows grazing on green grass",
+        "night": "the same little farm under a deep starry sky, glowing crescent moon, cows asleep on the grass",
+    },
+    "opposites-scenes": {
+        "big-small-scene": "a great big dog and a tiny kitten sitting side by side on the same rug, the size difference dramatic and clear",
+        "hot-cold-scene": "a table with a steaming bowl of noodle soup on one side and an ice-cream sundae with frost on the other",
+        "up-down-scene": "a tall tree with one squirrel perched at the very top and another squirrel at the bottom on the ground",
+        "happy-sad-scene": "two puppies side by side: one leaping joyfully with a huge grin, the other drooping with a single tear",
+        "light-dark-scene": "one lamp lighting one half of a room brightly while the other half sits in deep blue shadow",
+        "open-close-scene": "two identical lunchboxes side by side: one flipped wide open showing food inside, one snapped firmly shut",
+        "full-empty-scene": "two identical baskets side by side: one overflowing with red apples, one with nothing inside at all",
+        "wet-dry-scene": "two towels on a clothesline: one dripping wet with water droplets falling, one dry and fluttering in the breeze",
+        "long-short-scene": "two toy trains on parallel tracks: one very long with many colorful cars, one short with a single car",
+        "loud-quiet-scene": "a lion roaring with big sound waves on one side while a kitten sleeps peacefully on the other",
+        "soft-hard-scene": "a fluffy woolly sheep standing beside a tortoise with a thick solid shell",
+        "clean-dirty-scene": "two red toy cars side by side: one sparkling clean and shiny, one caked in dripping brown mud",
+        "old-new-scene": "two bicycles side by side: one rusty, faded and bent, one brand-new and shiny with a red gift bow",
+        "day-night-scene": "a rolling hill landscape split by weather magic: bright sun and blue sky over one half, moon and stars over the other",
     },
     "traffic": {
         "traffic-light": "a standard three-light traffic signal on a pole, with the red, amber yellow, and green lights all clearly visible from top to bottom, against a clear blue sky",
@@ -433,7 +470,8 @@ OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "objects")
 # Categories not listed here default to public/objects/<category>/
 OUTPUT_DIRS = {
     "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
-    "opposites-pairs": os.path.join(PROJECT_ROOT, "public", "opposites"),
+    "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
+    "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
 }
 
 WEBP_SIZE = 1024
@@ -519,64 +557,6 @@ def generate_image(category, item_name, subject_desc, force=False, provider="gem
         return False
 
 
-def generate_opposite_pair(pair_name, subject_desc, force=False):
-    """Generate a wide 2:1 image and split into left/right halves."""
-    output_dir = get_output_dir("opposites-pairs")
-    os.makedirs(output_dir, exist_ok=True)
-
-    left_name, right_name = pair_name.split("-")
-    left_path = os.path.join(output_dir, f"{left_name}.webp")
-    right_path = os.path.join(output_dir, f"{right_name}.webp")
-
-    if os.path.exists(left_path) and os.path.exists(right_path) and not force:
-        print(f"  ⏭  Skipping opposites-pairs/{pair_name} (already exists)")
-        return True
-
-    style = STYLE_PROMPTS["opposites-pairs"]
-    prompt = style.format(subject=subject_desc)
-
-    print(f"  🎨 Generating opposites-pairs/{pair_name}...")
-
-    try:
-        response = client.models.generate_content(
-            model=MODEL,
-            contents=[prompt],
-            config=types.GenerateContentConfig(
-                response_modalities=["Text", "Image"],
-                image_config=types.ImageConfig(
-                    aspect_ratio="16:9",
-                ),
-            ),
-        )
-
-        for part in response.candidates[0].content.parts:
-            if part.inline_data is not None:
-                image = Image.open(BytesIO(part.inline_data.data))
-                w, h = image.size
-                mid = w // 2
-
-                # Split into left and right halves, resize each to 512x512
-                left_img = image.crop((0, 0, mid, h)).resize((512, 512), Image.LANCZOS)
-                right_img = image.crop((mid, 0, w, h)).resize((512, 512), Image.LANCZOS)
-
-                left_img.save(left_path, "WEBP", quality=WEBP_QUALITY)
-                right_img.save(right_path, "WEBP", quality=WEBP_QUALITY)
-
-                left_kb = os.path.getsize(left_path) // 1024
-                right_kb = os.path.getsize(right_path) // 1024
-                print(f"  ✅ Split: {left_name}.webp ({left_kb}KB) + {right_name}.webp ({right_kb}KB)")
-                return True
-            elif part.text is not None:
-                print(f"  ℹ  Model note: {part.text[:100]}")
-
-        print(f"  ❌ No image returned for opposites-pairs/{pair_name}")
-        return False
-
-    except Exception as e:
-        print(f"  ❌ Error generating opposites-pairs/{pair_name}: {e}")
-        return False
-
-
 def main():
     parser = argparse.ArgumentParser(description="Generate images for Kids Learning App")
     parser.add_argument("--category", type=str, help="Generate only this category (e.g. animals, bodyparts, emotions, opposites, opposites-scenes)")
@@ -608,15 +588,12 @@ def main():
             target_items = dict(list(target_items.items())[:args.limit])
 
         for item_name, subject_desc in target_items.items():
-            if category == "opposites-pairs":
-                ok = generate_opposite_pair(item_name, subject_desc, force=args.force)
-            else:
-                output_path = os.path.join(get_output_dir(category), f"{item_name}.webp")
-                if os.path.exists(output_path) and not args.force:
-                    skipped += 1
-                    print(f"  ⏭  Skipping {category}/{item_name} (exists)")
-                    continue
-                ok = generate_image(category, item_name, subject_desc, force=args.force, provider=args.provider)
+            output_path = os.path.join(get_output_dir(category), f"{item_name}.webp")
+            if os.path.exists(output_path) and not args.force:
+                skipped += 1
+                print(f"  ⏭  Skipping {category}/{item_name} (exists)")
+                continue
+            ok = generate_image(category, item_name, subject_desc, force=args.force, provider=args.provider)
 
             if ok:
                 success += 1
