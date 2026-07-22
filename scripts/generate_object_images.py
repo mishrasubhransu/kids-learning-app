@@ -146,6 +146,20 @@ STYLE_PROMPTS = {
         "Simple pastel backdrop with no clutter. "
         "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
     ),
+    "letter-sounds": (
+        "A delightful 3D-rendered cartoon illustration of {subject}. "
+        "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
+        "like a still from a modern animated children's film. "
+        "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
+        "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
+    ),
+    "phonics-words": (
+        "A delightful 3D-rendered cartoon illustration of {subject}. "
+        "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
+        "like a still from a modern animated children's film. "
+        "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
+        "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
+    ),
     "household": (
         "A beautiful, high-quality photograph of {subject}. "
         "Photorealistic with vivid natural colors, soft studio lighting, "
@@ -461,6 +475,105 @@ ITEMS = {
         "one-way": "a black and white rectangular ONE WAY traffic sign with a large arrow, on a post against a clear sky",
         "school-crossing": "a fluorescent yellow-green pentagon school-crossing sign showing two children walking, on a post against a clear sky",
     },
+    # "A is for Apple" letter-sound words (src/data/letterSounds.js)
+    "letter-sounds": {
+        "apple": "a shiny red apple with a green leaf",
+        "ant": "a cute friendly black ant with big eyes",
+        "airplane": "a cheerful little passenger airplane flying among puffy clouds",
+        "ball": "a colorful striped bouncy ball",
+        "banana": "a bright yellow banana, slightly peeled",
+        "baby": "a happy giggling baby sitting up wearing a onesie",
+        "cat": "a cute orange tabby kitten sitting and smiling",
+        "car": "a happy little red toy car",
+        "cow": "a friendly white cow with black spots standing on grass",
+        "dog": "a happy golden puppy sitting with tongue out",
+        "duck": "a cute yellow duckling standing by a puddle",
+        "door": "a friendly red front door with a round doorknob",
+        "elephant": "a cute baby elephant with big ears waving its trunk",
+        "egg": "a white egg in a straw nest, one cracked open showing a yolk beside it",
+        "ear": "a friendly child's face in profile with a clearly visible ear",
+        "fish": "a cute smiling orange fish blowing bubbles underwater",
+        "frog": "a happy green frog sitting on a lily pad",
+        "flower": "a bright pink flower with a smiling yellow center",
+        "goat": "a playful white baby goat standing on grass",
+        "grapes": "a bunch of shiny purple grapes with a leaf",
+        "gift": "a wrapped gift box with a big red bow",
+        "hat": "a cheerful yellow sun hat with a ribbon",
+        "horse": "a friendly brown horse standing in a meadow",
+        "house": "a cozy little house with a red roof and a chimney",
+        "ice-cream": "a happy ice cream cone with a pink scoop and a cherry on top",
+        "igloo": "a snug white igloo made of snow blocks on snowy ground",
+        "insect": "a cute friendly ladybug on a green leaf",
+        "juice": "a glass of orange juice with a striped straw and an orange slice",
+        "jam": "a jar of red strawberry jam with a spoon and strawberries beside it",
+        "jellyfish": "a cute smiling pink jellyfish floating underwater",
+        "kite": "a colorful diamond kite with a long bowed tail flying in a blue sky",
+        "key": "a shiny golden key with a heart-shaped top",
+        "kangaroo": "a friendly kangaroo mom with a joey peeking from her pouch",
+        "lion": "a cute lion cub with a fluffy mane sitting proudly",
+        "leaf": "a single bright green leaf with visible veins",
+        "lemon": "a bright yellow lemon with one slice beside it",
+        "monkey": "a playful brown monkey hanging from a branch by one arm",
+        "moon": "a smiling crescent moon with little stars in a night sky",
+        "milk": "a glass of white milk next to a small milk jug",
+        "nose": "a friendly child's smiling face with a cute button nose front and center",
+        "nest": "a cozy bird nest with three little blue eggs",
+        "nut": "a brown acorn with a cap, with a walnut and a peanut beside it",
+        "orange": "a bright orange fruit with one peeled segment beside it",
+        "owl": "a cute wide-eyed brown owl perched on a branch",
+        "octopus": "a cute smiling purple octopus with curly arms underwater",
+        "pig": "a happy pink piglet with a curly tail standing in grass",
+        "penguin": "a cute baby penguin waddling on ice",
+        "pizza": "a cheerful pizza with melted cheese and one slice pulled out",
+        "queen": "a kind smiling queen with a golden crown and a purple royal cape",
+        "quilt": "a colorful patchwork quilt folded on a little bed",
+        "quail": "a cute round quail bird with a curled head plume",
+        "rabbit": "a cute white bunny rabbit with long ears holding a carrot",
+        "rainbow": "a bright rainbow arching over puffy white clouds",
+        "robot": "a friendly little blue toy robot waving hello",
+        "sun": "a big smiling yellow sun with soft rays",
+        "star": "a golden five-pointed star with a happy face in a night sky",
+        "snake": "a cute friendly green snake coiled with a smiling face",
+        "tiger": "a cute tiger cub with orange and black stripes sitting",
+        "train": "a happy little blue steam train with a red engine car on tracks",
+        "tree": "a big friendly green tree with a thick brown trunk on a grassy hill",
+        "umbrella": "a bright red open umbrella with rain drops falling around it",
+        "unicorn": "a cute white unicorn with a rainbow mane and a golden horn",
+        "up": "a happy child pointing up at a red balloon floating up into the sky",
+        "van": "a cheerful little blue van driving on a road",
+        "violin": "a shiny brown violin with a bow",
+        "vegetables": "a basket of colorful vegetables: carrot, tomato, broccoli, and corn",
+        "watermelon": "a big green watermelon with one juicy red slice cut out",
+        "whale": "a cute smiling blue whale spouting water",
+        "window": "a cozy open window with curtains and a flower pot on the sill",
+        "xylophone": "a colorful toy xylophone with rainbow bars and two mallets",
+        "x-ray": "a friendly cartoon x-ray picture showing the bones of a waving hand, on a light panel",
+        "fox": "a cute orange fox with a fluffy tail sitting and smiling",
+        "yo-yo": "a bright red yo-yo with its string making a loop",
+        "yogurt": "a cup of creamy yogurt with a spoon and strawberries beside it",
+        "yarn": "a ball of soft pink yarn with knitting needles",
+        "zebra": "a cute baby zebra with black and white stripes standing",
+        "zoo": "a cheerful zoo entrance gate with a giraffe and elephant peeking over the fence",
+        "zipper": "a big colorful zipper half-open on a bright blue jacket",
+    },
+    # 3-letter word-family words (src/data/phonics.js)
+    "phonics-words": {
+        "bat": "a cute friendly purple bat with round ears flying at dusk",
+        "cat": "a cute orange tabby cat sitting and smiling",
+        "hat": "a cheerful red and yellow party hat",
+        "mat": "a colorful welcome mat lying flat on the floor",
+        "rat": "a cute grey rat with round ears holding a piece of cheese",
+        "can": "a shiny tin can with a bright red label, no text on the label",
+        "fan": "a cheerful electric table fan with blue blades",
+        "man": "a friendly smiling man waving hello",
+        "pan": "a shiny frying pan with a black handle",
+        "van": "a cheerful little blue van driving on a road",
+        "cap": "a bright blue baseball cap",
+        "lap": "a parent sitting cross-legged with a happy toddler sitting on their lap",
+        "map": "a colorful treasure map with a dotted path and a big X",
+        "nap": "a cute toddler napping peacefully under a cozy blanket",
+        "tap": "a shiny silver water tap with water flowing into a sink",
+    },
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -472,6 +585,8 @@ OUTPUT_DIRS = {
     "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
     "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
     "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
+    "letter-sounds": os.path.join(PROJECT_ROOT, "public", "phonics", "letters"),
+    "phonics-words": os.path.join(PROJECT_ROOT, "public", "phonics", "words"),
 }
 
 WEBP_SIZE = 1024

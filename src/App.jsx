@@ -7,6 +7,7 @@ import ObjectsHome from './components/ObjectsHome';
 import ObjectsCategoryPage from './components/ObjectsCategoryPage';
 import PhonicsHome from './components/PhonicsHome';
 import PhonicsCategoryPage from './components/PhonicsCategoryPage';
+import LetterSoundsView from './components/LetterSoundsView';
 import OppositesPage from './components/opposites/OppositesPage';
 import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
@@ -33,6 +34,7 @@ const App = () => {
         <Route path="/objects" element={<ProtectedRoute><ObjectsHome /></ProtectedRoute>} />
         <Route path="/objects/:subcategory/*" element={<ProtectedRoute><ObjectsCategoryPage /></ProtectedRoute>} />
         <Route path="/phonics" element={<ProtectedRoute><PhonicsHome /></ProtectedRoute>} />
+        <Route path="/phonics/letters" element={<ProtectedRoute><LetterSoundsView /></ProtectedRoute>} />
         <Route path="/phonics/:family/*" element={<ProtectedRoute><PhonicsCategoryPage /></ProtectedRoute>} />
         <Route path="/opposites/*" element={<ProtectedRoute><OppositesPage /></ProtectedRoute>} />
         <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />

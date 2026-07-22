@@ -1,0 +1,3 @@
+-- Placeholder for the migration already applied to the remote project
+-- (version 20260324, created during initial project setup outside this
+-- repo). Exists only to align local migration history; intentionally empty.

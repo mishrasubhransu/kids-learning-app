@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
+import HomeButton from './ui/HomeButton';
+import useUserSetting from '../hooks/useUserSetting';
 
 const groups = [
   { id: '2-letter', title: '2-Letter Sounds', subtitle: 'Consonant + vowel' },
@@ -8,17 +9,19 @@ const groups = [
 ];
 
 const PhonicsHome = () => {
+  const [letterCase, setLetterCase] = useUserSetting('letterCase', 'capital');
+
+  const toggleLetterCase = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLetterCase(letterCase === 'capital' ? 'small' : 'capital');
+  };
+
   return (
     <div className="h-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex flex-col overflow-y-auto">
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
-          <Link
-            to="/home"
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Go home"
-          >
-            <ArrowLeft size={24} className="text-gray-600" />
-          </Link>
+          <HomeButton />
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             Phonics
           </h1>
@@ -26,6 +29,36 @@ const PhonicsHome = () => {
       </div>
 
       <div className="flex-1 flex flex-col items-center p-6 md:p-10 gap-8 md:gap-10">
+        <section className="w-full max-w-5xl">
+          <div className="mb-4 px-1">
+            <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+              Letter Sounds
+            </h2>
+            <p className="text-sm md:text-base text-gray-500">
+              A is for Apple
+            </p>
+          </div>
+          <Link
+            to="/phonics/letters"
+            className="bg-rose-500 hover:bg-rose-600 rounded-2xl p-5 md:p-6 text-white shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl flex items-center justify-center gap-4"
+          >
+            <span className="text-4xl md:text-5xl">🍎</span>
+            <span className="text-3xl md:text-5xl font-bold tracking-wide">
+              {letterCase === 'capital' ? (
+                <>A <span className="opacity-70">is for</span> APPLE</>
+              ) : (
+                <>Aa <span className="opacity-70">is for</span> Apple</>
+              )}
+            </span>
+            <button
+              onClick={toggleLetterCase}
+              className="text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors"
+            >
+              {letterCase === 'capital' ? 'ABC' : 'Aa'}
+            </button>
+          </Link>
+        </section>
+
         {groups.map((group) => {
           const families = phonicsFamilies.filter((f) => f.group === group.id);
           return (
