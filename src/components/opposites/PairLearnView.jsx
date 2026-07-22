@@ -87,7 +87,7 @@ const PairLearnView = ({ items }) => {
         <img
           src={currentItem.images[word]}
           alt={word}
-          className="w-[min(34vw,16rem)] h-[min(34vw,16rem)] md:w-[min(30vw,20rem)] md:h-[min(30vw,20rem)] object-contain rounded-2xl pointer-events-none"
+          className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
           draggable={false}
         />
         <span

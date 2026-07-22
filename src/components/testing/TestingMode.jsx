@@ -297,7 +297,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           >
             {showResult ? (
               <div
-                className="w-16 h-16 md:w-24 md:h-24 rounded-full"
+                className="w-[var(--img-tile)] h-[var(--img-tile)] rounded-full"
                 style={{
                   backgroundColor: item.hex,
                   border: item.name === 'White' ? '2px solid #e5e7eb' : 'none',
@@ -316,7 +316,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
             disabled={selectedAnswer !== null && isCorrect}
             className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
           >
-            <div className="w-20 h-20 md:w-28 md:h-28">{item.svg(shapeColor)}</div>
+            <div className="w-[var(--img-tile)] h-[var(--img-tile)]">{item.svg(shapeColor)}</div>
           </button>
         );
 

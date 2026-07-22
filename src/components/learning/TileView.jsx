@@ -94,7 +94,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
             onClick={() => handleClick(item)}
             className={`${baseClasses} bg-white p-4 md:p-6 flex flex-col items-center justify-center gap-2`}
           >
-            <div className="w-16 h-16 md:w-24 md:h-24">{item.svg(shapeColor)}</div>
+            <div className="w-[var(--img-tile)] h-[var(--img-tile)]">{item.svg(shapeColor)}</div>
             <span className="text-sm md:text-base font-semibold text-gray-600">
               {item.name}
             </span>
@@ -126,7 +126,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-lg"
+                className="w-[var(--img-tile)] h-[var(--img-tile)] object-contain rounded-lg"
               />
               <span className="text-sm md:text-base font-semibold text-gray-600">
                 {item.name}

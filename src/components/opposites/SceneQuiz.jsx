@@ -210,7 +210,7 @@ const SceneQuiz = ({ items, difficulty }) => {
       <img
         src={current.sceneImage}
         alt="scene"
-        className="w-56 h-56 md:w-72 md:h-72 object-contain rounded-2xl shadow-lg bg-white mb-6"
+        className="w-[var(--img-scene)] h-[var(--img-scene)] object-contain rounded-2xl shadow-lg bg-white mb-6"
         draggable={false}
       />
 
@@ -226,7 +226,7 @@ const SceneQuiz = ({ items, difficulty }) => {
             <img
               src={current.images[word]}
               alt={word}
-              className="w-24 h-24 md:w-32 md:h-32 object-contain rounded-xl pointer-events-none"
+              className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
             <span className="text-xl md:text-3xl font-bold text-gray-700">{word}</span>

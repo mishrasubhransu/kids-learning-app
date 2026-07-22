@@ -232,7 +232,7 @@ const MatchGame = ({ items, difficulty }) => {
           <img
             src={current.promptImage}
             alt={current.promptWord}
-            className="w-28 h-28 md:w-40 md:h-40 object-contain rounded-xl"
+            className="w-[var(--img-prompt)] h-[var(--img-prompt)] object-contain rounded-xl"
             draggable={false}
           />
           <span className="text-2xl md:text-3xl font-black uppercase text-orange-500">
@@ -260,7 +260,7 @@ const MatchGame = ({ items, difficulty }) => {
             <img
               src={choice.image}
               alt={choice.word}
-              className="w-24 h-24 md:w-36 md:h-36 object-contain rounded-xl pointer-events-none"
+              className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
             <span className="text-xl md:text-2xl font-bold text-gray-700">

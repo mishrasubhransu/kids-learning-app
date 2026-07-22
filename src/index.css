@@ -25,6 +25,72 @@ html, body, #root {
 }
 
 /*
+ * Central image size tokens — resize all app imagery from here.
+ * Components reference these via w-[var(--img-*)] classes, so each
+ * breakpoint step below bumps every view at once. vh caps keep tall
+ * images from overflowing short laptop screens.
+ *
+ *  --img-hero    main learn/scroll image (objects, colors, shapes)
+ *  --img-card    opposites learn pair cards
+ *  --img-scene   quiz scene (question) image
+ *  --img-prompt  match game prompt image
+ *  --img-choice  answer/choice images in games
+ *  --img-tile    tile grid images
+ */
+:root {
+  --img-hero: 16rem;
+  --img-card: min(16rem, 34vw);
+  --img-scene: 14rem;
+  --img-prompt: 7rem;
+  --img-choice: 6.5rem;
+  --img-tile: 6rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --img-hero: 30rem;
+    --img-card: min(30rem, 30vw);
+    --img-scene: min(27rem, 40vh);
+    --img-prompt: 15rem;
+    --img-choice: 13.5rem;
+    --img-tile: 11rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --img-hero: min(36rem, 52vh);
+    --img-card: min(33rem, 30vw, 50vh);
+    --img-scene: min(30rem, 40vh);
+    --img-prompt: min(16.5rem, 24vh);
+    --img-choice: min(15rem, 22vh);
+    --img-tile: 12.5rem;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --img-hero: min(42rem, 56vh);
+    --img-card: min(37.5rem, 30vw, 52vh);
+    --img-scene: min(33rem, 42vh);
+    --img-prompt: min(18rem, 26vh);
+    --img-choice: min(16.5rem, 24vh);
+    --img-tile: 14rem;
+  }
+}
+
+@media (min-width: 1700px) {
+  :root {
+    --img-hero: min(48rem, 60vh);
+    --img-card: min(42rem, 30vw, 56vh);
+    --img-scene: min(36rem, 44vh);
+    --img-prompt: min(19.5rem, 28vh);
+    --img-choice: min(18rem, 26vh);
+    --img-tile: 16rem;
+  }
+}
+
+/*
  * Opposites learn view: a pulsing glow that pulls the eye
  * to whichever card of the pair is currently highlighted.
  */

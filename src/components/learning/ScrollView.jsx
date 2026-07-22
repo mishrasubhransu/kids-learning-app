@@ -220,7 +220,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
         return (
           <div className="flex flex-col items-center gap-6">
             <div
-              className="w-48 h-48 md:w-72 md:h-72 rounded-full shadow-2xl border-4 border-white transition-transform hover:scale-105"
+              className="w-[var(--img-hero)] h-[var(--img-hero)] rounded-full shadow-2xl border-4 border-white transition-transform hover:scale-105"
               style={{
                 backgroundColor: currentItem.hex,
                 boxShadow: currentItem.name === 'White' 
@@ -237,7 +237,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       case 'shapes':
         return (
           <div className="flex flex-col items-center gap-6">
-            <div className="w-48 h-48 md:w-72 md:h-72">
+            <div className="w-[var(--img-hero)] h-[var(--img-hero)]">
               {currentItem.svg(shapeColor)}
             </div>
             <span className="text-4xl md:text-6xl font-bold text-gray-600">
@@ -269,7 +269,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
               <img
                 src={currentItem.image}
                 alt={currentItem.name}
-                className="w-64 h-64 md:w-80 md:h-80 lg:w-96 lg:h-96 object-contain rounded-2xl shadow-lg bg-white"
+                className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
               />
               <span className="text-4xl md:text-6xl font-bold text-gray-600">
                 {currentItem.name}
