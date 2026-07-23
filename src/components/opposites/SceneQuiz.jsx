@@ -107,8 +107,10 @@ const SceneQuiz = ({ items, difficulty }) => {
       });
     } else {
       setIsCorrect(false);
+      // Name what they picked but don't reveal the answer — the dashed
+      // hint plus immediate retry lets them find it themselves.
       playEncouragement().then(() => {
-        speak(`That was ${word}. The answer is ${current.correctAnswer}.`);
+        speak(`That was ${word}.`);
       });
       wrongResetTimerRef.current = setTimeout(() => {
         setSelectedAnswer(null);
