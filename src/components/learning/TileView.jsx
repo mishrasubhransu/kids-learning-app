@@ -2,7 +2,7 @@ import { useState } from 'react';
 import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
 
-const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
+const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
   const [activeId, setActiveId] = useState(null);
   // Recorded parent voice for 2-letter syllables, browser TTS everywhere else
   const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
@@ -158,23 +158,6 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObje
 
   return (
     <div className="flex-1 flex flex-col p-4 md:p-8 overflow-y-auto">
-      {/* Object selector for numbers */}
-      {category === 'numbers' && objectIcons && (
-        <div className="flex justify-center mb-6">
-          <select
-            value={objectType}
-            onChange={(e) => onObjectTypeChange(e.target.value)}
-            className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-200 cursor-pointer outline-none shadow-sm"
-          >
-            {Object.entries(objectIcons).map(([key, icon]) => (
-              <option key={key} value={key}>
-                {key.charAt(0).toUpperCase() + key.slice(1)} {icon}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
-
       {/* Tiles grid */}
       <div
         className={`grid ${getGridCols()} gap-3 md:gap-4 max-w-5xl mx-auto w-full`}

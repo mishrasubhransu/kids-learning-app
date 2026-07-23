@@ -42,7 +42,11 @@ phonicsFamilies.forEach((family) => {
 const CategoryPage = ({ category, backTo = '/home' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
-  const [objectType, setObjectType] = useState('eggs');
+  // Chosen via the pill on the home Numbers card, persisted in localStorage
+  const savedObjectType = localStorage.getItem('objectType');
+  const objectType = objectIcons[savedObjectType]
+    ? savedObjectType
+    : 'strawberries';
 
   // Generate a random color for shapes (only once when entering the shapes category)
   const shapeColor = useMemo(() => {
@@ -164,7 +168,6 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
-            onObjectTypeChange={setObjectType}
             onAutoplayComplete={() => setMode('test')}
           />
         )}
@@ -175,7 +178,6 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
-            onObjectTypeChange={setObjectType}
           />
         )}
         {mode === 'trace' && (
@@ -189,7 +191,6 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
-            onObjectTypeChange={setObjectType}
           />
         )}
       </div>

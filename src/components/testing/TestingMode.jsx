@@ -3,7 +3,7 @@ import { ChevronRight, Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 
-const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
+const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType }) => {
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -435,20 +435,6 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
             <Volume2 size={20} />
             Repeat question
           </button>
-          {category === 'numbers' && objectIcons && (
-            <select
-              value={objectType}
-              onChange={(e) => onObjectTypeChange(e.target.value)}
-              onClick={(e) => e.stopPropagation()}
-              className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
-            >
-              {Object.entries(objectIcons).map(([key, icon]) => (
-                <option key={key} value={key}>
-                  {key.charAt(0).toUpperCase() + key.slice(1)} {icon}
-                </option>
-              ))}
-            </select>
-          )}
         </div>
       </div>
 

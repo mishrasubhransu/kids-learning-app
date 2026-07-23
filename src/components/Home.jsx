@@ -4,6 +4,7 @@ import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRigh
 import VoiceSelector from './ui/VoiceSelector';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
+import { objectIcons } from '../data/numbers';
 import { useAuth } from '../context/AuthContext';
 
 // Light backgrounds (yellow/amber/green/cyan/orange) need dark text to stay
@@ -110,6 +111,19 @@ const Home = () => {
     localStorage.setItem('numberMax', next);
   };
 
+  const objectKeys = Object.keys(objectIcons);
+  const [objectType, setObjectType] = useState(() => {
+    const saved = localStorage.getItem('objectType');
+    return objectIcons[saved] ? saved : 'strawberries';
+  });
+
+  const cycleObjectType = () => {
+    const next =
+      objectKeys[(objectKeys.indexOf(objectType) + 1) % objectKeys.length];
+    setObjectType(next);
+    localStorage.setItem('objectType', next);
+  };
+
   return (
     // Outer div scrolls, inner div grows: with 9 cards the grid is taller
     // than short/landscape viewports, and justify-center inside a clipped
@@ -132,11 +146,12 @@ const Home = () => {
           // Pills are siblings positioned over the card, not children of the
           // Link — nested interactive elements are invalid HTML and a tap
           // aimed at the card could silently flip a setting.
-          const pillClass = `${
+          const pillBase = `${
             darkText
               ? 'bg-black/10 hover:bg-black/20 text-gray-900'
               : 'bg-white/20 hover:bg-white/30 text-white'
-          } text-sm rounded-full px-4 py-2 transition-colors whitespace-nowrap absolute bottom-3 left-1/2 -translate-x-1/2`;
+          } text-sm rounded-full px-4 py-2 transition-colors whitespace-nowrap`;
+          const pillPos = 'absolute bottom-3 left-1/2 -translate-x-1/2';
           return (
             // The wrapper scales on hover so the card and its overlaid pill
             // move as one unit, matching the old nested layout.
@@ -166,11 +181,24 @@ const Home = () => {
                 ) : null}
               </Link>
               {category.id === 'numbers' ? (
-                <button onClick={toggleNumberMax} className={pillClass}>
-                  1–{numberMax}
-                </button>
+                <div className={`${pillPos} flex items-center gap-2`}>
+                  <button onClick={toggleNumberMax} className={pillBase}>
+                    1–{numberMax}
+                  </button>
+                  <button
+                    onClick={cycleObjectType}
+                    aria-label={`Counting object: ${objectType}. Tap for the next one.`}
+                    title="Change counting object"
+                    className={`${pillBase} px-3`}
+                  >
+                    {objectIcons[objectType]}
+                  </button>
+                </div>
               ) : stylesForCategory(category.id) ? (
-                <StyleToggle category={category.id} className={pillClass} />
+                <StyleToggle
+                  category={category.id}
+                  className={`${pillBase} ${pillPos}`}
+                />
               ) : null}
             </div>
           );
