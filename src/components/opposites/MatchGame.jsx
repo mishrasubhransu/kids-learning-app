@@ -65,6 +65,7 @@ const MatchGame = ({ items, difficulty }) => {
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const advanceTimerRef = useRef(null);
+  const wrongResetTimerRef = useRef(null);
 
   const current = rounds[currentIdx];
 
@@ -83,7 +84,10 @@ const MatchGame = ({ items, difficulty }) => {
   }, [resetGame]);
 
   useEffect(() => {
-    return () => clearTimeout(advanceTimerRef.current);
+    return () => {
+      clearTimeout(advanceTimerRef.current);
+      clearTimeout(wrongResetTimerRef.current);
+    };
   }, []);
 
   const askRound = useCallback((round) => {
@@ -109,6 +113,7 @@ const MatchGame = ({ items, difficulty }) => {
 
   const nextRound = useCallback(() => {
     clearTimeout(advanceTimerRef.current);
+    clearTimeout(wrongResetTimerRef.current);
     if (currentIdx >= rounds.length - 1) {
       setGameComplete(true);
       return;
@@ -122,6 +127,9 @@ const MatchGame = ({ items, difficulty }) => {
 
   const handleSelect = (word) => {
     if (selected !== null && isCorrect) return;
+    // A retry during wrong-answer feedback must kill the pending reset,
+    // or the stale timer wipes the new selection mid-celebration.
+    clearTimeout(wrongResetTimerRef.current);
     setSelected(word);
 
     if (word === current.answerWord) {
@@ -136,7 +144,7 @@ const MatchGame = ({ items, difficulty }) => {
       playEncouragement().then(() => {
         speak(`${word} is not the opposite of ${current.promptWord}. Try again!`);
       });
-      setTimeout(() => {
+      wrongResetTimerRef.current = setTimeout(() => {
         setSelected(null);
         setIsCorrect(null);
       }, 2000);
