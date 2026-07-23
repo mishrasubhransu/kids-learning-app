@@ -5,12 +5,12 @@ import useSpeech from '../hooks/useSpeech';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 
+// No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const colors = [
   '#e74c3c', // Red
   '#8e44ad', // Purple
   '#3498db', // Blue
   '#1abc9c', // Teal
-  '#f1c40f', // Yellow
   '#e67e22', // Orange
   '#2ecc71', // Green
   '#ff0066', // Pink

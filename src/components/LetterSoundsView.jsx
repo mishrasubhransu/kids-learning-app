@@ -11,9 +11,11 @@ import {
 import preloadImages from '../utils/preloadImages';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 
+// No yellow here: these back white text, and white on #f1c40f is ~1.6:1
+// (it would also swallow the yellow letter-highlight in HighlightedWord)
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
-  '#f1c40f', '#e67e22', '#2ecc71', '#ff0066', '#34495e',
+  '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
 
 const randomWordIdx = (letter) =>
