@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { syncRecordings } from './lib/recordings';
 import Home from './components/Home';
@@ -51,6 +51,8 @@ const App = () => {
         <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
         <Route path="/admin/record" element={<ProtectedRoute><RecordingStudio /></ProtectedRoute>} />
+        {/* Unknown URLs land somewhere useful instead of a blank page */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <FeedbackButton />
     </>
