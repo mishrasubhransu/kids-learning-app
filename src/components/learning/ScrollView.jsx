@@ -222,20 +222,6 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
                 </div>
               ))}
             </div>
-            {objectIcons && (
-              <select
-                value={objectType}
-                onChange={(e) => onObjectTypeChange(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-gray-100 border-none rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
-              >
-                {Object.entries(objectIcons).map(([key, icon]) => (
-                  <option key={key} value={key}>
-                    {key.charAt(0).toUpperCase() + key.slice(1)} {icon}
-                  </option>
-                ))}
-              </select>
-            )}
           </div>
         );
 
@@ -332,6 +318,23 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       >
         {renderItem()}
       </button>
+
+      {/* Rendered outside the speak button — a select inside a button is
+          invalid HTML and doesn't open reliably in every browser. */}
+      {category === 'numbers' && objectIcons && (
+        <select
+          value={objectType}
+          onChange={(e) => onObjectTypeChange(e.target.value)}
+          aria-label="Counting object"
+          className="mt-4 bg-gray-100 border-none rounded-md px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-gray-200 cursor-pointer outline-none"
+        >
+          {Object.entries(objectIcons).map(([key, icon]) => (
+            <option key={key} value={key}>
+              {key.charAt(0).toUpperCase() + key.slice(1)} {icon}
+            </option>
+          ))}
+        </select>
+      )}
 
       {/* Top-right controls */}
       <div className="absolute top-4 right-4 flex items-center gap-2">
