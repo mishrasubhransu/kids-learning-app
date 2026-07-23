@@ -217,12 +217,16 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         nextQuestion();
       } else if (e.key === 'r' || e.key === 'R') {
         askQuestion();
+      } else if (hasStarted && !testComplete && /^[1-9]$/.test(e.key)) {
+        // Options read left-to-right, top-to-bottom, so key N = Nth option
+        const item = options[Number(e.key) - 1];
+        if (item) handleSelectRef.current(item);
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasStarted, isCorrect, nextQuestion, askQuestion]);
+  }, [hasStarted, isCorrect, nextQuestion, askQuestion, options, testComplete]);
 
   const renderOption = (item) => {
     const isSelected = selectedAnswer === item.id;
@@ -467,7 +471,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
 
       {/* Instructions */}
       <div className="absolute bottom-6 text-gray-400 text-xs md:text-sm text-center">
-        Press R to repeat the question
+        Press 1–{Math.min(options.length, 9)} to answer | R to repeat the question
       </div>
     </div>
   );
