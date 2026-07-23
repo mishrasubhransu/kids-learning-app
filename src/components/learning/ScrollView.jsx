@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useRecordedAudio from '../../hooks/useRecordedAudio';
+import { recordingCategoryFor } from '../../lib/recordings';
 
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
@@ -30,7 +31,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
   // Word-first reveal: phonics words with images show the word alone until
   // the right arrow reveals the picture, so sound maps to the word first.
   const [revealed, setRevealed] = useState(false);
-  const { speak } = useSpeech();
+  // Recorded parent voice for 2-letter syllables, browser TTS everywhere else
+  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
   const isCoolingDownRef = useRef(false);
@@ -43,9 +45,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
   const speakCurrent = useCallback(() => {
     if (currentItem) {
-      speak(currentItem.name);
+      speakItem(currentItem.name);
     }
-  }, [currentItem, speak]);
+  }, [currentItem, speakItem]);
 
   const stopAutoplay = useCallback(() => {
     setIsAutoplay(false);
@@ -85,7 +87,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
     let fallbackTimer;
     let cancelled = false;
 
-    const utterance = speak(currentItem.name);
+    const handle = speakItem(currentItem.name);
     if (category === 'alphabets') {
       setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
     }
@@ -102,14 +104,18 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       }
     };
 
-    if (utterance) {
-      utterance.onend = () => {
-        if (cancelled) return;
-        advanceTimer = setTimeout(advance, 1500);
-      };
+    const onSpeechEnd = () => {
+      if (cancelled) return;
+      advanceTimer = setTimeout(advance, 1500);
+    };
+
+    if (handle.kind === 'audio') {
+      handle.audio.addEventListener('ended', onSpeechEnd);
+    } else if (handle.utterance) {
+      handle.utterance.onend = onSpeechEnd;
     }
 
-    // Fallback in case onend doesn't fire
+    // Fallback in case the ended/onend event doesn't fire
     fallbackTimer = setTimeout(advance, 5000);
 
     return () => {
@@ -117,7 +123,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       clearTimeout(advanceTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [isAutoplay, currentIndex, speak, currentItem, category, displayItems.length, onAutoplayComplete]);
+  }, [isAutoplay, currentIndex, speakItem, currentItem, category, displayItems.length, onAutoplayComplete]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;

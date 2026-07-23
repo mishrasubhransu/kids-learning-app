@@ -1,15 +1,17 @@
 import { useState } from 'react';
-import useSpeech from '../../hooks/useSpeech';
+import useRecordedAudio from '../../hooks/useRecordedAudio';
+import { recordingCategoryFor } from '../../lib/recordings';
 
 const TileView = ({ items, category, objectIcons, shapeColor, objectType, onObjectTypeChange }) => {
   const [activeId, setActiveId] = useState(null);
-  const { speak } = useSpeech();
+  // Recorded parent voice for 2-letter syllables, browser TTS everywhere else
+  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
 
   const handleClick = (item) => {
     setActiveId(item.id);
     // Small delay to ensure click event completes before speech
     setTimeout(() => {
-      speak(item.name);
+      speakItem(item.name);
     }, 50);
     // Reset animation after 400ms
     setTimeout(() => setActiveId(null), 400);

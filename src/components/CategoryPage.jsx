@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, BookOpen, Gamepad2, Pencil } from 'lucide-react';
+import { recordingCategoryFor, syncRecordings, preloadRecordings } from '../lib/recordings';
 import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
 import TracingMode from './learning/TracingMode';
@@ -45,6 +46,17 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
   // Generate a random color for shapes (only once when entering the shapes category)
   const shapeColor = useMemo(() => {
     return category === 'shapes' ? getRandomShapeColor() : null;
+  }, [category]);
+
+  // Warm the audio cache when a category with parent recordings opens, so
+  // playback never waits on the network mid-session
+  useEffect(() => {
+    const recordingCategory = recordingCategoryFor(category);
+    const categoryItems = categoryData[category]?.items;
+    if (!recordingCategory || !categoryItems) return;
+    syncRecordings().then(() =>
+      preloadRecordings(recordingCategory, categoryItems.map((i) => i.name))
+    );
   }, [category]);
 
   const data = categoryData[category];

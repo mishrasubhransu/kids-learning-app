@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
+import { useAuth } from './context/AuthContext';
+import { syncRecordings } from './lib/recordings';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
@@ -16,11 +18,19 @@ import LandingPage from './components/LandingPage';
 import RecordingStudio from './components/admin/RecordingStudio';
 
 const App = () => {
+  const { user } = useAuth();
+
   useEffect(() => {
     const handler = (e) => e.preventDefault();
     document.addEventListener('contextmenu', handler);
     return () => document.removeEventListener('contextmenu', handler);
   }, []);
+
+  // Non-blocking: check the recordings version once per load and refresh the
+  // audio cache in the background while the rest of the site renders
+  useEffect(() => {
+    if (user) syncRecordings();
+  }, [user]);
 
   return (
     <>
