@@ -230,18 +230,20 @@ const TracingMode = ({ items }) => {
         onTouchEnd={endDraw}
       />
 
-      {/* Navigation arrows */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
+      {/* Navigation arrows: below the canvas on narrow screens — floating
+          at mid-height they'd overlap the canvas edges, so a child tracing
+          near the border would trigger navigation and lose the drawing */}
+      <div className="mt-4 w-full max-w-lg flex justify-between px-2 pointer-events-none md:absolute md:inset-x-0 md:top-1/2 md:-translate-y-1/2 md:mt-0 md:max-w-none md:px-8">
         <button
           onClick={goPrev}
-          className="pointer-events-auto p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-gray-200 transition-all"
+          className="pointer-events-auto p-4 rounded-full opacity-70 md:opacity-40 hover:opacity-100 hover:bg-gray-200 active:scale-95 active:opacity-100 transition-all"
           aria-label="Previous"
         >
           <ChevronLeft size={48} className="text-gray-500" />
         </button>
         <button
           onClick={goNext}
-          className="pointer-events-auto p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-gray-200 transition-all"
+          className="pointer-events-auto p-4 rounded-full opacity-70 md:opacity-40 hover:opacity-100 hover:bg-gray-200 active:scale-95 active:opacity-100 transition-all"
           aria-label="Next"
         >
           <ChevronRight size={48} className="text-gray-500" />
