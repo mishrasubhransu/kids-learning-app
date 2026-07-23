@@ -15,7 +15,7 @@ const categories = [
     description: 'Learn A to Z',
     icon: BookOpen,
     color: 'bg-blue-600',
-    hoverColor: 'hover:bg-blue-700',
+    hoverColor: 'group-hover:bg-blue-700',
     textColor: 'text-white',
     preview: 'ABC',
   },
@@ -24,7 +24,7 @@ const categories = [
     name: 'Numbers',
     icon: Hash,
     color: 'bg-green-500',
-    hoverColor: 'hover:bg-green-600',
+    hoverColor: 'group-hover:bg-green-600',
     textColor: 'text-gray-900',
     preview: '123',
   },
@@ -34,7 +34,7 @@ const categories = [
     description: 'Learn colors',
     icon: Palette,
     color: 'bg-pink-600',
-    hoverColor: 'hover:bg-pink-700',
+    hoverColor: 'group-hover:bg-pink-700',
     textColor: 'text-white',
     preview: '🎨',
   },
@@ -44,7 +44,7 @@ const categories = [
     description: 'Learn shapes',
     icon: Shapes,
     color: 'bg-purple-600',
-    hoverColor: 'hover:bg-purple-700',
+    hoverColor: 'group-hover:bg-purple-700',
     textColor: 'text-white',
     preview: '⬟',
   },
@@ -54,7 +54,7 @@ const categories = [
     description: 'Learn about objects',
     icon: Image,
     color: 'bg-amber-500',
-    hoverColor: 'hover:bg-amber-600',
+    hoverColor: 'group-hover:bg-amber-600',
     textColor: 'text-gray-900',
     preview: '🦁',
   },
@@ -63,7 +63,7 @@ const categories = [
     name: 'Opposites',
     icon: ArrowLeftRight,
     color: 'bg-cyan-500',
-    hoverColor: 'hover:bg-cyan-600',
+    hoverColor: 'group-hover:bg-cyan-600',
     textColor: 'text-gray-900',
     preview: '↔️',
   },
@@ -72,7 +72,7 @@ const categories = [
     name: 'Emotions',
     icon: Smile,
     color: 'bg-yellow-500',
-    hoverColor: 'hover:bg-yellow-600',
+    hoverColor: 'group-hover:bg-yellow-600',
     textColor: 'text-gray-900',
     preview: '😊',
   },
@@ -82,7 +82,7 @@ const categories = [
     description: 'Learn 3-letter words',
     icon: Volume2,
     color: 'bg-indigo-600',
-    hoverColor: 'hover:bg-indigo-700',
+    hoverColor: 'group-hover:bg-indigo-700',
     textColor: 'text-white',
     preview: '🔤',
   },
@@ -92,7 +92,7 @@ const categories = [
     description: 'Type & hear letters',
     icon: Keyboard,
     color: 'bg-orange-500',
-    hoverColor: 'hover:bg-orange-600',
+    hoverColor: 'group-hover:bg-orange-600',
     textColor: 'text-gray-900',
     preview: '⌨️',
   },
@@ -138,10 +138,15 @@ const Home = () => {
               : 'bg-white/20 hover:bg-white/30 text-white'
           } text-sm rounded-full px-4 py-2 transition-colors whitespace-nowrap absolute bottom-3 left-1/2 -translate-x-1/2`;
           return (
-            <div key={category.id} className="relative">
+            // The wrapper scales on hover so the card and its overlaid pill
+            // move as one unit, matching the old nested layout.
+            <div
+              key={category.id}
+              className="group relative transform transition-transform duration-200 hover:scale-105"
+            >
               <Link
                 to={`/${category.id}`}
-                className={`${category.color} ${category.hoverColor} ${category.textColor} h-full rounded-2xl p-6 md:p-8 shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3`}
+                className={`${category.color} ${category.hoverColor} ${category.textColor} h-full rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-200 group-hover:shadow-xl flex flex-col items-center justify-center gap-3`}
               >
                 <IconComponent size={48} className="md:w-16 md:h-16" />
                 <span className="text-3xl md:text-5xl font-bold">
