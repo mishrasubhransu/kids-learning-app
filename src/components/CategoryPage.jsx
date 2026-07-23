@@ -66,7 +66,15 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
 
   const data = categoryData[category];
   if (!data) {
-    return <div>Category not found</div>;
+    return (
+      <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center gap-6 p-4">
+        <div className="text-6xl" aria-hidden="true">🤔</div>
+        <h1 className="text-2xl md:text-3xl font-bold text-gray-700 text-center">
+          Hmm, we can't find that lesson
+        </h1>
+        <HomeButton to={backTo} />
+      </div>
+    );
   }
 
   const { items: rawItems, title, objectIcons: icons } = data;
