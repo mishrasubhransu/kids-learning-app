@@ -8,10 +8,10 @@ const brushColors = [
   '#9b59b6', '#e67e22', '#1abc9c', '#ff0066',
 ];
 
-const TracingMode = ({ items, category }) => {
+const TracingMode = ({ items }) => {
   const canvasRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [brushColor, setBrushColor] = useState(brushColors[0]);
+  const brushColor = brushColors[currentIndex % brushColors.length];
   const isDrawing = useRef(false);
   const lastPos = useRef(null);
   const { speak } = useSpeech();
@@ -53,7 +53,6 @@ const TracingMode = ({ items, category }) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
-    const dpr = window.devicePixelRatio || 1;
 
     // Clear
     ctx.save();
@@ -84,8 +83,6 @@ const TracingMode = ({ items, category }) => {
   useEffect(() => {
     setupCanvas();
     drawGuide();
-    const newColor = brushColors[currentIndex % brushColors.length];
-    setBrushColor(newColor);
     speak(currentItem.name);
   }, [currentIndex, setupCanvas, drawGuide, speak, currentItem]);
 
