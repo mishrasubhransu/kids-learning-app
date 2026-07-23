@@ -50,6 +50,11 @@ const melodyMap = {
 
 const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
+// On-screen keyboard for tablets/phones — letters first (the point of the
+// lesson), digits after. flex-wrap re-flows the rows to the screen width
+// while every key keeps a >=44px touch target.
+const keyboardChars = [...allLetters, ...'0123456789'];
+
 const TypingMode = () => {
   const [currentLetter, setCurrentLetter] = useState(null);
   const [bgColor, setBgColor] = useState('#2c3e50');
@@ -140,15 +145,8 @@ const TypingMode = () => {
     return () => clearTimeout(testResultTimerRef.current);
   }, []);
 
-  const handleKeyPress = useCallback((event) => {
-    // Ignore key repeats (holding down)
-    if (event.repeat || ownedByFocusedControl(event)) return;
-
-    // Check if key is a letter (A-Z) or number (0-9)
-    if (event.key.length !== 1 || !event.key.match(/[a-z0-9]/i)) return;
-
-    const char = event.key.toUpperCase();
-
+  // Shared by physical keys and the on-screen keyboard; char is uppercase
+  const handleChar = useCallback((char) => {
     // Test mode handling
     if (mode === 'test') {
       if (!testTarget || testResult !== null || testComplete) return;
@@ -204,6 +202,16 @@ const TypingMode = () => {
     }
   }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, testComplete, testSeenLetters, speak, playTone, playPositive, playEncouragement, generateTestTarget]);
 
+  const handleKeyPress = useCallback((event) => {
+    // Ignore key repeats (holding down)
+    if (event.repeat || ownedByFocusedControl(event)) return;
+
+    // Check if key is a letter (A-Z) or number (0-9)
+    if (event.key.length !== 1 || !event.key.match(/[a-z0-9]/i)) return;
+
+    handleChar(event.key.toUpperCase());
+  }, [handleChar]);
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
@@ -242,7 +250,7 @@ const TypingMode = () => {
       return (
         <div className="text-center">
           <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">Typing Test</h2>
-          <p className="text-xl text-white/70 mb-8">Type the letter shown on screen!</p>
+          <p className="text-xl text-white/70 mb-8">Tap or type the letter shown on screen!</p>
           <div className="flex justify-center mb-8">
             <select
               value={testOrder}
@@ -260,7 +268,6 @@ const TypingMode = () => {
             <Play size={28} />
             Start Test
           </button>
-          <p className="text-white/40 text-sm mt-4">Works best with a physical keyboard</p>
         </div>
       );
     }
@@ -268,9 +275,9 @@ const TypingMode = () => {
     // Active test
     return (
       <div className="flex flex-col items-center gap-4">
-        <p className="text-2xl text-white/60">Type this letter:</p>
+        <p className="text-2xl text-white/60">Tap or type this letter:</p>
         <div className="text-white font-bold select-none" style={{
-          fontSize: 'min(25vw, 40vh)',
+          fontSize: 'min(20vw, 28vh)',
           textShadow: '4px 4px 10px rgba(0,0,0,0.3)',
           fontFamily: 'Arial, sans-serif'
         }}>
@@ -289,7 +296,7 @@ const TypingMode = () => {
 
   return (
     <div
-      className="h-full flex flex-col items-center justify-center transition-colors duration-300 relative overflow-hidden"
+      className="h-full flex flex-col transition-colors duration-300 relative overflow-hidden"
       style={{ backgroundColor: bgColor }}
     >
       {/* Home button */}
@@ -301,63 +308,79 @@ const TypingMode = () => {
       <div className="absolute top-4 right-4 flex bg-white/15 p-1 rounded-full">
         <button
           onClick={() => setMode('read')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          aria-label="Read mode"
+          aria-pressed={mode === 'read'}
+          className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-sm font-medium transition-all focus-visible:outline-white/70 ${
             mode === 'read' ? 'bg-white/25 text-white' : 'text-white/50 hover:text-white/80'
           }`}
         >
-          <Volume2 size={16} />
+          <Volume2 size={18} />
           <span className="hidden md:inline">Read</span>
         </button>
         <button
           onClick={() => { initAudio(); setMode('music'); }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          aria-label="Music mode"
+          aria-pressed={mode === 'music'}
+          className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-sm font-medium transition-all focus-visible:outline-white/70 ${
             mode === 'music' ? 'bg-white/25 text-white' : 'text-white/50 hover:text-white/80'
           }`}
         >
-          <Music size={16} />
+          <Music size={18} />
           <span className="hidden md:inline">Music</span>
         </button>
         <button
           onClick={() => setMode('test')}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+          aria-label="Test mode"
+          aria-pressed={mode === 'test'}
+          className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-full text-sm font-medium transition-all focus-visible:outline-white/70 ${
             mode === 'test' ? 'bg-white/25 text-white' : 'text-white/50 hover:text-white/80'
           }`}
         >
-          <Gamepad2 size={16} />
+          <Gamepad2 size={18} />
           <span className="hidden md:inline">Test</span>
         </button>
       </div>
 
       {/* Main content */}
-      {mode === 'test' ? (
-        renderTestContent()
-      ) : (
-        <>
-          {/* Letter display */}
-          <div className="text-white font-bold select-none" style={{
-            fontSize: 'min(25vw, 40vh)',
-            textShadow: '4px 4px 10px rgba(0,0,0,0.3)',
-            fontFamily: 'Arial, sans-serif'
-          }}>
-            {currentLetter || (mode === 'music' ? '♫' : 'Hi!')}
-          </div>
+      <div className="flex-1 min-h-0 flex flex-col items-center justify-center px-4 pt-20">
+        {mode === 'test' ? (
+          renderTestContent()
+        ) : (
+          <>
+            {/* Letter display */}
+            <div className="text-white font-bold select-none" style={{
+              fontSize: 'min(22vw, 32vh)',
+              textShadow: '4px 4px 10px rgba(0,0,0,0.3)',
+              fontFamily: 'Arial, sans-serif'
+            }}>
+              {currentLetter || (mode === 'music' ? '♫' : 'Hi!')}
+            </div>
 
-          {/* Instructions */}
-          <div className="absolute bottom-8 text-white/50 text-lg md:text-xl text-center px-4">
-            {mode === 'music'
-              ? 'Type A-Z to play Twinkle Twinkle Little Star!'
-              : currentLetter
-                ? 'Keep typing! Each letter will be spoken.'
-                : 'Press any letter or number on your keyboard!'
-            }
-          </div>
+            {/* Instructions */}
+            <div className="text-white/50 text-base md:text-xl text-center px-4">
+              {mode === 'music'
+                ? 'Tap or type A-Z to play Twinkle Twinkle Little Star!'
+                : currentLetter
+                  ? 'Keep going! Each letter will be spoken.'
+                  : 'Tap or type any letter or number!'
+              }
+            </div>
+          </>
+        )}
+      </div>
 
-          {/* Visual keyboard hint for mobile */}
-          <div className="absolute bottom-20 text-white/30 text-sm">
-            Works best with a physical keyboard
-          </div>
-        </>
-      )}
+      {/* On-screen keyboard — tablets have no physical keys */}
+      <div className="w-full max-w-2xl lg:max-w-4xl mx-auto px-2 pb-3 md:pb-5 flex flex-wrap justify-center gap-1.5 md:gap-2">
+        {keyboardChars.map((ch) => (
+          <button
+            key={ch}
+            onClick={() => handleChar(ch)}
+            className="w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/40 active:scale-90 text-white text-2xl md:text-3xl font-bold transition-all focus-visible:outline-white/70"
+          >
+            {ch}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
