@@ -7,6 +7,7 @@ import TileView from './learning/TileView';
 import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
 import DifficultySelector from './ui/DifficultySelector';
+import GameInterstitial from './ui/GameInterstitial';
 import { getImageStyle, applyImageStyle } from '../lib/imageStyles';
 
 import alphabets from '../data/alphabets';
@@ -41,12 +42,19 @@ phonicsFamilies.forEach((family) => {
 
 const CategoryPage = ({ category, backTo = '/home' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
+  // "Ready to play a game?" screen after autoplay, instead of a silent jump to test
+  const [showGamePrompt, setShowGamePrompt] = useState(false);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
   // Chosen via the pill on the home Numbers card, persisted in localStorage
   const savedObjectType = localStorage.getItem('objectType');
   const objectType = objectIcons[savedObjectType]
     ? savedObjectType
     : 'strawberries';
+
+  const selectMode = (next) => {
+    setShowGamePrompt(false);
+    setMode(next);
+  };
 
   // Generate a random color for shapes (only once when entering the shapes category)
   const shapeColor = useMemo(() => {
@@ -98,7 +106,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
           <div className="flex items-center gap-2">
             <div className="flex bg-gray-100 p-1 rounded-lg">
               <button
-                onClick={() => setMode('scroll')}
+                onClick={() => selectMode('scroll')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'scroll'
                     ? 'bg-white text-gray-800 shadow-sm'
@@ -109,7 +117,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
                 Scroll
               </button>
               <button
-                onClick={() => setMode('tile')}
+                onClick={() => selectMode('tile')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'tile'
                     ? 'bg-white text-gray-800 shadow-sm'
@@ -133,7 +141,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
               </button>
               {(category === 'alphabets' || category === 'numbers') && (
                 <button
-                  onClick={() => setMode('trace')}
+                  onClick={() => selectMode('trace')}
                   className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                     mode === 'trace'
                       ? 'bg-white text-gray-800 shadow-sm'
@@ -145,7 +153,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
                 </button>
               )}
               <button
-                onClick={() => setMode('test')}
+                onClick={() => selectMode('test')}
                 className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'test'
                     ? 'bg-white text-gray-800 shadow-sm'
@@ -169,14 +177,20 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
 
       {/* Main content */}
       <div className="flex-1 flex flex-col">
-        {mode === 'scroll' && (
+        {mode === 'scroll' && showGamePrompt && (
+          <GameInterstitial
+            onPlay={() => selectMode('test')}
+            onKeepLearning={() => setShowGamePrompt(false)}
+          />
+        )}
+        {mode === 'scroll' && !showGamePrompt && (
           <ScrollView
             items={items}
             category={category}
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
-            onAutoplayComplete={() => setMode('test')}
+            onAutoplayComplete={() => setShowGamePrompt(true)}
           />
         )}
         {mode === 'tile' && (
