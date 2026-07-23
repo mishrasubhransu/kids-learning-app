@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Home, BookOpen, Puzzle, Gamepad2 } from 'lucide-react';
+import { BookOpen, Puzzle, Gamepad2 } from 'lucide-react';
+import HomeButton from '../ui/HomeButton';
 import PairLearnView from './PairLearnView';
 import MatchGame from './MatchGame';
 import SceneQuiz from './SceneQuiz';
@@ -23,13 +23,7 @@ const OppositesPage = ({ backTo = '/home' }) => {
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <Link
-              to={backTo}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Go back"
-            >
-              <Home size={24} className="text-gray-600" />
-            </Link>
+            <HomeButton to={backTo} />
             <h1 className="text-2xl font-bold text-gray-800">Opposites</h1>
           </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { Link } from 'react-router-dom';
-import { Home, Volume2, Music, Gamepad2, Play } from 'lucide-react';
+import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
+import HomeButton from './ui/HomeButton';
 import useSpeech from '../hooks/useSpeech';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 
@@ -292,13 +292,9 @@ const TypingMode = () => {
       style={{ backgroundColor: bgColor }}
     >
       {/* Home button */}
-      <Link
-        to="/home"
-        className="absolute top-4 left-4 p-3 bg-white/20 hover:bg-white/30 rounded-full transition-colors"
-        aria-label="Go home"
-      >
-        <Home size={24} className="text-white" />
-      </Link>
+      <div className="absolute top-4 left-4">
+        <HomeButton />
+      </div>
 
       {/* Mode selector */}
       <div className="absolute top-4 right-4 flex bg-white/15 p-1 rounded-full">

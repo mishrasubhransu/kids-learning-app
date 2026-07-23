@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Home, BookOpen, Gamepad2, Pencil } from 'lucide-react';
+import { BookOpen, Gamepad2, Pencil } from 'lucide-react';
 import { recordingCategoryFor, syncRecordings, preloadRecordings } from '../lib/recordings';
+import HomeButton from './ui/HomeButton';
 import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
 import TracingMode from './learning/TracingMode';
@@ -76,13 +76,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Back button and title */}
           <div className="flex items-center gap-4">
-            <Link
-              to={backTo}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Go back"
-            >
-              <Home size={24} className="text-gray-600" />
-            </Link>
+            <HomeButton to={backTo} />
             <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
           </div>
 

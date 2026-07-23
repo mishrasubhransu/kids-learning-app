@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Home, ArrowLeft } from 'lucide-react';
 import { objectCategories, objectItems } from '../data/objects';
+import HomeButton from './ui/HomeButton';
 
 const ObjectsHome = () => {
   return (
@@ -8,13 +8,7 @@ const ObjectsHome = () => {
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
-          <Link
-            to="/home"
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-            aria-label="Go home"
-          >
-            <ArrowLeft size={24} className="text-gray-600" />
-          </Link>
+          <HomeButton />
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
             Objects
           </h1>
