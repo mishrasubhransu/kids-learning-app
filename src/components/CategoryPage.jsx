@@ -7,6 +7,7 @@ import TileView from './learning/TileView';
 import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
 import DifficultySelector from './ui/DifficultySelector';
+import { getImageStyle, applyImageStyle } from '../lib/imageStyles';
 
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
@@ -65,9 +66,10 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
   }
 
   const { items: rawItems, title, objectIcons: icons } = data;
-  const items = category === 'numbers'
+  const sizedItems = category === 'numbers'
     ? rawItems.slice(0, Number(localStorage.getItem('numberMax') || '10'))
     : rawItems;
+  const items = applyImageStyle(sizedItems, category, getImageStyle(category));
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">

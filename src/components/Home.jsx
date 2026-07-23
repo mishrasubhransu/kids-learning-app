@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile, Volume2 } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
+import StyleToggle from './ui/StyleToggle';
+import { stylesForCategory } from '../lib/imageStyles';
 import { useAuth } from '../context/AuthContext';
 
 const categories = [
@@ -131,6 +133,8 @@ const Home = () => {
                 >
                   1–{numberMax}
                 </button>
+              ) : stylesForCategory(category.id) ? (
+                <StyleToggle category={category.id} />
               ) : category.description ? (
                 <span className="text-sm opacity-80 hidden md:block">
                   {category.description}

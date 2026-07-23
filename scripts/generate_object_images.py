@@ -131,6 +131,16 @@ STYLE_PROMPTS = {
         "Friendly and approachable style suitable for toddlers. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "emotions-real": (
+        "A warm, high-quality photograph of {subject}. "
+        "Photorealistic with natural skin tones and soft flattering lighting, "
+        "bright and friendly mood suitable for a toddler learning app. "
+        "The emotion must be instantly readable from the person's facial expression "
+        "and body language, with the face clearly visible and prominent. "
+        "Gentle, non-frightening tone even for negative emotions. "
+        "Sharp focus on the person, softly blurred background. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
     "opposites": (
         "A delightful 3D-rendered cartoon illustration of {subject}. "
         "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
@@ -361,6 +371,22 @@ ITEMS = {
         "love": "feeling love, hugging a big red heart with closed happy eyes",
         "silly": "being silly, making a funny face with tongue out and crossed eyes",
     },
+    # Realistic variants of the emotions lesson (diverse adults, with a
+    # visible cause for the emotion where it helps comprehension).
+    # Output goes to public/emotions/real/ — see OUTPUT_DIRS.
+    "emotions-real": {
+        "happy": "a young woman with a big genuine smile and bright sparkling eyes, holding a small wrapped gift box she has just received",
+        "sad": "a middle-aged man sitting on a park bench with sad teary eyes and drooping shoulders, looking down at his dropped ice cream cone splattered on the ground beside the bench",
+        "angry": "a woman with furrowed brows, a tight frown and crossed arms, glaring at a smartphone with a badly cracked screen lying on the table in front of her",
+        "surprised": "a man with wide open eyes, raised eyebrows and open mouth, hands on his cheeks, as colorful confetti falls around him at a surprise birthday party",
+        "scared": "a young man in genuine terror, leaning far backward away from a garden fence — eyes stretched extremely wide, eyebrows raised high, mouth wide open in a frightened scream, both arms thrown up to shield his face, body twisted away mid-retreat — as a powerful muscular pitbull growls fiercely at him with front paws up on the fence, wrinkled muzzle, lips fully pulled back baring sharp teeth, ears back, intense aggressive stare, muscles bulging",
+        "excited": "an excited young woman jumping with both arms raised high and a huge open-mouthed smile of joy, colorful celebration around her",
+        "tired": "a tired man yawning widely on a cozy couch in warm evening lamplight, droopy half-closed eyes, one hand covering his mouth",
+        "confused": "a confused woman scratching her head with a puzzled frown and tilted head, holding a large unfolded road map turned the wrong way around",
+        "shy": "a shy young woman with a small bashful smile and blushing cheeks, shoulders raised, partly hiding the lower half of her face behind her hands",
+        "love": "a woman with a gentle loving smile and softly closed eyes, warmly hugging a small fluffy puppy close to her chest",
+        "silly": "a man making a silly goofy face with his tongue sticking out and crossed eyes, wearing a colorful party hat",
+    },
     "household": {
         "cup": "a single ceramic coffee mug with a handle, side view",
         "plate": "a single round white ceramic dinner plate, top-down view",
@@ -583,6 +609,7 @@ OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "objects")
 # Categories not listed here default to public/objects/<category>/
 OUTPUT_DIRS = {
     "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
+    "emotions-real": os.path.join(PROJECT_ROOT, "public", "emotions", "real"),
     "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
     "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
     "letter-sounds": os.path.join(PROJECT_ROOT, "public", "phonics", "letters"),
