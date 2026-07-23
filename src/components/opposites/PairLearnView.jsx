@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
+import preloadImages from '../../utils/preloadImages';
 
 // The two poles of every pair: warm for the first word, cool for its opposite.
 const POLES = [
@@ -42,6 +43,12 @@ const PairLearnView = ({ items }) => {
       prevStepRef.current = step;
     }
   }, [step, displayItems, speak]);
+
+  // Warm the next pair's images so the word never plays over blank cards
+  useEffect(() => {
+    const next = displayItems[(pairIndex + 1) % displayItems.length];
+    if (next) preloadImages(next.pair.map((w) => next.images[w]));
+  }, [pairIndex, displayItems]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;

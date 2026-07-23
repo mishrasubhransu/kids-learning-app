@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import preloadImages from '../../utils/preloadImages';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -89,6 +90,14 @@ const MatchGame = ({ items, difficulty }) => {
       clearTimeout(wrongResetTimerRef.current);
     };
   }, []);
+
+  // Warm the current round (covers the start screen) and the next one
+  useEffect(() => {
+    const targets = [rounds[currentIdx], rounds[currentIdx + 1]].filter(Boolean);
+    preloadImages(
+      targets.flatMap((r) => [r.promptImage, ...r.choices.map((c) => c.image)])
+    );
+  }, [rounds, currentIdx]);
 
   const askRound = useCallback((round) => {
     if (round) speak(`What is the opposite of ${round.promptWord}?`);

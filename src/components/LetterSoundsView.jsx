@@ -8,6 +8,7 @@ import {
   letterAudioSrc,
   letterPhrase,
 } from '../data/letterSounds';
+import preloadImages from '../utils/preloadImages';
 
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
@@ -83,6 +84,13 @@ const LetterSoundsView = () => {
   useEffect(() => {
     playCurrent();
   }, [playCurrent]);
+
+  // The next letter's word is picked at random on arrival, so warm every
+  // candidate image for it
+  useEffect(() => {
+    const next = letterSounds[(current.index + 1) % letterSounds.length];
+    preloadImages(next.words.map((w) => letterImageSrc(w.slug)));
+  }, [current.index]);
 
   // Stop audio when leaving the page
   useEffect(() => {

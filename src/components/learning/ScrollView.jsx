@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
+import preloadImages from '../../utils/preloadImages';
 
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
@@ -39,6 +40,12 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
   const cooldownTimerRef = useRef(null);
 
   const currentItem = displayItems[currentIndex];
+
+  // Warm the next item's image so a reveal never shows an empty slot
+  useEffect(() => {
+    const next = displayItems[(currentIndex + 1) % displayItems.length];
+    if (next?.image) preloadImages([next.image]);
+  }, [currentIndex, displayItems]);
   const isRevealCategory = Boolean(
     category?.startsWith('phonics-') && displayItems[0]?.image
   );

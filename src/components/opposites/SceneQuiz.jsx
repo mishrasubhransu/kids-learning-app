@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import preloadImages from '../../utils/preloadImages';
 
 const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
@@ -52,6 +53,15 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, []);
 
   const current = questions[currentIdx];
+
+  // Warm the current question's choice images (covers the start screen)
+  // and the next question's
+  useEffect(() => {
+    const targets = [questions[currentIdx], questions[currentIdx + 1]].filter(
+      Boolean
+    );
+    preloadImages(targets.flatMap((q) => q.pair.map((w) => q.images[w])));
+  }, [questions, currentIdx]);
 
   const askQuestion = useCallback(() => {
     if (current) speak(current.question);
