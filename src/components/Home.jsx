@@ -104,9 +104,7 @@ const Home = () => {
     return localStorage.getItem('numberMax') || '10';
   });
 
-  const toggleNumberMax = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const toggleNumberMax = () => {
     const next = numberMax === '10' ? '20' : '10';
     setNumberMax(next);
     localStorage.setItem('numberMax', next);
@@ -129,36 +127,47 @@ const Home = () => {
         {categories.map((category) => {
           const IconComponent = category.icon;
           const darkText = category.textColor === 'text-gray-900';
-          const pillClass = darkText
-            ? 'text-sm bg-black/10 hover:bg-black/20 rounded-full px-3 py-1 transition-colors'
-            : 'text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors';
+          const hasPill =
+            category.id === 'numbers' || Boolean(stylesForCategory(category.id));
+          // Pills are siblings positioned over the card, not children of the
+          // Link — nested interactive elements are invalid HTML and a tap
+          // aimed at the card could silently flip a setting.
+          const pillClass = `${
+            darkText
+              ? 'bg-black/10 hover:bg-black/20 text-gray-900'
+              : 'bg-white/20 hover:bg-white/30 text-white'
+          } text-sm rounded-full px-4 py-2 transition-colors whitespace-nowrap absolute bottom-3 left-1/2 -translate-x-1/2`;
           return (
-            <Link
-              key={category.id}
-              to={`/${category.id}`}
-              className={`${category.color} ${category.hoverColor} ${category.textColor} rounded-2xl p-6 md:p-8 shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3`}
-            >
-              <IconComponent size={48} className="md:w-16 md:h-16" />
-              <span className="text-3xl md:text-5xl font-bold">
-                {category.preview}
-              </span>
-              <span className="text-lg md:text-xl font-semibold">
-                {category.name}
-              </span>
+            <div key={category.id} className="relative">
+              <Link
+                to={`/${category.id}`}
+                className={`${category.color} ${category.hoverColor} ${category.textColor} h-full rounded-2xl p-6 md:p-8 shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3`}
+              >
+                <IconComponent size={48} className="md:w-16 md:h-16" />
+                <span className="text-3xl md:text-5xl font-bold">
+                  {category.preview}
+                </span>
+                <span className="text-lg md:text-xl font-semibold">
+                  {category.name}
+                </span>
+                {hasPill ? (
+                  <span className="h-9" aria-hidden="true" />
+                ) : category.description ? (
+                  <span
+                    className={`text-sm hidden md:block ${darkText ? 'text-gray-900/80' : 'text-white/90'}`}
+                  >
+                    {category.description}
+                  </span>
+                ) : null}
+              </Link>
               {category.id === 'numbers' ? (
                 <button onClick={toggleNumberMax} className={pillClass}>
                   1–{numberMax}
                 </button>
               ) : stylesForCategory(category.id) ? (
                 <StyleToggle category={category.id} className={pillClass} />
-              ) : category.description ? (
-                <span
-                  className={`text-sm hidden md:block ${darkText ? 'text-gray-900/80' : 'text-white/90'}`}
-                >
-                  {category.description}
-                </span>
               ) : null}
-            </Link>
+            </div>
           );
         })}
       </div>
