@@ -13,6 +13,7 @@ import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';
+import RecordingStudio from './components/admin/RecordingStudio';
 
 const App = () => {
   useEffect(() => {
@@ -39,6 +40,7 @@ const App = () => {
         <Route path="/opposites/*" element={<ProtectedRoute><OppositesPage /></ProtectedRoute>} />
         <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
+        <Route path="/admin/record" element={<ProtectedRoute><RecordingStudio /></ProtectedRoute>} />
       </Routes>
       <FeedbackButton />
     </>
