@@ -9,23 +9,26 @@ export const phonicsFamilies = [
   { id: 'ap', group: '3-letter', name: '-ap words', emoji: '🧢', color: 'bg-green-500', hoverColor: 'hover:bg-green-600' },
 ];
 
-const buildWords = (rime, onsets) =>
+const buildWords = (rime, onsets, { images = false } = {}) =>
   onsets.map((onset, id) => ({
     id,
     name: onset + rime,
     onset,
     rime,
+    ...(images && { image: `/phonics/words/${onset + rime}.webp` }),
   }));
 
 const cvConsonants = ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'r', 's', 't'];
 
+// 3-letter lists only keep words a 2-4 year old knows, each with a
+// generated picture (public/phonics/words/) revealed after the word.
 export const phonicsWords = {
   a: buildWords('a', cvConsonants),
   e: buildWords('e', cvConsonants),
   i: buildWords('i', cvConsonants),
   o: buildWords('o', cvConsonants),
   u: buildWords('u', cvConsonants),
-  at: buildWords('at', ['b', 'c', 'h', 'm', 'r', 's', 'f', 'p']),
-  an: buildWords('an', ['c', 'f', 'm', 'p', 'r', 't', 'v', 'b']),
-  ap: buildWords('ap', ['c', 'l', 'm', 'n', 'r', 't', 'g', 'z']),
+  at: buildWords('at', ['b', 'c', 'h', 'm', 'r'], { images: true }),
+  an: buildWords('an', ['c', 'f', 'm', 'p', 'v'], { images: true }),
+  ap: buildWords('ap', ['c', 'l', 'm', 'n', 't'], { images: true }),
 };

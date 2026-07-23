@@ -27,6 +27,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const [isAutoplay, setIsAutoplay] = useState(false);
+  // Word-first reveal: phonics words with images show the word alone until
+  // the right arrow reveals the picture, so sound maps to the word first.
+  const [revealed, setRevealed] = useState(false);
   const { speak } = useSpeech();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
@@ -34,6 +37,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
   const cooldownTimerRef = useRef(null);
 
   const currentItem = displayItems[currentIndex];
+  const isRevealCategory = Boolean(
+    category?.startsWith('phonics-') && displayItems[0]?.image
+  );
 
   const speakCurrent = useCallback(() => {
     if (currentItem) {
@@ -127,17 +133,28 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
     if (isCoolingDownRef.current) return;
     stopAutoplay();
     hasInteracted.current = true;
-    setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
+    if (isRevealCategory && !revealed) {
+      // Reveal the picture silently — the word was already spoken
+      setRevealed(true);
+    } else {
+      setRevealed(false);
+      setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
+    }
     startCooldown();
-  }, [displayItems.length, startCooldown, stopAutoplay]);
+  }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed]);
 
+  // Going back is a correction, so it mirrors goNext step-for-step and
+  // skips the cooldown that only exists to stop forward mashing.
   const goPrev = useCallback(() => {
-    if (isCoolingDownRef.current) return;
     stopAutoplay();
     hasInteracted.current = true;
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
-    startCooldown();
-  }, [displayItems.length, startCooldown, stopAutoplay]);
+    if (isRevealCategory && revealed) {
+      setRevealed(false);
+    } else {
+      setRevealed(false);
+      setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
+    }
+  }, [displayItems.length, stopAutoplay, isRevealCategory, revealed]);
 
   const handleItemClick = () => {
     stopAutoplay();
@@ -248,18 +265,31 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
 
       default:
         if (category?.startsWith('phonics-')) {
+          const hasImage = Boolean(currentItem.image);
           return (
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-row items-center justify-center gap-6 md:gap-12">
               <span
                 className="font-bold leading-none select-none tracking-wide uppercase"
                 style={{
-                  fontSize: 'min(22vw, 32vh)',
+                  fontSize: hasImage ? 'min(16vw, 26vh)' : 'min(22vw, 32vh)',
                   fontFamily: 'Arial, sans-serif',
                 }}
               >
                 <span className="text-gray-700">{currentItem.onset}</span>
                 <span className="text-orange-500">{currentItem.rime}</span>
               </span>
+              {/* Slot is always reserved so the word never moves on reveal */}
+              {hasImage && (
+                <div className="w-[var(--img-hero)] h-[var(--img-hero)] flex-shrink-0">
+                  {revealed && (
+                    <img
+                      src={currentItem.image}
+                      alt={currentItem.name}
+                      className="w-full h-full object-contain rounded-2xl shadow-lg bg-white"
+                    />
+                  )}
+                </div>
+              )}
             </div>
           );
         }
@@ -329,11 +359,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          disabled={isCoolingDown}
-          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
-            isCoolingDown
-              ? 'opacity-15 cursor-not-allowed'
-              : `opacity-40 hover:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
+          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none opacity-40 hover:opacity-100 ${
+            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
           }`}
           aria-label="Previous"
         >
@@ -361,6 +388,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
             onClick={() => {
               stopAutoplay();
               hasInteracted.current = true;
+              setRevealed(false);
               setCurrentIndex(idx);
             }}
             className={`rounded-full transition-all duration-300 ${
@@ -376,7 +404,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onOb
       <div className={`absolute bottom-6 text-xs md:text-sm ${isAlphabets ? 'text-white/40' : 'text-gray-400'}`}>
         {isAutoplay
           ? `Autoplay: ${currentIndex + 1} / ${displayItems.length}`
-          : 'Click the letter or use Arrow Keys | Space to hear'}
+          : isRevealCategory && !revealed
+            ? 'Press → to see the picture!'
+            : 'Click the letter or use Arrow Keys | Space to hear'}
       </div>
     </div>
   );

@@ -560,8 +560,8 @@ ITEMS = {
     "phonics-words": {
         "bat": "a cute friendly purple bat with round ears flying at dusk",
         "cat": "a cute orange tabby cat sitting and smiling",
-        "hat": "a cheerful red and yellow party hat",
-        "mat": "a colorful welcome mat lying flat on the floor",
+        "hat": "a classic brown cowboy hat with a wide curved brim",
+        "mat": "a soft fluffy pink rectangular bath mat with white daisy flowers on it, lying flat on a bathroom floor, seen from a high angle so its rectangular shape is clear, with a person standing on it wearing striped pyjama bottoms and bare feet — only their feet and lower legs up to the calves visible, the rest of the body out of frame at the top",
         "rat": "a cute grey rat with round ears holding a piece of cheese",
         "can": "a shiny tin can with a bright red label, no text on the label",
         "fan": "a cheerful electric table fan with blue blades",
