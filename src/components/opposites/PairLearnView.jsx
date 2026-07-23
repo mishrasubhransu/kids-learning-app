@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 
@@ -8,35 +8,67 @@ const POLES = [
   { accent: '#3B9EFF', tint: '#EEF6FF' },
 ];
 
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 // One linear sequence: pair 0 word 0, pair 0 word 1, pair 1 word 0, ...
 // The right arrow always means "what comes next".
 const PairLearnView = ({ items }) => {
+  const displayItems = useMemo(() => shuffle(items), [items]);
   const [step, setStep] = useState(0);
+  const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useSpeech();
   const prevStepRef = useRef(null);
+  const isCoolingDownRef = useRef(false);
+  const cooldownTimerRef = useRef(null);
 
-  const totalSteps = items.length * 2;
+  const totalSteps = displayItems.length * 2;
   const pairIndex = Math.floor(step / 2);
   const side = step % 2;
-  const currentItem = items[pairIndex];
+  const currentItem = displayItems[pairIndex];
   const activeWord = currentItem.pair[side];
   const pole = POLES[side];
 
   // Speak whenever the highlight moves (and once on mount)
   useEffect(() => {
     if (prevStepRef.current !== step) {
-      speak(items[Math.floor(step / 2)].pair[step % 2]);
+      speak(displayItems[Math.floor(step / 2)].pair[step % 2]);
       prevStepRef.current = step;
     }
-  }, [step, items, speak]);
+  }, [step, displayItems, speak]);
+
+  const startCooldown = useCallback(() => {
+    isCoolingDownRef.current = true;
+    setIsCoolingDown(true);
+    clearTimeout(cooldownTimerRef.current);
+    cooldownTimerRef.current = setTimeout(() => {
+      isCoolingDownRef.current = false;
+      setIsCoolingDown(false);
+    }, 1000);
+  }, []);
 
   const goNext = useCallback(() => {
+    if (isCoolingDownRef.current) return;
     setStep((prev) => (prev + 1) % totalSteps);
-  }, [totalSteps]);
+    startCooldown();
+  }, [totalSteps, startCooldown]);
 
+  // Back is a correction, so it skips the cooldown that only exists to
+  // stop forward mashing (same rule as ScrollView/LetterSoundsView).
   const goPrev = useCallback(() => {
     setStep((prev) => (prev - 1 + totalSteps) % totalSteps);
   }, [totalSteps]);
+
+  // Cleanup cooldown timer on unmount
+  useEffect(() => {
+    return () => clearTimeout(cooldownTimerRef.current);
+  }, []);
 
   const handleCardTap = (tappedSide) => {
     const tappedStep = pairIndex * 2 + tappedSide;
@@ -133,7 +165,12 @@ const PairLearnView = ({ items }) => {
         </button>
         <button
           onClick={goNext}
-          className="pointer-events-auto p-3 md:p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-white/60 transition-all focus:outline-none"
+          disabled={isCoolingDown}
+          className={`pointer-events-auto p-3 md:p-4 rounded-full transition-all focus:outline-none ${
+            isCoolingDown
+              ? 'opacity-15 cursor-not-allowed'
+              : 'opacity-40 hover:opacity-100 hover:bg-white/60'
+          }`}
           aria-label="Next"
         >
           <ChevronRight size={44} className="text-gray-500" />
@@ -142,7 +179,7 @@ const PairLearnView = ({ items }) => {
 
       {/* Pair dots */}
       <div className="absolute bottom-16 flex flex-wrap justify-center gap-2 max-w-[90%]">
-        {items.map((item, idx) => (
+        {displayItems.map((item, idx) => (
           <button
             key={item.id}
             onClick={() => setStep(idx * 2)}
