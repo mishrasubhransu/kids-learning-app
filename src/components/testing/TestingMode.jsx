@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronRight, Volume2, Play } from 'lucide-react';
+import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 
@@ -14,6 +14,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
+  const wrongResetTimerRef = useRef(null);
   const askedIdsRef = useRef(new Set());
   const touchStartRef = useRef(null);
 
@@ -68,6 +69,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     if (autoAdvanceTimerRef.current) {
       clearTimeout(autoAdvanceTimerRef.current);
     }
+    clearTimeout(wrongResetTimerRef.current);
 
     return correct; // Return the new correct answer
   }, [items, getOptionCount]);
@@ -86,6 +88,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
       if (autoAdvanceTimerRef.current) {
         clearTimeout(autoAdvanceTimerRef.current);
       }
+      clearTimeout(wrongResetTimerRef.current);
     };
   }, []);
 
@@ -140,7 +143,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
 
   // Handle answer selection
   const handleSelect = (item) => {
-    if (selectedAnswer !== null) return; // Already answered
+    // Only lock input after a correct answer — during wrong-answer feedback
+    // the dash-highlighted correct option invites a retry, so let it through.
+    if (selectedAnswer !== null && isCorrect) return;
+    clearTimeout(wrongResetTimerRef.current);
 
     setSelectedAnswer(item.id);
 
@@ -161,10 +167,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         playEncouragement().then(() => {
           speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
         });
-        setTimeout(() => {
+        wrongResetTimerRef.current = setTimeout(() => {
           setSelectedAnswer(null);
           setIsCorrect(null);
-        }, 3000);
+        }, 2000);
       }
     }, 50);
   };
@@ -443,17 +449,11 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         {options.map((item) => renderOption(item))}
       </div>
 
-      {/* Result feedback and next button */}
+      {/* Result feedback — praise audio auto-advances, so no Next button
+          that would vanish before anyone could tap it */}
       {isCorrect === true && (
         <div className="flex flex-col items-center gap-4">
           <div className="text-4xl md:text-6xl">🎉</div>
-          <button
-            onClick={nextQuestion}
-            className="flex items-center gap-2 px-6 py-3 bg-green-500 text-white rounded-xl font-semibold text-lg hover:bg-green-600 transition-colors shadow-lg"
-          >
-            Next
-            <ChevronRight size={24} />
-          </button>
         </div>
       )}
 
