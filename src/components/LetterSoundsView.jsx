@@ -34,6 +34,8 @@ const LetterSoundsView = () => {
   const [current, setCurrent] = useState({ index: 0, wordIdx: randomWordIdx(0) });
   const [bgColor, setBgColor] = useState(bgColors[0]);
   const [isCoolingDown, setIsCoolingDown] = useState(false);
+  // Mirrors isAudioPlayingRef so the Next arrow can show the locked state
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   // 'capital' shows only uppercase everywhere; 'small' adds lowercase
   const [letterCase] = useUserSetting('letterCase', 'capital');
   const audioRef = useRef(null);
@@ -41,6 +43,7 @@ const LetterSoundsView = () => {
   const cooldownTimerRef = useRef(null);
   // Forward navigation waits for the clip to finish, however long it is
   const isAudioPlayingRef = useRef(false);
+  const unlockTimerRef = useRef(null);
 
   const { letter, words } = letterSounds[current.index];
   const word = words[current.wordIdx];
@@ -59,11 +62,21 @@ const LetterSoundsView = () => {
       // clip that replaced it (StrictMode remount, rapid navigation)
       if (audioRef.current === audio) {
         isAudioPlayingRef.current = false;
+        setIsAudioPlaying(false);
       }
     };
     audio.addEventListener('ended', clear);
     audio.addEventListener('error', clear);
-    audio.play().catch(clear);
+    // If the network stalls and neither event ever fires, unlock anyway —
+    // otherwise forward navigation dead-locks for the rest of the session
+    clearTimeout(unlockTimerRef.current);
+    unlockTimerRef.current = setTimeout(clear, 5000);
+    audio
+      .play()
+      .then(() => {
+        if (audioRef.current === audio) setIsAudioPlaying(true);
+      })
+      .catch(clear);
   }, [letter, word]);
 
   // Play on mount and whenever the letter/word changes
@@ -76,6 +89,7 @@ const LetterSoundsView = () => {
     return () => {
       audioRef.current?.pause();
       clearTimeout(cooldownTimerRef.current);
+      clearTimeout(unlockTimerRef.current);
     };
   }, []);
 
@@ -138,7 +152,11 @@ const LetterSoundsView = () => {
       {/* Replay button */}
       <button
         onClick={playCurrent}
-        className="absolute top-4 right-4 z-10 p-3 rounded-full bg-white/20 text-white hover:bg-white/30 transition-colors"
+        className={`absolute top-4 right-4 z-10 p-3 rounded-full text-white transition-colors ${
+          isAudioPlaying
+            ? 'bg-white/30 animate-pulse'
+            : 'bg-white/20 hover:bg-white/30'
+        }`}
         aria-label="Say it again"
       >
         <Volume2 size={28} />
@@ -193,9 +211,9 @@ const LetterSoundsView = () => {
         </button>
         <button
           onClick={goNext}
-          disabled={isCoolingDown}
+          disabled={isCoolingDown || isAudioPlaying}
           className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
-            isCoolingDown
+            isCoolingDown || isAudioPlaying
               ? 'opacity-15 cursor-not-allowed'
               : 'opacity-40 hover:opacity-100 hover:bg-white/20'
           }`}
