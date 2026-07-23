@@ -619,6 +619,31 @@ OUTPUT_DIRS = {
 WEBP_SIZE = 1024
 WEBP_QUALITY = 80
 
+# Cross-project generated-image library (/mnt/data/genlab). Archiving must
+# never break generation, so failures are reported and swallowed.
+GENLAB_DIR = "/mnt/data/genlab"
+
+
+def archive_to_genlab(output_path, prompt, provider, model, category, item_name,
+                      status="accepted", notes=None):
+    try:
+        if GENLAB_DIR not in sys.path:
+            sys.path.insert(0, GENLAB_DIR)
+        import genlab
+        genlab.record(
+            output_path,
+            prompt=prompt,
+            provider=provider,
+            model=model,
+            project="toddlearn",
+            category=category,
+            item=item_name,
+            status=status,
+            notes=notes,
+        )
+    except Exception as e:
+        print(f"  ⚠  genlab archive failed for {category}/{item_name}: {e}")
+
 
 def get_output_dir(category):
     """Get the output directory for a category."""
@@ -687,12 +712,15 @@ def generate_image(category, item_name, subject_desc, force=False, provider="gem
 
     try:
         if provider == "openai":
-            return _generate_openai(prompt, output_path)
+            ok = _generate_openai(prompt, output_path)
         else:
             ok = _generate_gemini(prompt, output_path)
             if not ok:
                 print(f"  ❌ No image returned for {category}/{item_name}")
-            return ok
+        if ok:
+            model = OPENAI_MODEL if provider == "openai" else MODEL
+            archive_to_genlab(output_path, prompt, provider, model, category, item_name)
+        return ok
 
     except Exception as e:
         print(f"  ❌ Error generating {category}/{item_name}: {e}")

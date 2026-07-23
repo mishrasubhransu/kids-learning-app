@@ -27,3 +27,5 @@ dist-ssr
 
 # Supabase CLI local state
 supabase/.temp/
+
+__pycache__/
