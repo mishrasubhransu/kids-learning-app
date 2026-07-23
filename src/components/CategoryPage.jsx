@@ -44,6 +44,8 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   // "Ready to play a game?" screen after autoplay, instead of a silent jump to test
   const [showGamePrompt, setShowGamePrompt] = useState(false);
+  // Entering test via that screen skips TestingMode's own "Ready to Test?" gate
+  const [autoStartTest, setAutoStartTest] = useState(false);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
   // Chosen via the pill on the home Numbers card, persisted in localStorage
   const savedObjectType = localStorage.getItem('objectType');
@@ -53,6 +55,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
 
   const selectMode = (next) => {
     setShowGamePrompt(false);
+    setAutoStartTest(false);
     setMode(next);
   };
 
@@ -179,7 +182,11 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
       <div className="flex-1 flex flex-col">
         {mode === 'scroll' && showGamePrompt && (
           <GameInterstitial
-            onPlay={() => selectMode('test')}
+            onPlay={() => {
+              setShowGamePrompt(false);
+              setAutoStartTest(true);
+              setMode('test');
+            }}
             onKeepLearning={() => setShowGamePrompt(false)}
           />
         )}
@@ -213,6 +220,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
+            autoStart={autoStartTest}
           />
         )}
       </div>

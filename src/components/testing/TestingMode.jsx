@@ -4,7 +4,10 @@ import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
-const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType }) => {
+// autoStart skips the "Ready to Test?" screen — used when the child already
+// tapped through the post-autoplay interstitial (that tap is the user gesture
+// speech needs, so a second start tap would just be a hurdle).
+const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType, autoStart = false }) => {
   const [options, setOptions] = useState([]);
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -75,13 +78,24 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     return correct; // Return the new correct answer
   }, [items, getOptionCount]);
 
+  // Speak question for a specific answer (used after generating new question)
+  const askQuestionFor = useCallback((answer) => {
+    if (answer) {
+      speak(`Which one is ${answer.name}?`);
+    }
+  }, [speak]);
+
   // Initialize on mount and difficulty change
   useEffect(() => {
     askedIdsRef.current = new Set();
     setTestComplete(false);
-    generateQuestion();
-    setHasStarted(false);
-  }, [generateQuestion, difficulty]);
+    const first = generateQuestion();
+    setHasStarted(autoStart);
+    if (autoStart) {
+      const timer = setTimeout(() => askQuestionFor(first), 400);
+      return () => clearTimeout(timer);
+    }
+  }, [generateQuestion, difficulty, autoStart, askQuestionFor]);
 
   // Cleanup timers on unmount
   useEffect(() => {
@@ -99,13 +113,6 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
       speak(`Which one is ${correctAnswer.name}?`);
     }
   }, [correctAnswer, speak]);
-
-  // Speak question for a specific answer (used after generating new question)
-  const askQuestionFor = useCallback((answer) => {
-    if (answer) {
-      speak(`Which one is ${answer.name}?`);
-    }
-  }, [speak]);
 
   // Start the test
   const handleStart = () => {
