@@ -35,25 +35,35 @@ function getScreen() {
 }
 
 function getContext(pathname) {
-  if (pathname === '/') return 'Home';
+  if (pathname === '/') return 'Landing';
   const parts = pathname.split('/').filter(Boolean);
   return parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' → ');
 }
 
 const MAX_CHARS = 250;
 
+// Parent-facing surfaces only. Mid-lesson, a bright floating tap target
+// that opens a text modal is toddler bait.
+const PARENT_SURFACES = ['/', '/home', '/objects', '/phonics', '/admin/record'];
+
 const FeedbackButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [status, setStatus] = useState('idle'); // idle | sending | sent | error
-  const textareaRef = useRef(null);
+  const dialogRef = useRef(null);
+  const openerRef = useRef(null);
   const location = useLocation();
 
+  // Focus the dialog itself, not the textarea — autofocusing a text field
+  // pops the on-screen keyboard on tablets before the parent asked for it
   useEffect(() => {
-    if (isOpen && textareaRef.current) {
-      textareaRef.current.focus();
-    }
+    if (isOpen) dialogRef.current?.focus();
   }, [isOpen]);
+
+  const close = () => {
+    setIsOpen(false);
+    openerRef.current?.focus();
+  };
 
   const handleSubmit = async () => {
     if (!message.trim() || status === 'sending') return;
@@ -77,7 +87,7 @@ const FeedbackButton = () => {
         setStatus('sent');
         setMessage('');
         setTimeout(() => {
-          setIsOpen(false);
+          close();
           setStatus('idle');
         }, 1500);
       } else {
@@ -88,19 +98,41 @@ const FeedbackButton = () => {
     }
   };
 
-  const handleKeyDown = (e) => {
+  const handleTextareaKeyDown = (e) => {
     if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
       handleSubmit();
     }
+  };
+
+  // Escape closes from anywhere in the dialog; Tab cycles inside it
+  const handleModalKeyDown = (e) => {
     if (e.key === 'Escape') {
-      setIsOpen(false);
+      close();
+      return;
+    }
+    if (e.key !== 'Tab' || !dialogRef.current) return;
+    const focusables = [
+      ...dialogRef.current.querySelectorAll('button, textarea'),
+    ].filter((el) => !el.disabled);
+    if (!focusables.length) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if (e.shiftKey && (document.activeElement === first || document.activeElement === dialogRef.current)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && document.activeElement === last) {
+      e.preventDefault();
+      first.focus();
     }
   };
+
+  if (!PARENT_SURFACES.includes(location.pathname)) return null;
 
   return (
     <>
       {/* Floating button */}
       <button
+        ref={openerRef}
         onClick={() => { setIsOpen(true); setStatus('idle'); }}
         className="fixed bottom-4 right-4 z-40 bg-indigo-500 hover:bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110"
         aria-label="Send feedback"
@@ -112,28 +144,35 @@ const FeedbackButton = () => {
       {isOpen && (
         <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/40"
-          onClick={(e) => { if (e.target === e.currentTarget) setIsOpen(false); }}
+          onClick={(e) => { if (e.target === e.currentTarget) close(); }}
+          onKeyDown={handleModalKeyDown}
         >
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 relative">
+          <div
+            ref={dialogRef}
+            tabIndex={-1}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="feedback-title"
+            className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-5 relative"
+          >
             <button
-              onClick={() => setIsOpen(false)}
-              className="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+              onClick={close}
+              className="absolute top-2 right-2 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100"
               aria-label="Close"
             >
-              <X size={20} />
+              <X size={24} />
             </button>
 
-            <h2 className="text-lg font-semibold text-gray-800 mb-3">Send Feedback</h2>
+            <h2 id="feedback-title" className="text-lg font-semibold text-gray-800 mb-3">Send Feedback</h2>
 
             {status === 'sent' ? (
               <p className="text-green-600 font-medium py-4 text-center">Thanks for your feedback!</p>
             ) : (
               <>
                 <textarea
-                  ref={textareaRef}
                   value={message}
                   onChange={(e) => setMessage(e.target.value.slice(0, MAX_CHARS))}
-                  onKeyDown={handleKeyDown}
+                  onKeyDown={handleTextareaKeyDown}
                   placeholder="What's on your mind?"
                   rows={4}
                   className="w-full border border-gray-200 rounded-lg p-3 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-indigo-300"

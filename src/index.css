@@ -24,6 +24,14 @@ html, body, #root {
   -webkit-tap-highlight-color: transparent;
 }
 
+/* The kid-proofing above must not break typing fields (feedback textarea) */
+input, textarea {
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+}
+
 /*
  * One focus indicator app-wide. :focus-visible only, so taps never leave a
  * lingering ring — it appears for keyboard users. Outline rather than

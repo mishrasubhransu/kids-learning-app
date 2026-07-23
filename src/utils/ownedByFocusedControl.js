@@ -13,7 +13,7 @@
 const ownedByFocusedControl = (e) => {
   const el = e.target instanceof Element ? e.target : null;
   if (!el) return false;
-  if (el.closest('input, select, textarea, [contenteditable="true"]')) {
+  if (el.closest('input, select, textarea, [contenteditable="true"], [role="dialog"]')) {
     return true;
   }
   if (e.key === 'Enter' || e.key === ' ') {
