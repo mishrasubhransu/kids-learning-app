@@ -246,7 +246,7 @@ const TypingMode = () => {
             <select
               value={testOrder}
               onChange={(e) => setTestOrder(e.target.value)}
-              className="bg-white/20 text-white rounded-lg px-4 py-2 text-sm cursor-pointer outline-none border border-white/20"
+              className="bg-white/20 text-white rounded-lg px-4 py-2 text-sm cursor-pointer border border-white/20 focus-visible:outline-white/70"
             >
               <option value="random" className="text-gray-800">Random</option>
               <option value="sequential" className="text-gray-800">A to Z</option>

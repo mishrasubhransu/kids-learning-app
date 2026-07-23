@@ -15,7 +15,7 @@ const VoiceSelector = () => {
     <select
       value={selectedVoiceURI}
       onChange={handleChange}
-      className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 focus:ring-2 focus:ring-blue-200 cursor-pointer outline-none"
+      className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 cursor-pointer"
     >
       <option value="">Auto (default voice)</option>
       {availableVoices.map((voice) => (

@@ -160,7 +160,7 @@ const LetterSoundsView = () => {
       {/* Replay button */}
       <button
         onClick={playCurrent}
-        className={`absolute top-4 right-4 z-10 p-3 rounded-full text-white transition-colors ${
+        className={`absolute top-4 right-4 z-10 p-3 rounded-full text-white transition-colors focus-visible:outline-white/70 ${
           isAudioPlaying
             ? 'bg-white/30 animate-pulse'
             : 'bg-white/20 hover:bg-white/30'
@@ -173,7 +173,7 @@ const LetterSoundsView = () => {
       {/* Main display - clickable to replay */}
       <button
         onClick={playCurrent}
-        className="flex flex-col items-center gap-3 md:gap-5 cursor-pointer focus:outline-none"
+        className="flex flex-col items-center gap-3 md:gap-5 cursor-pointer focus-visible:outline-white/70"
         aria-label={letterPhrase(letter, word)}
       >
         <span
@@ -212,7 +212,7 @@ const LetterSoundsView = () => {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className="pointer-events-auto p-4 rounded-full transition-all focus:outline-none opacity-40 hover:opacity-100 hover:bg-white/20"
+          className="pointer-events-auto p-4 rounded-full transition-all focus-visible:outline-white/70 opacity-40 hover:opacity-100 hover:bg-white/20"
           aria-label="Previous letter"
         >
           <ChevronLeft size={48} className="text-white" />
@@ -220,7 +220,7 @@ const LetterSoundsView = () => {
         <button
           onClick={goNext}
           disabled={isCoolingDown || isAudioPlaying}
-          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
+          className={`pointer-events-auto p-4 rounded-full transition-all focus-visible:outline-white/70 ${
             isCoolingDown || isAudioPlaying
               ? 'opacity-15 cursor-not-allowed'
               : 'opacity-40 hover:opacity-100 hover:bg-white/20'
@@ -240,7 +240,7 @@ const LetterSoundsView = () => {
               setCurrent({ index: idx, wordIdx: randomWordIdx(idx) });
               setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
             }}
-            className={`rounded-full transition-all duration-300 ${
+            className={`rounded-full transition-all duration-300 focus-visible:outline-white/70 ${
               idx === current.index
                 ? 'bg-white w-3 h-3'
                 : 'bg-white/40 hover:bg-white/60 w-2 h-2'

@@ -25,6 +25,20 @@ html, body, #root {
 }
 
 /*
+ * One focus indicator app-wide. :focus-visible only, so taps never leave a
+ * lingering ring — it appears for keyboard users. Outline rather than
+ * box-shadow so it never fights shadow-* utilities, and in the base layer so
+ * components on dark/saturated lesson backgrounds can override the color
+ * with focus-visible:outline-white/70.
+ */
+@layer base {
+  :focus-visible {
+    outline: 4px solid rgb(99 102 241 / 0.75); /* indigo-500 */
+    outline-offset: 2px;
+  }
+}
+
+/*
  * Central image size tokens — resize all app imagery from here.
  * Components reference these via w-[var(--img-*)] classes, so each
  * breakpoint step below bumps every view at once. vh caps keep tall

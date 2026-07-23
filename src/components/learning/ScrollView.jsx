@@ -320,7 +320,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
       {/* Main display - clickable to speak */}
       <button
         onClick={handleItemClick}
-        className="flex items-center justify-center min-h-[50vh] cursor-pointer hover:opacity-90 transition-opacity focus:outline-none"
+        className={`flex items-center justify-center min-h-[50vh] cursor-pointer hover:opacity-90 transition-opacity ${
+          isAlphabets ? 'focus-visible:outline-white/70' : ''
+        }`}
         aria-label={`Speak ${currentItem?.name}`}
       >
         {renderItem()}
@@ -331,6 +333,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
         <button
           onClick={() => isAutoplay ? stopAutoplay() : startAutoplay()}
           className={`p-3 rounded-full transition-colors ${
+            isAlphabets ? 'focus-visible:outline-white/70' : ''
+          } ${
             isAutoplay
               ? 'bg-red-100 text-red-600 hover:bg-red-200'
               : isAlphabets
@@ -345,7 +349,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
           onClick={handleItemClick}
           className={`p-3 rounded-full transition-colors ${
             isAlphabets
-              ? 'bg-white/20 text-white hover:bg-white/30'
+              ? 'bg-white/20 text-white hover:bg-white/30 focus-visible:outline-white/70'
               : 'bg-blue-100 text-blue-600 hover:bg-blue-200'
           }`}
           aria-label="Speak"
@@ -358,8 +362,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none opacity-40 hover:opacity-100 ${
-            isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'
+          className={`pointer-events-auto p-4 rounded-full transition-all opacity-40 hover:opacity-100 ${
+            isAlphabets ? 'hover:bg-white/20 focus-visible:outline-white/70' : 'hover:bg-gray-200'
           }`}
           aria-label="Previous"
         >
@@ -368,7 +372,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
         <button
           onClick={goNext}
           disabled={isCoolingDown}
-          className={`pointer-events-auto p-4 rounded-full transition-all focus:outline-none ${
+          className={`pointer-events-auto p-4 rounded-full transition-all ${
+            isAlphabets ? 'focus-visible:outline-white/70' : ''
+          } ${
             isCoolingDown
               ? 'opacity-15 cursor-not-allowed'
               : `opacity-40 hover:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
@@ -391,6 +397,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
               setCurrentIndex(idx);
             }}
             className={`rounded-full transition-all duration-300 ${
+              isAlphabets ? 'focus-visible:outline-white/70' : ''
+            } ${
               idx === currentIndex
                 ? (isAlphabets ? 'bg-white' : 'bg-gray-500') + ' w-3 h-3'
                 : (isAlphabets ? 'bg-white/40 hover:bg-white/60' : 'bg-gray-300 hover:bg-gray-400') + ' w-2 h-2'
