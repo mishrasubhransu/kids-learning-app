@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Eraser } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useRecordedAudio from '../../hooks/useRecordedAudio';
+import { recordingCategoryFor } from '../../lib/recordings';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
@@ -9,7 +10,7 @@ const brushColors = [
   '#9b59b6', '#e67e22', '#1abc9c', '#ff0066',
 ];
 
-const TracingMode = ({ items }) => {
+const TracingMode = ({ items, category }) => {
   // Two stacked canvases: the guide underlay and the child's strokes.
   // Keeping strokes separate lets a resize restore them without also
   // duplicating the old guide at the wrong scale.
@@ -19,7 +20,9 @@ const TracingMode = ({ items }) => {
   const brushColor = brushColors[currentIndex % brushColors.length];
   const isDrawing = useRef(false);
   const lastPos = useRef(null);
-  const { speak } = useSpeech();
+  // Parent-recorded voice when a recording exists, browser TTS otherwise —
+  // same speech path as the sibling lesson modes (ScrollView etc.)
+  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
   const { playPositive } = useAudioFeedback();
   const hasChecked = useRef(false);
 
@@ -89,8 +92,8 @@ const TracingMode = ({ items }) => {
   useEffect(() => {
     setupCanvas();
     drawGuide();
-    speak(currentItem.name);
-  }, [currentIndex, setupCanvas, drawGuide, speak, currentItem]);
+    speakItem(currentItem.name);
+  }, [currentIndex, setupCanvas, drawGuide, speakItem, currentItem]);
 
   // Resize handler — tablets fire this on rotation, so the child's
   // strokes are snapshotted and drawn back scaled instead of being lost
@@ -222,12 +225,12 @@ const TracingMode = ({ items }) => {
       else if (e.key === 'ArrowLeft') goPrev();
       else if (e.key === ' ') {
         e.preventDefault();
-        speak(currentItem.name);
+        speakItem(currentItem.name);
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, items.length, speak, currentItem]);
+  }, [currentIndex, items.length, speakItem, currentItem]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
@@ -241,7 +244,7 @@ const TracingMode = ({ items }) => {
           <Eraser size={24} />
         </button>
         <button
-          onClick={() => speak(currentItem.name)}
+          onClick={() => speakItem(currentItem.name)}
           className="p-3 rounded-full bg-blue-100 text-blue-600 hover:bg-blue-200 transition-colors"
           aria-label="Speak"
         >
