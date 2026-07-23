@@ -14,6 +14,7 @@ const SceneQuiz = ({ items, difficulty }) => {
   const { speak } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const autoAdvanceTimerRef = useRef(null);
+  const wrongResetTimerRef = useRef(null);
 
   const buildQuestions = useCallback(() => {
     let pairCount;
@@ -44,7 +45,10 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, [buildQuestions]);
 
   useEffect(() => {
-    return () => clearTimeout(autoAdvanceTimerRef.current);
+    return () => {
+      clearTimeout(autoAdvanceTimerRef.current);
+      clearTimeout(wrongResetTimerRef.current);
+    };
   }, []);
 
   const current = questions[currentIdx];
@@ -73,6 +77,7 @@ const SceneQuiz = ({ items, difficulty }) => {
 
   const nextQuestion = useCallback(() => {
     clearTimeout(autoAdvanceTimerRef.current);
+    clearTimeout(wrongResetTimerRef.current);
     if (currentIdx >= questions.length - 1) {
       setTestComplete(true);
       return;
@@ -87,7 +92,10 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, [currentIdx, questions, speak]);
 
   const handleSelect = (word) => {
-    if (selectedAnswer !== null) return;
+    // Only lock input after a correct answer — during wrong-answer feedback
+    // the highlighted correct card invites a retry, so let it through.
+    if (selectedAnswer !== null && isCorrect) return;
+    clearTimeout(wrongResetTimerRef.current);
     setSelectedAnswer(word);
 
     if (word === current.correctAnswer) {
@@ -102,10 +110,10 @@ const SceneQuiz = ({ items, difficulty }) => {
       playEncouragement().then(() => {
         speak(`That was ${word}. The answer is ${current.correctAnswer}.`);
       });
-      setTimeout(() => {
+      wrongResetTimerRef.current = setTimeout(() => {
         setSelectedAnswer(null);
         setIsCorrect(null);
-      }, 3000);
+      }, 2000);
     }
   };
 
