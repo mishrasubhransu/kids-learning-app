@@ -214,14 +214,6 @@ const SceneQuiz = ({ items, difficulty }) => {
         </button>
       </div>
 
-      {/* Scene image */}
-      <img
-        src={current.sceneImage}
-        alt="scene"
-        className="w-[var(--img-scene)] h-[var(--img-scene)] object-contain rounded-2xl shadow-lg bg-white mb-6"
-        draggable={false}
-      />
-
       {/* Image answer buttons */}
       <div className="flex gap-4 md:gap-8">
         {buttonOrder.map((word) => (
