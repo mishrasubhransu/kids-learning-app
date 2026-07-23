@@ -6,14 +6,17 @@ import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { useAuth } from '../context/AuthContext';
 
+// Light backgrounds (yellow/amber/green/cyan/orange) need dark text to stay
+// readable; the darker card colors keep white text.
 const categories = [
   {
     id: 'alphabets',
     name: 'Alphabets',
     description: 'Learn A to Z',
     icon: BookOpen,
-    color: 'bg-blue-500',
-    hoverColor: 'hover:bg-blue-600',
+    color: 'bg-blue-600',
+    hoverColor: 'hover:bg-blue-700',
+    textColor: 'text-white',
     preview: 'ABC',
   },
   {
@@ -22,6 +25,7 @@ const categories = [
     icon: Hash,
     color: 'bg-green-500',
     hoverColor: 'hover:bg-green-600',
+    textColor: 'text-gray-900',
     preview: '123',
   },
   {
@@ -29,8 +33,9 @@ const categories = [
     name: 'Colors',
     description: 'Learn colors',
     icon: Palette,
-    color: 'bg-pink-500',
-    hoverColor: 'hover:bg-pink-600',
+    color: 'bg-pink-600',
+    hoverColor: 'hover:bg-pink-700',
+    textColor: 'text-white',
     preview: '🎨',
   },
   {
@@ -38,8 +43,9 @@ const categories = [
     name: 'Shapes',
     description: 'Learn shapes',
     icon: Shapes,
-    color: 'bg-purple-500',
-    hoverColor: 'hover:bg-purple-600',
+    color: 'bg-purple-600',
+    hoverColor: 'hover:bg-purple-700',
+    textColor: 'text-white',
     preview: '⬟',
   },
   {
@@ -49,6 +55,7 @@ const categories = [
     icon: Image,
     color: 'bg-amber-500',
     hoverColor: 'hover:bg-amber-600',
+    textColor: 'text-gray-900',
     preview: '🦁',
   },
   {
@@ -57,6 +64,7 @@ const categories = [
     icon: ArrowLeftRight,
     color: 'bg-cyan-500',
     hoverColor: 'hover:bg-cyan-600',
+    textColor: 'text-gray-900',
     preview: '↔️',
   },
   {
@@ -65,6 +73,7 @@ const categories = [
     icon: Smile,
     color: 'bg-yellow-500',
     hoverColor: 'hover:bg-yellow-600',
+    textColor: 'text-gray-900',
     preview: '😊',
   },
   {
@@ -72,8 +81,9 @@ const categories = [
     name: 'Phonics',
     description: 'Learn 3-letter words',
     icon: Volume2,
-    color: 'bg-indigo-500',
-    hoverColor: 'hover:bg-indigo-600',
+    color: 'bg-indigo-600',
+    hoverColor: 'hover:bg-indigo-700',
+    textColor: 'text-white',
     preview: '🔤',
   },
   {
@@ -83,6 +93,7 @@ const categories = [
     icon: Keyboard,
     color: 'bg-orange-500',
     hoverColor: 'hover:bg-orange-600',
+    textColor: 'text-gray-900',
     preview: '⌨️',
   },
 ];
@@ -113,11 +124,15 @@ const Home = () => {
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
         {categories.map((category) => {
           const IconComponent = category.icon;
+          const darkText = category.textColor === 'text-gray-900';
+          const pillClass = darkText
+            ? 'text-sm bg-black/10 hover:bg-black/20 rounded-full px-3 py-1 transition-colors'
+            : 'text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors';
           return (
             <Link
               key={category.id}
               to={`/${category.id}`}
-              className={`${category.color} ${category.hoverColor} rounded-2xl p-6 md:p-8 text-white shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3`}
+              className={`${category.color} ${category.hoverColor} ${category.textColor} rounded-2xl p-6 md:p-8 shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl flex flex-col items-center justify-center gap-3`}
             >
               <IconComponent size={48} className="md:w-16 md:h-16" />
               <span className="text-3xl md:text-5xl font-bold">
@@ -127,16 +142,15 @@ const Home = () => {
                 {category.name}
               </span>
               {category.id === 'numbers' ? (
-                <button
-                  onClick={toggleNumberMax}
-                  className="text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors"
-                >
+                <button onClick={toggleNumberMax} className={pillClass}>
                   1–{numberMax}
                 </button>
               ) : stylesForCategory(category.id) ? (
-                <StyleToggle category={category.id} />
+                <StyleToggle category={category.id} className={pillClass} />
               ) : category.description ? (
-                <span className="text-sm opacity-80 hidden md:block">
+                <span
+                  className={`text-sm hidden md:block ${darkText ? 'text-gray-900/80' : 'text-white/90'}`}
+                >
                   {category.description}
                 </span>
               ) : null}
@@ -152,7 +166,7 @@ const Home = () => {
         </span>
         <button
           onClick={signOut}
-          className="mt-2 flex items-center gap-2 text-gray-400 hover:text-gray-600 text-sm transition-colors"
+          className="mt-2 flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm transition-colors"
         >
           <LogOut size={16} />
           Sign Out
