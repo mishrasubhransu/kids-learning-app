@@ -9,7 +9,11 @@ const brushColors = [
 ];
 
 const TracingMode = ({ items }) => {
+  // Two stacked canvases: the guide underlay and the child's strokes.
+  // Keeping strokes separate lets a resize restore them without also
+  // duplicating the old guide at the wrong scale.
   const canvasRef = useRef(null);
+  const guideCanvasRef = useRef(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const brushColor = brushColors[currentIndex % brushColors.length];
   const isDrawing = useRef(false);
@@ -32,24 +36,25 @@ const TracingMode = ({ items }) => {
     return canvas.getContext('2d');
   }, [getCanvas]);
 
-  // Setup canvas with retina support
+  // Setup both canvases with retina support (assigning width also clears)
   const setupCanvas = useCallback(() => {
-    const canvas = getCanvas();
-    if (!canvas) return;
-    const rect = canvas.getBoundingClientRect();
     const dpr = window.devicePixelRatio || 1;
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    const ctx = canvas.getContext('2d');
-    ctx.scale(dpr, dpr);
-    ctx.lineCap = 'round';
-    ctx.lineJoin = 'round';
-    ctx.lineWidth = 14;
-  }, [getCanvas]);
+    [guideCanvasRef.current, canvasRef.current].forEach((canvas) => {
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.lineWidth = 14;
+    });
+  }, []);
 
   // Draw guide character
   const drawGuide = useCallback(() => {
-    const canvas = getCanvas();
+    const canvas = guideCanvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     const rect = canvas.getBoundingClientRect();
@@ -78,7 +83,7 @@ const TracingMode = ({ items }) => {
     ctx.lineWidth = 14;
 
     hasChecked.current = false;
-  }, [getCanvas, currentItem]);
+  }, [currentItem]);
 
   useEffect(() => {
     setupCanvas();
@@ -86,14 +91,41 @@ const TracingMode = ({ items }) => {
     speak(currentItem.name);
   }, [currentIndex, setupCanvas, drawGuide, speak, currentItem]);
 
-  // Resize handler
+  // Resize handler — tablets fire this on rotation, so the child's
+  // strokes are snapshotted and drawn back scaled instead of being lost
   useEffect(() => {
+    let timer;
     const handleResize = () => {
-      setupCanvas();
-      drawGuide();
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const snapshot = document.createElement('canvas');
+        snapshot.width = canvas.width;
+        snapshot.height = canvas.height;
+        const hasStrokes = snapshot.width > 0 && snapshot.height > 0;
+        if (hasStrokes) {
+          snapshot.getContext('2d').drawImage(canvas, 0, 0);
+        }
+        setupCanvas();
+        drawGuide();
+        if (hasStrokes) {
+          const rect = canvas.getBoundingClientRect();
+          canvas
+            .getContext('2d')
+            .drawImage(
+              snapshot,
+              0, 0, snapshot.width, snapshot.height,
+              0, 0, rect.width, rect.height
+            );
+        }
+      }, 150);
     };
     window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', handleResize);
+    };
   }, [setupCanvas, drawGuide]);
 
   const getPos = (e) => {
@@ -161,9 +193,16 @@ const TracingMode = ({ items }) => {
     }
   };
 
+  // Clear only the strokes — the guide underlay stays put
   const handleClear = () => {
-    setupCanvas();
-    drawGuide();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+    hasChecked.current = false;
   };
 
   const goNext = () => {
@@ -216,19 +255,26 @@ const TracingMode = ({ items }) => {
         </span>
       </div>
 
-      {/* Canvas */}
-      <canvas
-        ref={canvasRef}
-        className="w-full max-w-lg aspect-square bg-white rounded-2xl shadow-lg cursor-crosshair"
-        style={{ touchAction: 'none' }}
-        onMouseDown={startDraw}
-        onMouseMove={draw}
-        onMouseUp={endDraw}
-        onMouseLeave={endDraw}
-        onTouchStart={startDraw}
-        onTouchMove={draw}
-        onTouchEnd={endDraw}
-      />
+      {/* Canvas: guide underlay + transparent stroke layer on top */}
+      <div className="relative w-full max-w-lg aspect-square">
+        <canvas
+          ref={guideCanvasRef}
+          className="absolute inset-0 w-full h-full bg-white rounded-2xl shadow-lg"
+          aria-hidden="true"
+        />
+        <canvas
+          ref={canvasRef}
+          className="absolute inset-0 w-full h-full rounded-2xl cursor-crosshair"
+          style={{ touchAction: 'none' }}
+          onMouseDown={startDraw}
+          onMouseMove={draw}
+          onMouseUp={endDraw}
+          onMouseLeave={endDraw}
+          onTouchStart={startDraw}
+          onTouchMove={draw}
+          onTouchEnd={endDraw}
+        />
+      </div>
 
       {/* Navigation arrows: below the canvas on narrow screens — floating
           at mid-height they'd overlap the canvas edges, so a child tracing
