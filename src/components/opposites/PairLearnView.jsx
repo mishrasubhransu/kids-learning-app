@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import preloadImages from '../../utils/preloadImages';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 // The two poles of every pair: warm for the first word, cool for its opposite.
 const POLES = [
@@ -89,7 +90,7 @@ const PairLearnView = ({ items }) => {
   // Keyboard: right = next, left = back, space/enter = repeat
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {

@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
 import preloadImages from '../../utils/preloadImages';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
@@ -178,7 +179,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {

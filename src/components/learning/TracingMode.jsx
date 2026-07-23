@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Eraser } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 const brushColors = [
   '#e74c3c', '#3498db', '#2ecc71', '#f1c40f',
@@ -216,7 +217,7 @@ const TracingMode = ({ items }) => {
   // Keyboard
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') goNext();
       else if (e.key === 'ArrowLeft') goPrev();
       else if (e.key === ' ') {

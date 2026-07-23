@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, objectType }) => {
   const [options, setOptions] = useState([]);
@@ -209,7 +210,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (!hasStarted && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault();
         handleStart();

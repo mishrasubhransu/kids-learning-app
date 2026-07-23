@@ -3,6 +3,7 @@ import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import preloadImages from '../../utils/preloadImages';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
@@ -131,7 +132,7 @@ const SceneQuiz = ({ items, difficulty }) => {
 
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (!hasStarted && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault();
         handleStart();

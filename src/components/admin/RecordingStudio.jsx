@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { Navigate } from 'react-router-dom';
 import { Mic, Square, Play, Save, RotateCcw, Check } from 'lucide-react';
 import HomeButton from '../ui/HomeButton';
+import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { useAuth } from '../../context/AuthContext';
 import { phonicsWords } from '../../data/phonics';
 import {
@@ -214,7 +215,7 @@ const RecordingStudio = () => {
   // Hold Space to record, Enter save, R re-record, P play, arrows move
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (e.code === 'Space') {
         e.preventDefault();
         startRecording();
@@ -232,6 +233,7 @@ const RecordingStudio = () => {
       }
     };
     const onKeyUp = (e) => {
+      if (ownedByFocusedControl(e)) return;
       if (e.code === 'Space') {
         e.preventDefault();
         stopRecording();

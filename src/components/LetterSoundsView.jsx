@@ -9,6 +9,7 @@ import {
   letterPhrase,
 } from '../data/letterSounds';
 import preloadImages from '../utils/preloadImages';
+import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
@@ -133,7 +134,7 @@ const LetterSoundsView = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat) return;
+      if (e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {

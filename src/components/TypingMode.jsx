@@ -3,6 +3,7 @@ import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
 import useSpeech from '../hooks/useSpeech';
 import useAudioFeedback from '../hooks/useAudioFeedback';
+import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 
 const colors = [
   '#e74c3c', // Red
@@ -141,7 +142,7 @@ const TypingMode = () => {
 
   const handleKeyPress = useCallback((event) => {
     // Ignore key repeats (holding down)
-    if (event.repeat) return;
+    if (event.repeat || ownedByFocusedControl(event)) return;
 
     // Check if key is a letter (A-Z) or number (0-9)
     if (event.key.length !== 1 || !event.key.match(/[a-z0-9]/i)) return;
