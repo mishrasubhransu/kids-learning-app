@@ -11,9 +11,7 @@ const groups = [
 const PhonicsHome = () => {
   const [letterCase, setLetterCase] = useUserSetting('letterCase', 'capital');
 
-  const toggleLetterCase = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+  const toggleLetterCase = () => {
     setLetterCase(letterCase === 'capital' ? 'small' : 'capital');
   };
 
@@ -30,13 +28,24 @@ const PhonicsHome = () => {
 
       <div className="flex-1 flex flex-col items-center p-6 md:p-10 gap-8 md:gap-10">
         <section className="w-full max-w-5xl">
-          <div className="mb-4 px-1">
-            <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-              Letter Sounds
-            </h2>
-            <p className="text-sm md:text-base text-gray-500">
-              A is for Apple
-            </p>
+          <div className="mb-4 px-1 flex items-end justify-between gap-4">
+            <div>
+              <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                Letter Sounds
+              </h2>
+              <p className="text-sm md:text-base text-gray-500">
+                A is for Apple
+              </p>
+            </div>
+            {/* Case toggle lives outside the Link — a button inside an
+                anchor is invalid HTML and easy to mis-tap. */}
+            <button
+              onClick={toggleLetterCase}
+              aria-pressed={letterCase === 'small'}
+              className="text-sm font-semibold bg-rose-100 text-rose-700 hover:bg-rose-200 rounded-full px-4 py-2 transition-colors whitespace-nowrap"
+            >
+              {letterCase === 'capital' ? 'ABC' : 'Aa'}
+            </button>
           </div>
           <Link
             to="/phonics/letters"
@@ -50,12 +59,6 @@ const PhonicsHome = () => {
                 <>Aa <span className="opacity-70">is for</span> Apple</>
               )}
             </span>
-            <button
-              onClick={toggleLetterCase}
-              className="text-sm bg-white/20 hover:bg-white/30 rounded-full px-3 py-1 transition-colors"
-            >
-              {letterCase === 'capital' ? 'ABC' : 'Aa'}
-            </button>
           </Link>
         </section>
 
