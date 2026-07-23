@@ -387,8 +387,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
         </button>
       </div>
 
-      {/* Progress indicators */}
-      <div className="absolute bottom-16 flex flex-wrap justify-center gap-2 max-w-[90%]">
+      {/* Progress indicators — display-only on touch, clickable via a padded
+          hit box for mouse/keyboard */}
+      <div className="absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {displayItems.map((_, idx) => (
           <button
             key={idx}
@@ -398,15 +399,19 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
               setRevealed(false);
               setCurrentIndex(idx);
             }}
-            className={`rounded-full transition-all duration-300 ${
+            className={`group w-6 h-6 flex items-center justify-center ${
               isAlphabets ? 'focus-visible:outline-white/70' : ''
-            } ${
-              idx === currentIndex
-                ? (isAlphabets ? 'bg-white' : 'bg-gray-500') + ' w-3 h-3'
-                : (isAlphabets ? 'bg-white/40 hover:bg-white/60' : 'bg-gray-300 hover:bg-gray-400') + ' w-2 h-2'
             }`}
             aria-label={`Go to item ${idx + 1}`}
-          />
+          >
+            <span
+              className={`rounded-full transition-all duration-300 ${
+                idx === currentIndex
+                  ? (isAlphabets ? 'bg-white' : 'bg-gray-500') + ' w-3 h-3'
+                  : (isAlphabets ? 'bg-white/40 group-hover:bg-white/60' : 'bg-gray-300 group-hover:bg-gray-400') + ' w-2 h-2'
+              }`}
+            />
+          </button>
         ))}
       </div>
 

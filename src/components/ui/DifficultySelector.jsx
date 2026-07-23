@@ -3,7 +3,7 @@ const DifficultySelector = ({ difficulty, onChange }) => {
     <select
       value={difficulty}
       onChange={(e) => onChange(e.target.value)}
-      className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 cursor-pointer"
+      className="min-h-10 bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 cursor-pointer"
     >
       <option value="easy">Easy (3-4)</option>
       <option value="medium">Medium (5-6)</option>

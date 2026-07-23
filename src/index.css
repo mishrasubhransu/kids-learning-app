@@ -47,6 +47,19 @@ input, textarea {
 }
 
 /*
+ * Progress dots are far below the ~40px touch-target minimum, and padding
+ * 20-26 of them up to size would wrap into a wall of dots. On touch screens
+ * they become display-only (children navigate with the big arrows); mouse
+ * and keyboard users keep them clickable. pointer-events inherits, so the
+ * class goes on the dots' container.
+ */
+@media (pointer: coarse) {
+  .touch-display-only {
+    pointer-events: none;
+  }
+}
+
+/*
  * Central image size tokens — resize all app imagery from here.
  * Components reference these via w-[var(--img-*)] classes, so each
  * breakpoint step below bumps every view at once. vh caps keep tall

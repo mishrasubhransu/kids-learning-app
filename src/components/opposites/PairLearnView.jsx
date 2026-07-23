@@ -185,20 +185,25 @@ const PairLearnView = ({ items }) => {
         </button>
       </div>
 
-      {/* Pair dots */}
-      <div className="absolute bottom-16 flex flex-wrap justify-center gap-2 max-w-[90%]">
+      {/* Pair dots — display-only on touch, clickable via a padded hit box
+          for mouse/keyboard */}
+      <div className="absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {displayItems.map((item, idx) => (
           <button
             key={item.id}
             onClick={() => setStep(idx * 2)}
-            className={`rounded-full transition-all duration-300 ${
-              idx === pairIndex
-                ? 'w-3 h-3'
-                : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
-            }`}
-            style={idx === pairIndex ? { backgroundColor: pole.accent } : undefined}
+            className="group w-6 h-6 flex items-center justify-center"
             aria-label={`Go to ${item.name}`}
-          />
+          >
+            <span
+              className={`rounded-full transition-all duration-300 ${
+                idx === pairIndex
+                  ? 'w-3 h-3'
+                  : 'w-2 h-2 bg-gray-300 group-hover:bg-gray-400'
+              }`}
+              style={idx === pairIndex ? { backgroundColor: pole.accent } : undefined}
+            />
+          </button>
         ))}
       </div>
 

@@ -234,8 +234,9 @@ const LetterSoundsView = () => {
         </button>
       </div>
 
-      {/* Progress indicators */}
-      <div className="absolute bottom-10 flex flex-wrap justify-center gap-1.5 max-w-[90%]">
+      {/* Progress indicators — display-only on touch, clickable via a padded
+          hit box for mouse/keyboard */}
+      <div className="absolute bottom-10 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {letterSounds.map((entry, idx) => (
           <button
             key={entry.letter}
@@ -243,13 +244,17 @@ const LetterSoundsView = () => {
               setCurrent({ index: idx, wordIdx: randomWordIdx(idx) });
               setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
             }}
-            className={`rounded-full transition-all duration-300 focus-visible:outline-white/70 ${
-              idx === current.index
-                ? 'bg-white w-3 h-3'
-                : 'bg-white/40 hover:bg-white/60 w-2 h-2'
-            }`}
+            className="group w-6 h-6 flex items-center justify-center focus-visible:outline-white/70"
             aria-label={`Go to letter ${entry.letter.toUpperCase()}`}
-          />
+          >
+            <span
+              className={`rounded-full transition-all duration-300 ${
+                idx === current.index
+                  ? 'bg-white w-3 h-3'
+                  : 'bg-white/40 group-hover:bg-white/60 w-2 h-2'
+              }`}
+            />
+          </button>
         ))}
       </div>
 

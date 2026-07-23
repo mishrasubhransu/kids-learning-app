@@ -110,7 +110,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
             <div className="flex bg-gray-100 p-1 rounded-lg">
               <button
                 onClick={() => selectMode('scroll')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`min-h-10 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'scroll'
                     ? 'bg-white text-gray-800 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
@@ -121,7 +121,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
               </button>
               <button
                 onClick={() => selectMode('tile')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`min-h-10 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'tile'
                     ? 'bg-white text-gray-800 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'
@@ -145,7 +145,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
               {(category === 'alphabets' || category === 'numbers') && (
                 <button
                   onClick={() => selectMode('trace')}
-                  className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                  className={`min-h-10 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                     mode === 'trace'
                       ? 'bg-white text-gray-800 shadow-sm'
                       : 'text-gray-500 hover:text-gray-700'
@@ -157,7 +157,7 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
               )}
               <button
                 onClick={() => selectMode('test')}
-                className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`min-h-10 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === 'test'
                     ? 'bg-white text-gray-800 shadow-sm'
                     : 'text-gray-500 hover:text-gray-700'

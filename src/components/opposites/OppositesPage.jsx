@@ -35,7 +35,7 @@ const OppositesPage = ({ backTo = '/home' }) => {
                   <button
                     key={m.id}
                     onClick={() => setMode(m.id)}
-                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
+                    className={`min-h-10 px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${
                       mode === m.id
                         ? 'bg-white text-gray-800 shadow-sm'
                         : 'text-gray-500 hover:text-gray-700'
