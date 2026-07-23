@@ -6,8 +6,14 @@ const ProtectedRoute = ({ children }) => {
 
   if (loading) {
     return (
-      <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex items-center justify-center">
-        <div className="text-2xl text-gray-500">Loading...</div>
+      <div
+        className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center gap-4"
+        role="status"
+      >
+        <div className="text-6xl motion-safe:animate-bounce" aria-hidden="true">
+          🎈
+        </div>
+        <div className="text-2xl font-semibold text-gray-600">Loading…</div>
       </div>
     );
   }
