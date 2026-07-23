@@ -186,8 +186,12 @@ const PairLearnView = ({ items }) => {
       </div>
 
       {/* Pair dots — display-only on touch, clickable via a padded hit box
-          for mouse/keyboard */}
-      <div className="absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
+          for mouse/keyboard; a plain counter replaces them on phones/short
+          landscape (see .progress-dots in index.css) */}
+      <div className="progress-count absolute bottom-16 text-sm font-medium text-gray-400">
+        {pairIndex + 1} / {displayItems.length}
+      </div>
+      <div className="progress-dots absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {displayItems.map((item, idx) => (
           <button
             key={item.id}

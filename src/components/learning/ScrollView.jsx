@@ -388,8 +388,16 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
       </div>
 
       {/* Progress indicators — display-only on touch, clickable via a padded
-          hit box for mouse/keyboard */}
-      <div className="absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
+          hit box for mouse/keyboard; a plain counter replaces them on
+          phones/short landscape (see .progress-dots in index.css) */}
+      <div
+        className={`progress-count absolute bottom-16 text-sm font-medium ${
+          isAlphabets ? 'text-white/60' : 'text-gray-400'
+        }`}
+      >
+        {currentIndex + 1} / {displayItems.length}
+      </div>
+      <div className="progress-dots absolute bottom-16 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {displayItems.map((_, idx) => (
           <button
             key={idx}

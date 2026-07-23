@@ -60,6 +60,25 @@ input, textarea {
 }
 
 /*
+ * Progress dots read as clutter on phones (20+ wrapped dots) and collide
+ * with content on short landscape viewports. Below md width or 500px height
+ * the dot row is swapped for a compact "4 / 26" counter. The two classes are
+ * exact inverses — exactly one of the pair renders.
+ */
+.progress-count {
+  display: none;
+}
+
+@media (max-width: 767.98px), (max-height: 500px) {
+  .progress-dots {
+    display: none;
+  }
+  .progress-count {
+    display: block;
+  }
+}
+
+/*
  * Central image size tokens — resize all app imagery from here.
  * Components reference these via w-[var(--img-*)] classes, so each
  * breakpoint step below bumps every view at once. vh caps keep tall

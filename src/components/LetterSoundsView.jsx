@@ -235,8 +235,12 @@ const LetterSoundsView = () => {
       </div>
 
       {/* Progress indicators — display-only on touch, clickable via a padded
-          hit box for mouse/keyboard */}
-      <div className="absolute bottom-10 flex flex-wrap justify-center max-w-[90%] touch-display-only">
+          hit box for mouse/keyboard; a plain counter replaces them on
+          phones/short landscape (see .progress-dots in index.css) */}
+      <div className="progress-count absolute bottom-10 text-sm font-medium text-white/60">
+        {current.index + 1} / {letterSounds.length}
+      </div>
+      <div className="progress-dots absolute bottom-10 flex flex-wrap justify-center max-w-[90%] touch-display-only">
         {letterSounds.map((entry, idx) => (
           <button
             key={entry.letter}
