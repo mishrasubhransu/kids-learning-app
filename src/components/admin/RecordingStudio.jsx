@@ -40,7 +40,12 @@ const RecordingStudio = () => {
   const [micError, setMicError] = useState('');
   const [saveError, setSaveError] = useState('');
   const [level, setLevel] = useState(0);
+  const [syncing, setSyncing] = useState(true);
+  // Seconds until the MAX_TAKE_MS auto-stop cuts the take
+  const [secondsLeft, setSecondsLeft] = useState(null);
 
+  const disposedRef = useRef(false);
+  const countdownRef = useRef(null);
   const streamRef = useRef(null);
   const audioCtxRef = useRef(null);
   const analyserRef = useRef(null);
@@ -52,16 +57,18 @@ const RecordingStudio = () => {
   const autoStopRef = useRef(null);
   const rafRef = useRef(null);
 
-  // Mic + analyser for the level meter, acquired once on mount
-  useEffect(() => {
-    let cancelled = false;
+  // Mic + analyser for the level meter — on mount, and again from the
+  // error banner's retry button after the user grants permission
+  const acquireMic = useCallback(() => {
     navigator.mediaDevices
       .getUserMedia({ audio: true })
       .then((stream) => {
-        if (cancelled) {
+        if (disposedRef.current) {
           stream.getTracks().forEach((t) => t.stop());
           return;
         }
+        streamRef.current?.getTracks().forEach((t) => t.stop());
+        audioCtxRef.current?.close();
         streamRef.current = stream;
         const ctx = new AudioContext();
         const analyser = ctx.createAnalyser();
@@ -72,22 +79,31 @@ const RecordingStudio = () => {
         setMicError('');
       })
       .catch((err) => setMicError(err.message || 'Microphone access denied'));
+  }, []);
+
+  useEffect(() => {
+    disposedRef.current = false;
+    acquireMic();
     return () => {
-      cancelled = true;
+      disposedRef.current = true;
       streamRef.current?.getTracks().forEach((t) => t.stop());
       audioCtxRef.current?.close();
       cancelAnimationFrame(rafRef.current);
       clearTimeout(autoStopRef.current);
+      clearInterval(countdownRef.current);
       audioRef.current?.pause();
       if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
     };
-  }, []);
+  }, [acquireMic]);
 
   // Pick up recordings made on another device
   useEffect(() => {
-    syncRecordings().then(() => {
-      setRecorded(new Set(names.filter((n) => hasRecording(CATEGORY, n))));
-    });
+    syncRecordings()
+      .then(() => {
+        setRecorded(new Set(names.filter((n) => hasRecording(CATEGORY, n))));
+      })
+      .catch(() => {})
+      .finally(() => setSyncing(false));
   }, [names]);
 
   const runMeter = useCallback(() => {
@@ -128,6 +144,8 @@ const RecordingStudio = () => {
     };
     rec.onstop = () => {
       cancelAnimationFrame(rafRef.current);
+      clearInterval(countdownRef.current);
+      setSecondsLeft(null);
       setLevel(0);
       const blob = new Blob(chunksRef.current, { type: rec.mimeType || 'audio/webm' });
       if (!blob.size) {
@@ -146,6 +164,13 @@ const RecordingStudio = () => {
     setStatus('recording');
     runMeter();
     autoStopRef.current = setTimeout(stopRecording, MAX_TAKE_MS);
+    // Visible countdown so the auto-stop never truncates a take by surprise
+    const deadline = Date.now() + MAX_TAKE_MS;
+    setSecondsLeft(Math.ceil(MAX_TAKE_MS / 1000));
+    clearInterval(countdownRef.current);
+    countdownRef.current = setInterval(() => {
+      setSecondsLeft(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+    }, 200);
   }, [status, runMeter, stopRecording]);
 
   const discardTake = useCallback(() => {
@@ -247,7 +272,7 @@ const RecordingStudio = () => {
     };
   }, [startRecording, stopRecording, save, discardTake, playCurrent, selectOffset]);
 
-  if (user.email !== ADMIN_EMAIL) {
+  if (user?.email !== ADMIN_EMAIL) {
     return <Navigate to="/home" replace />;
   }
 
@@ -263,16 +288,24 @@ const RecordingStudio = () => {
             <HomeButton to="/home" />
             <h1 className="text-2xl font-bold text-gray-800">Syllable Recorder</h1>
           </div>
-          <span className="text-sm font-medium text-gray-500">
-            {recorded.size} / {names.length} recorded
+          <span className="text-sm font-medium text-gray-500" role="status">
+            {syncing
+              ? 'Syncing recordings…'
+              : `${recorded.size} / ${names.length} recorded`}
           </span>
         </div>
       </div>
 
       <div className="flex-1 max-w-4xl w-full mx-auto p-4 flex flex-col gap-6">
         {micError && (
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-sm">
-            Microphone unavailable: {micError}. Allow mic access and reload.
+          <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-sm flex items-center justify-between gap-4 flex-wrap">
+            <span>Microphone unavailable: {micError}. Allow mic access, then try again.</span>
+            <button
+              onClick={acquireMic}
+              className="shrink-0 min-h-10 px-4 py-2 rounded-lg bg-red-600 text-white font-medium hover:bg-red-700 transition-colors"
+            >
+              Try again
+            </button>
           </div>
         )}
 
@@ -296,7 +329,8 @@ const RecordingStudio = () => {
           </div>
 
           <div className="text-sm text-gray-500 h-5">
-            {status === 'recording' && 'Recording… release Space to stop'}
+            {status === 'recording' &&
+              `Recording… release Space to stop (auto-stops in ${secondsLeft}s)`}
             {status === 'preview' && 'Preview played — Enter to save, R to re-record'}
             {status === 'saving' && 'Saving…'}
             {status === 'idle' &&
