@@ -166,7 +166,7 @@ const PairLearnView = ({ items }) => {
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-1 md:px-6 pointer-events-none">
         <button
           onClick={goPrev}
-          className="pointer-events-auto p-3 md:p-4 rounded-full opacity-40 hover:opacity-100 hover:bg-white/60 transition-all"
+          className="pointer-events-auto p-3 md:p-4 rounded-full opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/60 active:scale-95 active:opacity-100 transition-all"
           aria-label="Back"
         >
           <ChevronLeft size={44} className="text-gray-500" />
@@ -177,7 +177,7 @@ const PairLearnView = ({ items }) => {
           className={`pointer-events-auto p-3 md:p-4 rounded-full transition-all ${
             isCoolingDown
               ? 'opacity-15 cursor-not-allowed'
-              : 'opacity-40 hover:opacity-100 hover:bg-white/60'
+              : 'opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/60 active:scale-95 active:opacity-100'
           }`}
           aria-label="Next"
         >

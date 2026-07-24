@@ -364,7 +364,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
       <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className={`pointer-events-auto p-4 rounded-full transition-all opacity-40 hover:opacity-100 ${
+          className={`pointer-events-auto p-4 rounded-full transition-all opacity-70 md:opacity-40 hover:opacity-100 active:scale-95 active:opacity-100 ${
             isAlphabets ? 'hover:bg-white/20 focus-visible:outline-white/70' : 'hover:bg-gray-200'
           }`}
           aria-label="Previous"
@@ -379,7 +379,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
           } ${
             isCoolingDown
               ? 'opacity-15 cursor-not-allowed'
-              : `opacity-40 hover:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
+              : `opacity-70 md:opacity-40 hover:opacity-100 active:scale-95 active:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
           }`}
           aria-label="Next"
         >
