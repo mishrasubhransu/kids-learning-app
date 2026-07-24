@@ -131,7 +131,7 @@ const Home = () => {
     <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 overflow-y-auto">
       <div className="min-h-full flex flex-col items-center justify-center p-4">
       <h1 className="text-4xl md:text-6xl font-bold text-gray-800 mb-4 text-center">
-        Toddler Learning App
+        ToddLearn
       </h1>
       <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 text-center">
         Choose what you want to learn today!
