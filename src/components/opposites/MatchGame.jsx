@@ -161,6 +161,14 @@ const MatchGame = ({ items, difficulty }) => {
     }
   };
 
+  // The completion screen was a silent static trophy — say the praise out
+  // loud, matching the spoken feedback everywhere else in the game.
+  useEffect(() => {
+    if (gameComplete) {
+      speak(`Great job! You found ${rounds.length} opposites!`);
+    }
+  }, [gameComplete, rounds.length, speak]);
+
   // Keyboard: space/enter to start, R to repeat
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -181,7 +189,8 @@ const MatchGame = ({ items, difficulty }) => {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
-          <div className="text-6xl md:text-8xl mb-6">🏆</div>
+          <div className="text-6xl md:text-8xl mb-4 motion-safe:animate-bounce" aria-hidden="true">🏆</div>
+          <div className="text-3xl md:text-4xl mb-4 opposites-pop" aria-hidden="true">🎉 🎈 ⭐ 🎈 🎉</div>
           <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">
             All Matched!
           </h2>
