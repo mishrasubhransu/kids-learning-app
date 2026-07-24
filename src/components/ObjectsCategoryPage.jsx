@@ -14,6 +14,7 @@ const ObjectsCategoryPage = () => {
     <CategoryPage
       category={`objects-${subcategory}`}
       backTo="/objects"
+      catInfo={catInfo}
     />
   );
 };

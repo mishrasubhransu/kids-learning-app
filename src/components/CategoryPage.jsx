@@ -41,7 +41,7 @@ phonicsFamilies.forEach((family) => {
   };
 });
 
-const CategoryPage = ({ category, backTo = '/home' }) => {
+const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const { user } = useAuth();
   // Recorded clips only play for the admin account (regional pronunciation
   // varies), so don't warm the audio cache for anyone else
@@ -108,6 +108,15 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
           {/* Back button and title */}
           <div className="flex items-center gap-4">
             <HomeButton to={backTo} />
+            {/* Echo the card the child tapped on ObjectsHome (its color + emoji) */}
+            {catInfo && (
+              <span
+                className={`${catInfo.color} w-10 h-10 rounded-xl flex items-center justify-center text-2xl shadow-sm`}
+                aria-hidden="true"
+              >
+                {catInfo.emoji}
+              </span>
+            )}
             <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
           </div>
 
