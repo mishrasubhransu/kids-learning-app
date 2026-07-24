@@ -52,9 +52,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
     category?.startsWith('phonics-') && displayItems[0]?.image
   );
 
-  const speakCurrent = useCallback(() => {
+  const speakCurrent = useCallback((options) => {
     if (currentItem) {
-      speakItem(currentItem.name);
+      speakItem(currentItem.name, options);
     }
   }, [currentItem, speakItem]);
 
@@ -68,10 +68,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
     hasInteracted.current = true;
   }, []);
 
-  // Speak the first item when entering the page
+  // Speak the first item when entering the page. Queued, not spoken over:
+  // arriving from ObjectsHome, the category name is still being announced.
   useEffect(() => {
     if (!isAutoplay) {
-      speakCurrent();
+      speakCurrent({ enqueue: true });
       hasInteracted.current = true;
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

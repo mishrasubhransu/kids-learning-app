@@ -50,8 +50,11 @@ export const useSpeech = () => {
   const speak = useCallback((text, options = {}) => {
     if (!text) return;
 
-    // Cancel any ongoing speech
-    window.speechSynthesis.cancel();
+    // Cancel any ongoing speech — unless the caller wants to queue behind it
+    // (speechSynthesis plays queued utterances back to back natively)
+    if (!options.enqueue) {
+      window.speechSynthesis.cancel();
+    }
 
     // Chrome bug workaround: speech synthesis can get "stuck"
     // This unsticks it by calling getVoices

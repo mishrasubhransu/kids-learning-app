@@ -29,7 +29,7 @@ const useRecordedAudio = (rawCategory) => {
   }, []);
 
   const speakItem = useCallback(
-    (name) => {
+    (name, options) => {
       audioRef.current?.pause();
       const token = ++tokenRef.current;
       if (category && hasRecording(category, name)) {
@@ -47,7 +47,7 @@ const useRecordedAudio = (rawCategory) => {
         });
         return { kind: 'audio', audio };
       }
-      return { kind: 'tts', utterance: speak(name) };
+      return { kind: 'tts', utterance: speak(name, options) };
     },
     [category, speak, cancel]
   );
