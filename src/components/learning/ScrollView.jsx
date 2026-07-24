@@ -360,8 +360,16 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
         </button>
       </div>
 
-      {/* Navigation arrows */}
-      <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
+      {/* Navigation arrows: below the content on narrow screens — floating at
+          mid-height they overlap the hero card (alphabets is just a glyph on a
+          colored background, so floating stays fine there) */}
+      <div
+        className={
+          isAlphabets
+            ? 'absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none'
+            : 'mt-4 w-full flex justify-between px-2 pointer-events-none md:absolute md:inset-x-0 md:top-1/2 md:-translate-y-1/2 md:mt-0 md:px-8'
+        }
+      >
         <button
           onClick={goPrev}
           className={`pointer-events-auto p-4 rounded-full transition-all opacity-70 md:opacity-40 hover:opacity-100 active:scale-95 active:opacity-100 ${
