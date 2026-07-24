@@ -18,7 +18,7 @@ const OppositesPage = ({ backTo = '/home' }) => {
   const [difficulty, setDifficulty] = useState('easy');
 
   return (
-    <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">
+    <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex flex-col overflow-hidden">
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -48,9 +48,12 @@ const OppositesPage = ({ backTo = '/home' }) => {
               })}
             </div>
 
-            {mode !== 'learn' && (
+            {/* Always in the layout so the mode pills don't jump when Learn
+                hides it; visibility (not conditional render) reserves the
+                space and drops it from the tab order. */}
+            <div className={mode === 'learn' ? 'invisible' : undefined}>
               <DifficultySelector difficulty={difficulty} onChange={setDifficulty} />
-            )}
+            </div>
           </div>
         </div>
       </div>

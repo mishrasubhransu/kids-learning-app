@@ -3,6 +3,7 @@ const DifficultySelector = ({ difficulty, onChange }) => {
     <select
       value={difficulty}
       onChange={(e) => onChange(e.target.value)}
+      aria-label="Difficulty"
       className="min-h-10 bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 cursor-pointer"
     >
       <option value="easy">Easy (3-4)</option>
