@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { BookOpen, Gamepad2, Pencil } from 'lucide-react';
-import { recordingCategoryFor, syncRecordings, preloadRecordings } from '../lib/recordings';
+import { ADMIN_EMAIL, recordingCategoryFor, syncRecordings, preloadRecordings } from '../lib/recordings';
+import { useAuth } from '../context/AuthContext';
 import HomeButton from './ui/HomeButton';
 import ScrollView from './learning/ScrollView';
 import TileView from './learning/TileView';
@@ -41,6 +42,10 @@ phonicsFamilies.forEach((family) => {
 });
 
 const CategoryPage = ({ category, backTo = '/home' }) => {
+  const { user } = useAuth();
+  // Recorded clips only play for the admin account (regional pronunciation
+  // varies), so don't warm the audio cache for anyone else
+  const isAdmin = user?.email === ADMIN_EMAIL;
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   // "Ready to play a game?" screen after autoplay, instead of a silent jump to test
   const [showGamePrompt, setShowGamePrompt] = useState(false);
@@ -67,13 +72,14 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
   // Warm the audio cache when a category with parent recordings opens, so
   // playback never waits on the network mid-session
   useEffect(() => {
+    if (!isAdmin) return;
     const recordingCategory = recordingCategoryFor(category);
     const categoryItems = categoryData[category]?.items;
     if (!recordingCategory || !categoryItems) return;
     syncRecordings().then(() =>
       preloadRecordings(recordingCategory, categoryItems.map((i) => i.name))
     );
-  }, [category]);
+  }, [category, isAdmin]);
 
   const data = categoryData[category];
   if (!data) {

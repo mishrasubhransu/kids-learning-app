@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import useSpeech from './useSpeech';
-import { hasRecording, getRecordingObjectUrl } from '../lib/recordings';
+import { useAuth } from '../context/AuthContext';
+import { ADMIN_EMAIL, hasRecording, getRecordingObjectUrl } from '../lib/recordings';
 
 // Speaks an item with the parent-recorded clip when one exists, browser TTS
 // otherwise. Once a recording is chosen, TTS never stacks on top of it — a
@@ -10,8 +11,13 @@ import { hasRecording, getRecordingObjectUrl } from '../lib/recordings';
 //
 // speakItem returns { kind: 'audio', audio } or { kind: 'tts', utterance } so
 // callers that need an "ended" signal (autoplay) can attach to either.
-const useRecordedAudio = (category) => {
+const useRecordedAudio = (rawCategory) => {
   const { speak, cancel } = useSpeech();
+  const { user } = useAuth();
+  // Recorded clips are the admin's own voice and accent. Other families hear
+  // TTS in their device's locale instead — syllable pronunciation differs by
+  // region, and a stranger's accent would be wrong for many of them.
+  const category = user?.email === ADMIN_EMAIL ? rawCategory : null;
   const audioRef = useRef(null);
   const tokenRef = useRef(0);
 
