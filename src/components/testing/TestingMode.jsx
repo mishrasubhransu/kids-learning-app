@@ -260,7 +260,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     const baseClasses = `
       rounded-2xl shadow-lg cursor-pointer transition-all duration-200 select-none
       ${bgClass} ${borderClass}
-      ${selectedAnswer === null ? 'hover:scale-105 hover:shadow-xl' : ''}
+      ${selectedAnswer === null ? 'motion-safe:hover:scale-105 hover:shadow-xl' : ''}
     `;
 
     switch (category) {

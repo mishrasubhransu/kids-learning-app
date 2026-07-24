@@ -74,7 +74,7 @@ const LandingPage = () => {
         </p>
         <Link
           to="/login"
-          className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+          className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all transform motion-safe:hover:scale-105"
         >
           Try for Free
         </Link>
@@ -115,7 +115,7 @@ const LandingPage = () => {
           </p>
           <Link
             to="/login"
-            className="inline-block bg-white text-indigo-600 font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all transform hover:scale-105"
+            className="inline-block bg-white text-indigo-600 font-bold py-3 px-8 rounded-full text-lg shadow-lg hover:shadow-xl transition-all transform motion-safe:hover:scale-105"
           >
             Get Started for Free
           </Link>

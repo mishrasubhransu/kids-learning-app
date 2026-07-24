@@ -157,7 +157,7 @@ const Home = () => {
             // move as one unit, matching the old nested layout.
             <div
               key={category.id}
-              className="group relative transform transition-transform duration-200 hover:scale-105"
+              className="group relative transform transition-transform duration-200 motion-safe:hover:scale-105"
             >
               <Link
                 to={`/${category.id}`}

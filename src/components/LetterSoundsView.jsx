@@ -165,7 +165,7 @@ const LetterSoundsView = () => {
         onClick={playCurrent}
         className={`absolute top-4 right-4 z-10 p-3 rounded-full text-white transition-colors focus-visible:outline-white/70 ${
           isAudioPlaying
-            ? 'bg-white/30 animate-pulse'
+            ? 'bg-white/30 motion-safe:animate-pulse'
             : 'bg-white/20 hover:bg-white/30'
         }`}
         aria-label="Say it again"
@@ -217,7 +217,7 @@ const LetterSoundsView = () => {
       <div className="absolute inset-x-0 bottom-2 md:bottom-auto md:top-1/2 md:-translate-y-1/2 flex justify-between px-2 md:px-8 pointer-events-none">
         <button
           onClick={goPrev}
-          className="pointer-events-auto p-4 rounded-full transition-all focus-visible:outline-white/70 opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/20 active:scale-95 active:opacity-100"
+          className="pointer-events-auto p-4 rounded-full transition-all focus-visible:outline-white/70 opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/20 motion-safe:active:scale-95 active:opacity-100"
           aria-label="Previous letter"
         >
           <ChevronLeft size={48} className="text-white" />
@@ -228,7 +228,7 @@ const LetterSoundsView = () => {
           className={`pointer-events-auto p-4 rounded-full transition-all focus-visible:outline-white/70 ${
             isCoolingDown || isAudioPlaying
               ? 'opacity-15 cursor-not-allowed'
-              : 'opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/20 active:scale-95 active:opacity-100'
+              : 'opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/20 motion-safe:active:scale-95 active:opacity-100'
           }`}
           aria-label="Next letter"
         >

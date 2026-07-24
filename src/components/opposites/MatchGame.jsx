@@ -227,7 +227,7 @@ const MatchGame = ({ items, difficulty }) => {
 
   const getChoiceStyle = (word) => {
     if (selected === null) {
-      return 'bg-white border-4 border-transparent hover:border-blue-200 hover:scale-105';
+      return 'bg-white border-4 border-transparent hover:border-blue-200 motion-safe:hover:scale-105';
     }
     if (selected === word) {
       return isCorrect

@@ -134,7 +134,7 @@ const FeedbackButton = () => {
       <button
         ref={openerRef}
         onClick={() => { setIsOpen(true); setStatus('idle'); }}
-        className="fixed bottom-4 right-4 z-40 bg-indigo-500 hover:bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all hover:scale-110"
+        className="fixed bottom-4 right-4 z-40 bg-indigo-500 hover:bg-indigo-600 text-white p-3 rounded-full shadow-lg transition-all motion-safe:hover:scale-110"
         aria-label="Send feedback"
       >
         <MessageSquare size={22} />

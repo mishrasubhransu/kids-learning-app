@@ -49,7 +49,7 @@ const PhonicsHome = () => {
           </div>
           <Link
             to="/phonics/letters"
-            className="bg-rose-500 hover:bg-rose-600 rounded-2xl p-5 md:p-6 text-white shadow-lg transform transition-all duration-200 hover:scale-[1.02] hover:shadow-xl active:scale-[0.98] flex items-center justify-center gap-4"
+            className="bg-rose-500 hover:bg-rose-600 rounded-2xl p-5 md:p-6 text-white shadow-lg transform transition-all duration-200 motion-safe:hover:scale-[1.02] hover:shadow-xl motion-safe:active:scale-[0.98] flex items-center justify-center gap-4"
           >
             <span className="text-4xl md:text-5xl">🍎</span>
             <span className="text-3xl md:text-5xl font-bold tracking-wide">
@@ -79,7 +79,7 @@ const PhonicsHome = () => {
                   <Link
                     key={family.id}
                     to={`/phonics/${family.id}`}
-                    className={`${family.color} ${family.hoverColor} rounded-2xl p-4 md:p-5 text-white shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl active:scale-95 flex flex-col items-center justify-center gap-1`}
+                    className={`${family.color} ${family.hoverColor} rounded-2xl p-4 md:p-5 text-white shadow-lg transform transition-all duration-200 motion-safe:hover:scale-105 hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-1`}
                   >
                     {family.emoji && (
                       <span className="text-3xl md:text-4xl">{family.emoji}</span>

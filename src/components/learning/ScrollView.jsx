@@ -226,7 +226,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
               {Array.from({ length: currentItem.value }).map((_, i) => (
                 <div
                   key={i}
-                  className="text-[3rem] md:text-[5rem] leading-none filter drop-shadow-lg transform transition-all hover:scale-110 duration-200"
+                  className="text-[3rem] md:text-[5rem] leading-none filter drop-shadow-lg transform transition-all motion-safe:hover:scale-110 duration-200"
                 >
                   {objectIcons?.[objectType] || '🥚'}
                 </div>
@@ -239,7 +239,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
         return (
           <div className="flex flex-col items-center gap-6">
             <div
-              className="w-[var(--img-hero)] h-[var(--img-hero)] rounded-full shadow-2xl border-4 border-white transition-transform hover:scale-105"
+              className="w-[var(--img-hero)] h-[var(--img-hero)] rounded-full shadow-2xl border-4 border-white transition-transform motion-safe:hover:scale-105"
               style={{
                 backgroundColor: currentItem.hex,
                 boxShadow: currentItem.name === 'White' 
@@ -375,7 +375,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
       >
         <button
           onClick={goPrev}
-          className={`pointer-events-auto p-4 rounded-full transition-all opacity-70 md:opacity-40 hover:opacity-100 active:scale-95 active:opacity-100 ${
+          className={`pointer-events-auto p-4 rounded-full transition-all opacity-70 md:opacity-40 hover:opacity-100 motion-safe:active:scale-95 active:opacity-100 ${
             isAlphabets ? 'hover:bg-white/20 focus-visible:outline-white/70' : 'hover:bg-gray-200'
           }`}
           aria-label="Previous"
@@ -390,7 +390,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
           } ${
             isCoolingDown
               ? 'opacity-15 cursor-not-allowed'
-              : `opacity-70 md:opacity-40 hover:opacity-100 active:scale-95 active:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
+              : `opacity-70 md:opacity-40 hover:opacity-100 motion-safe:active:scale-95 active:opacity-100 ${isAlphabets ? 'hover:bg-white/20' : 'hover:bg-gray-200'}`
           }`}
           aria-label="Next"
         >

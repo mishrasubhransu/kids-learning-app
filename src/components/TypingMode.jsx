@@ -375,7 +375,7 @@ const TypingMode = () => {
           <button
             key={ch}
             onClick={() => handleChar(ch)}
-            className="w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/40 active:scale-90 text-white text-2xl md:text-3xl font-bold transition-all focus-visible:outline-white/70"
+            className="w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/40 motion-safe:active:scale-90 text-white text-2xl md:text-3xl font-bold transition-all focus-visible:outline-white/70"
           >
             {ch}
           </button>

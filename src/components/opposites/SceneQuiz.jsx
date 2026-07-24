@@ -193,7 +193,7 @@ const SceneQuiz = ({ items, difficulty }) => {
 
   const getButtonStyle = (word) => {
     if (selectedAnswer === null) {
-      return 'bg-white border-4 border-transparent hover:border-blue-200 hover:scale-105';
+      return 'bg-white border-4 border-transparent hover:border-blue-200 motion-safe:hover:scale-105';
     }
     if (selectedAnswer === word) {
       return isCorrect

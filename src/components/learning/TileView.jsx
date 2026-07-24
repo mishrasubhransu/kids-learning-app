@@ -21,7 +21,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
     const isActive = activeId === item.id;
     const baseClasses = `
       rounded-2xl shadow-lg cursor-pointer transition-all duration-200
-      ${isActive ? 'scale-110 shadow-xl' : 'hover:scale-105 hover:shadow-xl'}
+      ${isActive ? 'scale-110 shadow-xl' : 'motion-safe:hover:scale-105 hover:shadow-xl'}
     `;
 
     switch (category) {

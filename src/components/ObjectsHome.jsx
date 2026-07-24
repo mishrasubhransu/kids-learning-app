@@ -30,7 +30,7 @@ const ObjectsHome = () => {
               key={cat.id}
               to={`/objects/${cat.id}`}
               onClick={() => speak(cat.name)}
-              className={`${cat.color} ${cat.hoverColor} rounded-2xl p-6 md:p-8 text-white shadow-lg transform transition-all duration-200 hover:scale-105 hover:shadow-xl active:scale-95 flex flex-col items-center justify-center gap-3`}
+              className={`${cat.color} ${cat.hoverColor} rounded-2xl p-6 md:p-8 text-white shadow-lg transform transition-all duration-200 motion-safe:hover:scale-105 hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
             >
               <span className="text-5xl md:text-6xl">{cat.emoji}</span>
               <span className="text-lg md:text-xl font-semibold">

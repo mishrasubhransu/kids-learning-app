@@ -42,14 +42,14 @@ const GameInterstitial = ({ onPlay, onKeepLearning }) => {
         <button
           ref={playButtonRef}
           onClick={onPlay}
-          className="flex items-center gap-3 px-10 py-5 rounded-2xl bg-purple-600 text-white text-2xl md:text-3xl font-bold shadow-lg hover:bg-purple-700 active:scale-95 transition-all"
+          className="flex items-center gap-3 px-10 py-5 rounded-2xl bg-purple-600 text-white text-2xl md:text-3xl font-bold shadow-lg hover:bg-purple-700 motion-safe:active:scale-95 transition-all"
         >
           <Gamepad2 size={32} />
           Let's play!
         </button>
         <button
           onClick={onKeepLearning}
-          className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-white text-gray-600 text-lg md:text-xl font-medium shadow hover:bg-gray-50 active:scale-95 transition-all"
+          className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-white text-gray-600 text-lg md:text-xl font-medium shadow hover:bg-gray-50 motion-safe:active:scale-95 transition-all"
         >
           <BookOpen size={22} />
           Keep learning
