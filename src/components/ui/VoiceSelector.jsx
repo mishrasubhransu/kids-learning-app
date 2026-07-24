@@ -15,6 +15,7 @@ const VoiceSelector = () => {
     <select
       value={selectedVoiceURI}
       onChange={handleChange}
+      aria-label="Voice"
       className="bg-gray-100 border-none rounded-lg px-3 py-2 text-sm text-gray-700 cursor-pointer"
     >
       <option value="">Auto (default voice)</option>

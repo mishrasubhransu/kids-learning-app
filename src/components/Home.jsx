@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile, Volume2 } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
@@ -111,6 +111,24 @@ const Home = () => {
     localStorage.setItem('numberMax', next);
   };
 
+  // Toddler-proofing: signing out takes two taps. The first arms the button
+  // (distinct red "tap again" state) and a stray single tap disarms itself.
+  const [confirmSignOut, setConfirmSignOut] = useState(false);
+  const confirmTimerRef = useRef(null);
+
+  const handleSignOut = () => {
+    if (!confirmSignOut) {
+      setConfirmSignOut(true);
+      clearTimeout(confirmTimerRef.current);
+      confirmTimerRef.current = setTimeout(() => setConfirmSignOut(false), 4000);
+      return;
+    }
+    clearTimeout(confirmTimerRef.current);
+    signOut();
+  };
+
+  useEffect(() => () => clearTimeout(confirmTimerRef.current), []);
+
   const objectKeys = Object.keys(objectIcons);
   const [objectType, setObjectType] = useState(() => {
     const saved = localStorage.getItem('objectType');
@@ -211,11 +229,15 @@ const Home = () => {
           Use arrow keys or tap to navigate
         </span>
         <button
-          onClick={signOut}
-          className="mt-2 flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm transition-colors"
+          onClick={handleSignOut}
+          className={`mt-2 flex items-center gap-2 text-sm transition-colors ${
+            confirmSignOut
+              ? 'text-red-600 hover:text-red-700 font-semibold'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
         >
           <LogOut size={16} />
-          Sign Out
+          {confirmSignOut ? 'Tap again to sign out' : 'Sign Out'}
         </button>
       </div>
       </div>
