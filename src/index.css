@@ -163,7 +163,7 @@ input, textarea {
   }
 }
 
-/* Gentle shake for wrong answers in the opposites games */
+/* Gentle shake for wrong answers in the quiz games (opposites + TestingMode) */
 @keyframes opposites-shake {
   0%, 100% { transform: translateX(0); }
   20% { transform: translateX(-8px); }

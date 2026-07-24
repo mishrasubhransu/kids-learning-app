@@ -241,19 +241,20 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     const isCorrectAnswer = item.id === correctAnswer?.id;
     const showResult = selectedAnswer !== null;
 
+    // Same feedback language as MatchGame/SceneQuiz: border-4 + pop/shake
     let bgClass = 'bg-white hover:bg-gray-50';
-    let borderClass = 'border-2 border-transparent';
+    let borderClass = 'border-4 border-transparent';
 
     if (showResult && isSelected) {
       if (isCorrect) {
-        bgClass = 'bg-green-100';
-        borderClass = 'border-2 border-green-500';
+        bgClass = 'bg-green-50';
+        borderClass = 'border-4 border-green-500 opposites-pop';
       } else {
-        bgClass = 'bg-red-100';
-        borderClass = 'border-2 border-red-500';
+        bgClass = 'bg-red-50';
+        borderClass = 'border-4 border-red-400 opposites-shake';
       }
     } else if (showResult && isCorrectAnswer && !isCorrect) {
-      borderClass = 'border-2 border-green-500 border-dashed';
+      borderClass = 'border-4 border-green-500 border-dashed';
     }
 
     const baseClasses = `
@@ -386,6 +387,9 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     if (count <= 3) return 'grid-cols-3';
     if (count <= 4) return 'grid-cols-2 md:grid-cols-4';
     if (count <= 6) return 'grid-cols-2 md:grid-cols-3';
+    // Hard mode can show every item (26 letters) — denser columns, and the
+    // scroll container below keeps the tall grid reachable
+    if (count > 12) return 'grid-cols-4 md:grid-cols-6';
     return 'grid-cols-3 md:grid-cols-4';
   };
 
@@ -438,48 +442,49 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   }
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
-      {/* Question prompt */}
-      <div className="mb-8 text-center">
-        <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-4">
-          Which one is{' '}
-          <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>?
-        </h2>
-        <div className="flex items-center gap-3 justify-center">
-          <button
-            onClick={askQuestion}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
-          >
-            <Volume2 size={20} />
-            Repeat question
-          </button>
+    // Scrollable so hard mode's full grid stays reachable; my-auto on the
+    // wrapper centers short content and lets tall content scroll from the top
+    // (justify-center would clip the top of an overflowing flex column)
+    <div className="flex-1 min-h-0 flex flex-col items-center overflow-y-auto p-4 md:p-8">
+      <div className="my-auto w-full max-w-5xl flex flex-col items-center">
+        {/* Question prompt */}
+        <div className="mb-8 text-center">
+          <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-4">
+            Which one is{' '}
+            <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>?
+          </h2>
+          <div className="flex items-center gap-3 justify-center">
+            <button
+              onClick={askQuestion}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
+            >
+              <Volume2 size={20} />
+              Repeat question
+            </button>
+          </div>
         </div>
-      </div>
 
-      {/* Options grid */}
-      <div className={`grid ${getGridCols()} gap-4 md:gap-6 max-w-5xl w-full mb-8`}>
-        {options.map((item) => renderOption(item))}
-      </div>
-
-      {/* Result feedback — praise audio auto-advances, so no Next button
-          that would vanish before anyone could tap it */}
-      {isCorrect === true && (
-        <div className="flex flex-col items-center gap-4">
-          <div className="text-4xl md:text-6xl">🎉</div>
+        {/* Options grid */}
+        <div className={`grid ${getGridCols()} gap-4 md:gap-6 w-full mb-4`}>
+          {options.map((item) => renderOption(item))}
         </div>
-      )}
 
-      {isCorrect === false && (
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-xl text-orange-600 font-medium">
-            Try again! Find {correctAnswer?.name}
-          </span>
+        {/* Result feedback — praise audio auto-advances, so no Next button
+            that would vanish before anyone could tap it. Fixed-height slot so
+            the instructions below don't jump when feedback appears. */}
+        <div className="min-h-16 md:min-h-20 flex items-center justify-center">
+          {isCorrect === true && <div className="text-4xl md:text-6xl">🎉</div>}
+          {isCorrect === false && (
+            <span className="text-xl text-orange-600 font-medium">
+              Try again! Find {correctAnswer?.name}
+            </span>
+          )}
         </div>
-      )}
 
-      {/* Instructions */}
-      <div className="absolute bottom-6 text-gray-400 text-xs md:text-sm text-center">
-        Press 1–{Math.min(options.length, 9)} to answer | R to repeat the question
+        {/* Instructions */}
+        <div className="mt-2 text-gray-400 text-xs md:text-sm text-center">
+          Press 1–{Math.min(options.length, 9)} to answer | R to repeat the question
+        </div>
       </div>
     </div>
   );

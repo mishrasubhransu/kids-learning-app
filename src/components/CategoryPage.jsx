@@ -184,8 +184,9 @@ const CategoryPage = ({ category, backTo = '/home' }) => {
         </div>
       </div>
 
-      {/* Main content */}
-      <div className="flex-1 flex flex-col">
+      {/* Main content — min-h-0 so a tall child (hard-mode TestingMode grid)
+          scrolls inside its own container instead of growing past the page */}
+      <div className="flex-1 min-h-0 flex flex-col">
         {mode === 'scroll' && showGamePrompt && (
           <GameInterstitial
             onPlay={() => {
