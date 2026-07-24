@@ -10,6 +10,7 @@ import {
 } from '../data/letterSounds';
 import preloadImages from '../utils/preloadImages';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
+import nextBgColor from '../utils/nextBgColor';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 // (it would also swallow the yellow letter-highlight in HighlightedWord)
@@ -119,7 +120,7 @@ const LetterSoundsView = () => {
       const index = indexFn(prev.index);
       return { index, wordIdx: randomWordIdx(index) };
     });
-    setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+    setBgColor((c) => nextBgColor(bgColors, c));
   }, []);
 
   const goNext = useCallback(() => {
@@ -248,7 +249,7 @@ const LetterSoundsView = () => {
             key={entry.letter}
             onClick={() => {
               setCurrent({ index: idx, wordIdx: randomWordIdx(idx) });
-              setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+              setBgColor((c) => nextBgColor(bgColors, c));
             }}
             className="group w-6 h-6 flex items-center justify-center focus-visible:outline-white/70"
             aria-label={`Go to letter ${entry.letter.toUpperCase()}`}

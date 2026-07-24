@@ -4,6 +4,7 @@ import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import nextBgColor from '../../utils/nextBgColor';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const bgColors = [
@@ -83,7 +84,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
       speakCurrent();
       if (category === 'alphabets') {
-        setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+        setBgColor((c) => nextBgColor(bgColors, c));
       }
     }
     prevIndexRef.current = currentIndex;
@@ -99,7 +100,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
 
     const handle = speakItem(currentItem.name);
     if (category === 'alphabets') {
-      setBgColor(bgColors[Math.floor(Math.random() * bgColors.length)]);
+      setBgColor((c) => nextBgColor(bgColors, c));
     }
 
     const advance = () => {
