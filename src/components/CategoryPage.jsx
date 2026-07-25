@@ -16,7 +16,7 @@ import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
-import { objectCategories, objectItems } from '../data/objects';
+import { conceptCategories, conceptItems } from '../data/concepts';
 import emotions from '../data/emotions';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 
@@ -28,9 +28,9 @@ const categoryData = {
   emotions: { items: emotions, title: 'Emotions' },
 };
 
-objectCategories.forEach((cat) => {
-  categoryData[`objects-${cat.id}`] = {
-    items: objectItems[cat.id],
+conceptCategories.forEach((cat) => {
+  categoryData[`concepts-${cat.id}`] = {
+    items: conceptItems[cat.id],
     title: cat.name,
   };
 });
@@ -116,7 +116,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
           {/* Back button and title */}
           <div className="flex items-center gap-4">
             <HomeButton to={backTo} />
-            {/* Echo the card the child tapped on ObjectsHome (its color + emoji) */}
+            {/* Echo the card the child tapped on ConceptsHome (its color + emoji) */}
             {catInfo && (
               <span
                 className={`${catInfo.color} w-10 h-10 rounded-xl flex items-center justify-center text-2xl shadow-sm`}

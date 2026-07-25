@@ -46,7 +46,7 @@ const MAX_CHARS = 250;
 // that opens a text modal is toddler bait. Admin pages count as parent
 // surfaces too ('/admin' prefix, so specific tool paths stay out of the
 // main bundle).
-const PARENT_SURFACES = ['/', '/home', '/objects', '/phonics'];
+const PARENT_SURFACES = ['/', '/home', '/concepts', '/phonics'];
 const isParentSurface = (pathname) =>
   PARENT_SURFACES.includes(pathname) || pathname.startsWith('/admin');
 

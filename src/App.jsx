@@ -5,8 +5,8 @@ import { ADMIN_EMAIL, syncRecordings } from './lib/recordings';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
-import ObjectsHome from './components/ObjectsHome';
-import ObjectsCategoryPage from './components/ObjectsCategoryPage';
+import ConceptsHome from './components/ConceptsHome';
+import ConceptsCategoryPage from './components/ConceptsCategoryPage';
 import PhonicsHome from './components/PhonicsHome';
 import PhonicsCategoryPage from './components/PhonicsCategoryPage';
 import LetterSoundsView from './components/LetterSoundsView';
@@ -56,8 +56,10 @@ const App = () => {
         <Route path="/numbers/*" element={<ProtectedRoute><CategoryPage category="numbers" /></ProtectedRoute>} />
         <Route path="/colors/*" element={<ProtectedRoute><CategoryPage category="colors" /></ProtectedRoute>} />
         <Route path="/shapes/*" element={<ProtectedRoute><CategoryPage category="shapes" /></ProtectedRoute>} />
-        <Route path="/objects" element={<ProtectedRoute><ObjectsHome /></ProtectedRoute>} />
-        <Route path="/objects/:subcategory/*" element={<ProtectedRoute><ObjectsCategoryPage /></ProtectedRoute>} />
+        <Route path="/concepts" element={<ProtectedRoute><ConceptsHome /></ProtectedRoute>} />
+        <Route path="/concepts/:subcategory/*" element={<ProtectedRoute><ConceptsCategoryPage /></ProtectedRoute>} />
+        {/* Old bookmarks from before the Objects → Concepts rename */}
+        <Route path="/objects/*" element={<Navigate to="/concepts" replace />} />
         <Route path="/phonics" element={<ProtectedRoute><PhonicsHome /></ProtectedRoute>} />
         <Route path="/phonics/letters" element={<ProtectedRoute><LetterSoundsView /></ProtectedRoute>} />
         <Route path="/phonics/:family/*" element={<ProtectedRoute><PhonicsCategoryPage /></ProtectedRoute>} />

@@ -70,7 +70,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
   }, []);
 
   // Speak the first item when entering the page. Queued, not spoken over:
-  // arriving from ObjectsHome, the category name is still being announced.
+  // arriving from ConceptsHome, the category name is still being announced.
   useEffect(() => {
     if (!isAutoplay) {
       speakCurrent({ enqueue: true });

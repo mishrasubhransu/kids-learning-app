@@ -50,9 +50,9 @@ const categories = [
     preview: '⬟',
   },
   {
-    id: 'objects',
-    name: 'Objects',
-    description: 'Learn about objects',
+    id: 'concepts',
+    name: 'Concepts',
+    description: 'Learn about the world',
     icon: Image,
     color: 'bg-amber-500',
     hoverColor: 'group-hover:bg-amber-600',

@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom';
-import { objectCategories, objectItems } from '../data/objects';
+import { conceptCategories, conceptItems } from '../data/concepts';
 import HomeButton from './ui/HomeButton';
 import useSpeech from '../hooks/useSpeech';
 
-const ObjectsHome = () => {
+const ConceptsHome = () => {
   const { speak } = useSpeech();
 
   return (
@@ -13,7 +13,7 @@ const ObjectsHome = () => {
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <HomeButton />
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            Objects
+            Concepts
           </h1>
         </div>
       </div>
@@ -28,10 +28,10 @@ const ObjectsHome = () => {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
-            {objectCategories.map((cat) => (
+            {conceptCategories.map((cat) => (
               <Link
                 key={cat.id}
-                to={`/objects/${cat.id}`}
+                to={`/concepts/${cat.id}`}
                 onClick={() => speak(cat.name)}
                 className={`${cat.color} ${cat.hoverColor} rounded-2xl p-6 md:p-8 text-white shadow-lg transform transition-all duration-200 motion-safe:hover:scale-105 hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
               >
@@ -40,7 +40,7 @@ const ObjectsHome = () => {
                   {cat.name}
                 </span>
                 <span className="text-sm opacity-80">
-                  {objectItems[cat.id].length} items
+                  {conceptItems[cat.id].length} items
                 </span>
               </Link>
             ))}
@@ -51,4 +51,4 @@ const ObjectsHome = () => {
   );
 };
 
-export default ObjectsHome;
+export default ConceptsHome;

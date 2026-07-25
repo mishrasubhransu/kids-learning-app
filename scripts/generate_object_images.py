@@ -603,10 +603,10 @@ ITEMS = {
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
-OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "objects")
+OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "concepts")
 
 # Custom output directories for non-object categories
-# Categories not listed here default to public/objects/<category>/
+# Categories not listed here default to public/concepts/<category>/
 OUTPUT_DIRS = {
     "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
     "emotions-real": os.path.join(PROJECT_ROOT, "public", "emotions", "real"),
