@@ -4,6 +4,7 @@ import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import { track } from '../../lib/analytics';
 
 const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
@@ -113,11 +114,23 @@ const SceneQuiz = ({ items, difficulty }) => {
       setIsCorrect(true);
       const newCount = correctCount + 1;
       setCorrectCount(newCount);
+      track('answer', {
+        category: 'opposites',
+        mode: 'quiz',
+        item: current.correctAnswer,
+        meta: { correct: true, difficulty },
+      });
       playPositive(newCount).then(() => {
         autoAdvanceTimerRef.current = setTimeout(() => nextQuestion(), 800);
       });
     } else {
       setIsCorrect(false);
+      track('answer', {
+        category: 'opposites',
+        mode: 'quiz',
+        item: current.correctAnswer,
+        meta: { correct: false, picked: word, difficulty },
+      });
       // Name what they picked but don't reveal the answer — the dashed
       // hint plus immediate retry lets them find it themselves.
       playEncouragement().then(() => {

@@ -10,6 +10,7 @@ import TestingMode from './testing/TestingMode';
 import DifficultySelector from './ui/DifficultySelector';
 import GameInterstitial from './ui/GameInterstitial';
 import { getImageStyle, applyImageStyle } from '../lib/imageStyles';
+import { setScreenContext } from '../lib/analytics';
 
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
@@ -63,6 +64,13 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     setAutoStartTest(false);
     setMode(next);
   };
+
+  // Screen-time analytics: report the precise category key and the active
+  // mode; clear the mode on the way out so it doesn't leak onto other pages
+  useEffect(() => {
+    setScreenContext({ category, mode });
+    return () => setScreenContext({ mode: null });
+  }, [category, mode]);
 
   // Generate a random color for shapes (only once when entering the shapes category)
   const shapeColor = useMemo(() => {

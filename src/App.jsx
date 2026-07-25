@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { syncRecordings } from './lib/recordings';
+import { ADMIN_EMAIL, syncRecordings } from './lib/recordings';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
@@ -15,10 +15,24 @@ import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import LandingPage from './components/LandingPage';
-import RecordingStudio from './components/admin/RecordingStudio';
+import usePageTracking from './hooks/usePageTracking';
+
+// Admin screens stay out of the main bundle: this chunk is only fetched
+// after AdminGate has confirmed the admin account, so other users never
+// download the admin UI or see which tools exist
+const AdminRoutes = lazy(() => import('./components/admin/AdminRoutes'));
+
+const AdminGate = ({ children }) => {
+  const { user } = useAuth();
+  if (user?.email !== ADMIN_EMAIL) {
+    return <Navigate to="/home" replace />;
+  }
+  return <Suspense fallback={null}>{children}</Suspense>;
+};
 
 const App = () => {
   const { user } = useAuth();
+  usePageTracking();
 
   useEffect(() => {
     const handler = (e) => e.preventDefault();
@@ -50,7 +64,7 @@ const App = () => {
         <Route path="/opposites/*" element={<ProtectedRoute><OppositesPage /></ProtectedRoute>} />
         <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
-        <Route path="/admin/record" element={<ProtectedRoute><RecordingStudio /></ProtectedRoute>} />
+        <Route path="/admin/*" element={<ProtectedRoute><AdminGate><AdminRoutes /></AdminGate></ProtectedRoute>} />
         {/* Unknown URLs land somewhere useful instead of a blank page */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

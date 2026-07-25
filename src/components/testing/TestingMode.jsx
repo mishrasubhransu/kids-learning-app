@@ -3,6 +3,7 @@ import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import { track } from '../../lib/analytics';
 
 // autoStart skips the "Ready to Test?" screen — used when the child already
 // tapped through the post-autoplay interstitial (that tap is the user gesture
@@ -149,6 +150,15 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     }, 400);
   }, [generateQuestion, askQuestionFor]);
 
+  useEffect(() => {
+    if (!testComplete) return;
+    track('test_complete', {
+      category,
+      mode: 'test',
+      meta: { correct: correctCount, total: items.length, difficulty },
+    });
+  }, [testComplete, category, correctCount, items.length, difficulty]);
+
   // Handle answer selection
   const handleSelect = (item) => {
     // Only lock input after a correct answer — during wrong-answer feedback
@@ -163,6 +173,12 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         setIsCorrect(true);
         const newCount = correctCount + 1;
         setCorrectCount(newCount);
+        track('answer', {
+          category,
+          mode: 'test',
+          item: correctAnswer.name,
+          meta: { correct: true, difficulty },
+        });
 
         // Play praise, then wait a beat before advancing
         playPositive(newCount).then(() => {
@@ -172,6 +188,12 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         });
       } else {
         setIsCorrect(false);
+        track('answer', {
+          category,
+          mode: 'test',
+          item: correctAnswer.name,
+          meta: { correct: false, picked: item.name, difficulty },
+        });
         playEncouragement().then(() => {
           speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
         });

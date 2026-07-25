@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { BookOpen, Puzzle, Gamepad2 } from 'lucide-react';
+import { setScreenContext } from '../../lib/analytics';
 import HomeButton from '../ui/HomeButton';
 import PairLearnView from './PairLearnView';
 import MatchGame from './MatchGame';
@@ -16,6 +17,13 @@ const modes = [
 const OppositesPage = ({ backTo = '/home' }) => {
   const [mode, setMode] = useState('learn');
   const [difficulty, setDifficulty] = useState('easy');
+
+  // Screen-time analytics: learn vs match vs quiz time is the interesting
+  // split here; clear the mode on the way out
+  useEffect(() => {
+    setScreenContext({ category: 'opposites', mode });
+    return () => setScreenContext({ mode: null });
+  }, [mode]);
 
   return (
     <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex flex-col overflow-hidden">

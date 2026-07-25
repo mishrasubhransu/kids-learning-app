@@ -4,6 +4,7 @@ import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import { track } from '../../lib/analytics';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -146,11 +147,23 @@ const MatchGame = ({ items, difficulty }) => {
       setIsCorrect(true);
       const newCount = correctCount + 1;
       setCorrectCount(newCount);
+      track('answer', {
+        category: 'opposites',
+        mode: 'match',
+        item: current.answerWord,
+        meta: { correct: true, difficulty },
+      });
       playPositive(newCount).then(() => {
         advanceTimerRef.current = setTimeout(() => nextRound(), 800);
       });
     } else {
       setIsCorrect(false);
+      track('answer', {
+        category: 'opposites',
+        mode: 'match',
+        item: current.answerWord,
+        meta: { correct: false, picked: word, difficulty },
+      });
       playEncouragement().then(() => {
         speak(`${word} is not the opposite of ${current.promptWord}. Try again!`);
       });

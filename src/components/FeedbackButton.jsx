@@ -43,8 +43,12 @@ function getContext(pathname) {
 const MAX_CHARS = 250;
 
 // Parent-facing surfaces only. Mid-lesson, a bright floating tap target
-// that opens a text modal is toddler bait.
-const PARENT_SURFACES = ['/', '/home', '/objects', '/phonics', '/admin/record'];
+// that opens a text modal is toddler bait. Admin pages count as parent
+// surfaces too ('/admin' prefix, so specific tool paths stay out of the
+// main bundle).
+const PARENT_SURFACES = ['/', '/home', '/objects', '/phonics'];
+const isParentSurface = (pathname) =>
+  PARENT_SURFACES.includes(pathname) || pathname.startsWith('/admin');
 
 const FeedbackButton = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -126,7 +130,7 @@ const FeedbackButton = () => {
     }
   };
 
-  if (!PARENT_SURFACES.includes(location.pathname)) return null;
+  if (!isParentSurface(location.pathname)) return null;
 
   return (
     <>
