@@ -16,7 +16,7 @@ import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
-import { conceptCategories, conceptItems } from '../data/concepts';
+import { conceptCategories, conceptItems, pickItemVariants } from '../data/concepts';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 
 const categoryData = {
@@ -75,6 +75,14 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     return category === 'shapes' ? getRandomShapeColor() : null;
   }, [category]);
 
+  // Items may list several interchangeable photos (item.images, e.g. the
+  // nature lesson); pick one at random per visit so repeat visits vary but
+  // the picture never swaps mid-session
+  const resolvedItems = useMemo(() => {
+    const categoryItems = categoryData[category]?.items;
+    return categoryItems ? pickItemVariants(categoryItems) : null;
+  }, [category]);
+
   // Warm the audio cache when a category with parent recordings opens, so
   // playback never waits on the network mid-session
   useEffect(() => {
@@ -100,7 +108,8 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     );
   }
 
-  const { items: rawItems, title, objectIcons: icons } = data;
+  const { title, objectIcons: icons } = data;
+  const rawItems = resolvedItems;
   const sizedItems = category === 'numbers'
     ? rawItems.slice(0, Number(localStorage.getItem('numberMax') || '10'))
     : rawItems;

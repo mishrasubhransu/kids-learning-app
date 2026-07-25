@@ -1,5 +1,14 @@
 import emotions from './emotions';
 
+// Some items list several interchangeable photos in `images` (e.g. nature);
+// resolve each to a single random `image` for this visit.
+export const pickItemVariants = (items) =>
+  items.map((item) =>
+    item.images
+      ? { ...item, image: item.images[Math.floor(Math.random() * item.images.length)] }
+      : item
+  );
+
 export const conceptCategories = [
   { id: 'animals', name: 'Animals', emoji: '🦁', color: 'bg-amber-500', hoverColor: 'hover:bg-amber-600' },
   { id: 'birds', name: 'Birds', emoji: '🦅', color: 'bg-sky-500', hoverColor: 'hover:bg-sky-600' },
@@ -14,10 +23,36 @@ export const conceptCategories = [
   { id: 'sea-creatures', name: 'Sea Creatures', emoji: '🐠', color: 'bg-cyan-500', hoverColor: 'hover:bg-cyan-600' },
   { id: 'traffic', name: 'Traffic', emoji: '🚦', color: 'bg-yellow-500', hoverColor: 'hover:bg-yellow-600' },
   { id: 'emotions', name: 'Emotions', emoji: '😊', color: 'bg-pink-500', hoverColor: 'hover:bg-pink-600' },
+  { id: 'nature', name: 'Nature', emoji: '🏞️', color: 'bg-green-500', hoverColor: 'hover:bg-green-600' },
 ];
 
 export const conceptItems = {
   emotions,
+  // Nature items list every generated photo variant in `images`;
+  // CategoryPage picks one at random per visit (realistic photos only —
+  // no cartoon style for this category).
+  nature: [
+    { id: 0, name: 'Waterfall', images: ['/concepts/nature/waterfall-1.webp'] },
+    { id: 1, name: 'Mountain', images: ['/concepts/nature/mountain-1.webp'] },
+    { id: 2, name: 'Valley', images: ['/concepts/nature/valley-1.webp'] },
+    { id: 3, name: 'River', images: ['/concepts/nature/river-1.webp'] },
+    { id: 4, name: 'Lake', images: ['/concepts/nature/lake-1.webp'] },
+    { id: 5, name: 'Beach', images: ['/concepts/nature/beach-1.webp'] },
+    { id: 6, name: 'Ocean', images: ['/concepts/nature/ocean-1.webp'] },
+    { id: 7, name: 'Forest', images: ['/concepts/nature/forest-1.webp'] },
+    { id: 8, name: 'Desert', images: ['/concepts/nature/desert-1.webp'] },
+    { id: 9, name: 'Volcano', images: ['/concepts/nature/volcano-1.webp'] },
+    { id: 10, name: 'Cave', images: ['/concepts/nature/cave-1.webp'] },
+    { id: 11, name: 'Island', images: ['/concepts/nature/island-1.webp'] },
+    { id: 12, name: 'Rainbow', images: ['/concepts/nature/rainbow-1.webp'] },
+    { id: 13, name: 'Cloud', images: ['/concepts/nature/cloud-1.webp'] },
+    { id: 14, name: 'Sun', images: ['/concepts/nature/sun-1.webp'] },
+    { id: 15, name: 'Moon', images: ['/concepts/nature/moon-1.webp'] },
+    { id: 16, name: 'Stars', images: ['/concepts/nature/stars-1.webp'] },
+    { id: 17, name: 'Snow', images: ['/concepts/nature/snow-1.webp'] },
+    { id: 18, name: 'Lightning', images: ['/concepts/nature/lightning-1.webp'] },
+    { id: 19, name: 'Glacier', images: ['/concepts/nature/glacier-1.webp'] },
+  ],
   animals: [
     { id: 0, name: 'Lion', image: '/concepts/animals/lion.webp' },
     { id: 1, name: 'Tiger', image: '/concepts/animals/tiger.webp' },

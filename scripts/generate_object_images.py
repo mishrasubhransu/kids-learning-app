@@ -186,6 +186,14 @@ STYLE_PROMPTS = {
         "Sharp focus on the subject, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "nature": (
+        "A breathtaking, high-quality landscape photograph of {subject}. "
+        "Photorealistic with vivid natural colors and beautiful natural light. "
+        "The subject is instantly recognizable at a glance and dominates the frame, "
+        "with a simple, uncluttered composition. "
+        "Captured as if by a professional landscape photographer. "
+        "No people, no animals, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
     "traffic": (
         "A beautiful, high-quality photograph of {subject}. "
         "Photorealistic with vivid colors and bright natural outdoor daylight, "
@@ -480,6 +488,30 @@ ITEMS = {
         "clean-dirty-scene": "two red toy cars side by side: one sparkling clean and shiny, one caked in dripping brown mud",
         "old-new-scene": "two bicycles side by side: one rusty, faded and bent, one brand-new and shiny with a red gift bow",
         "day-night-scene": "a rolling hill landscape split by weather magic: bright sun and blue sky over one half, moon and stars over the other",
+    },
+    # Nature concepts support several photo variants per item; filenames are
+    # suffixed -1, -2, … and listed in src/data/concepts.js `images` arrays.
+    "nature": {
+        "waterfall-1": "a tall powerful waterfall cascading down mossy rock cliffs into a clear pool, white falling water clearly visible",
+        "mountain-1": "a majestic snow-capped mountain peak rising against a clear blue sky, dramatic and instantly recognizable",
+        "valley-1": "a lush green valley between rolling mountains, viewed from a scenic overlook, a small river winding through the middle",
+        "river-1": "a wide gently flowing river with clear blue water winding through a green landscape, both banks visible",
+        "lake-1": "a calm mirror-still mountain lake with a perfect reflection of trees and sky in the water",
+        "beach-1": "a beautiful sandy beach where gentle turquoise waves meet golden sand, clear blue sky above",
+        "ocean-1": "the vast open ocean with rolling deep-blue waves and white foam crests under a bright sky",
+        "forest-1": "a lush green forest with tall trees and sunlight streaming down between the trunks onto a soft path",
+        "desert-1": "golden sand dunes of a vast desert with rippled wind patterns under a clear blue sky",
+        "volcano-1": "a classic cone-shaped volcano with a thin plume of smoke rising from its crater, viewed from a distance",
+        "cave-1": "the entrance of a large rocky cave, dark opening framed by rugged stone, soft daylight illuminating the mouth",
+        "island-1": "a small lush tropical island with palm trees surrounded by clear turquoise water, seen from above",
+        "rainbow-1": "a vivid full rainbow arching over a bright green meadow after rain, all colors clearly visible",
+        "cloud-1": "big puffy white cumulus clouds floating in a bright blue sky, soft and cotton-like",
+        "sun-1": "the bright golden sun glowing in a clear sky at golden hour, warm rays spreading over a soft landscape below",
+        "moon-1": "a large detailed full moon glowing in a dark night sky, craters clearly visible",
+        "stars-1": "a brilliant starry night sky filled with twinkling stars over a dark silhouetted horizon",
+        "snow-1": "a peaceful snowy landscape with evergreen trees blanketed in fresh white snow, soft winter light",
+        "lightning-1": "a dramatic bolt of lightning striking down from dark storm clouds over an open landscape",
+        "glacier-1": "a massive blue-white glacier meeting dark water, with a floating iceberg, crisp arctic light",
     },
     "traffic": {
         "traffic-light": "a standard three-light traffic signal on a pole, with the red, amber yellow, and green lights all clearly visible from top to bottom, against a clear blue sky",
