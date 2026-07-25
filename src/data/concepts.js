@@ -1,3 +1,5 @@
+import emotions from './emotions';
+
 export const conceptCategories = [
   { id: 'animals', name: 'Animals', emoji: '🦁', color: 'bg-amber-500', hoverColor: 'hover:bg-amber-600' },
   { id: 'birds', name: 'Birds', emoji: '🦅', color: 'bg-sky-500', hoverColor: 'hover:bg-sky-600' },
@@ -11,9 +13,11 @@ export const conceptCategories = [
   { id: 'household', name: 'Household', emoji: '🏠', color: 'bg-purple-500', hoverColor: 'hover:bg-purple-600' },
   { id: 'sea-creatures', name: 'Sea Creatures', emoji: '🐠', color: 'bg-cyan-500', hoverColor: 'hover:bg-cyan-600' },
   { id: 'traffic', name: 'Traffic', emoji: '🚦', color: 'bg-yellow-500', hoverColor: 'hover:bg-yellow-600' },
+  { id: 'emotions', name: 'Emotions', emoji: '😊', color: 'bg-pink-500', hoverColor: 'hover:bg-pink-600' },
 ];
 
 export const conceptItems = {
+  emotions,
   animals: [
     { id: 0, name: 'Lion', image: '/concepts/animals/lion.webp' },
     { id: 1, name: 'Tiger', image: '/concepts/animals/tiger.webp' },

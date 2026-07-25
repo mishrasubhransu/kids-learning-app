@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Smile, Volume2 } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Volume2 } from 'lucide-react';
 import VoiceSelector from './ui/VoiceSelector';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
@@ -67,15 +67,6 @@ const categories = [
     hoverColor: 'group-hover:bg-cyan-600',
     textColor: 'text-gray-900',
     preview: '↔️',
-  },
-  {
-    id: 'emotions',
-    name: 'Emotions',
-    icon: Smile,
-    color: 'bg-yellow-500',
-    hoverColor: 'group-hover:bg-yellow-600',
-    textColor: 'text-gray-900',
-    preview: '😊',
   },
   {
     id: 'phonics',

@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { conceptCategories, conceptItems } from '../data/concepts';
 import HomeButton from './ui/HomeButton';
+import StyleToggle from './ui/StyleToggle';
+import { stylesForCategory } from '../lib/imageStyles';
 import useSpeech from '../hooks/useSpeech';
 
 const ConceptsHome = () => {
@@ -28,22 +30,41 @@ const ConceptsHome = () => {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
-            {conceptCategories.map((cat) => (
-              <Link
-                key={cat.id}
-                to={`/concepts/${cat.id}`}
-                onClick={() => speak(cat.name)}
-                className={`${cat.color} ${cat.hoverColor} rounded-2xl p-6 md:p-8 text-white shadow-lg transform transition-all duration-200 motion-safe:hover:scale-105 hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
-              >
-                <span className="text-5xl md:text-6xl">{cat.emoji}</span>
-                <span className="text-lg md:text-xl font-semibold">
-                  {cat.name}
-                </span>
-                <span className="text-sm opacity-80">
-                  {conceptItems[cat.id].length} items
-                </span>
-              </Link>
-            ))}
+            {conceptCategories.map((cat) => {
+              // Lessons with more than one art style (e.g. emotions
+              // cartoon/real) get a toggle pill. It sits over the card as a
+              // sibling of the Link, not inside it — nested interactive
+              // elements are invalid HTML (same pattern as Home).
+              const styleCategory = `concepts-${cat.id}`;
+              const hasStyles = Boolean(stylesForCategory(styleCategory));
+              return (
+                <div
+                  key={cat.id}
+                  className="group relative transform transition-transform duration-200 motion-safe:hover:scale-105"
+                >
+                  <Link
+                    to={`/concepts/${cat.id}`}
+                    onClick={() => speak(cat.name)}
+                    className={`${cat.color} ${cat.hoverColor} h-full rounded-2xl p-6 md:p-8 text-white shadow-lg transition-all duration-200 group-hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
+                  >
+                    <span className="text-5xl md:text-6xl">{cat.emoji}</span>
+                    <span className="text-lg md:text-xl font-semibold">
+                      {cat.name}
+                    </span>
+                    <span className="text-sm opacity-80">
+                      {conceptItems[cat.id].length} items
+                    </span>
+                    {hasStyles && <span className="h-8" aria-hidden="true" />}
+                  </Link>
+                  {hasStyles && (
+                    <StyleToggle
+                      category={styleCategory}
+                      className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-white/20 hover:bg-white/30 text-white text-sm rounded-full px-4 py-2 transition-colors whitespace-nowrap"
+                    />
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

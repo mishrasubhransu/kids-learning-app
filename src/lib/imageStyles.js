@@ -1,7 +1,7 @@
 // Reusable image-style support for lessons that offer more than one art
 // style (e.g. cartoon vs. real photos). To opt a lesson in:
 //   1. Put the variant images in a sibling folder named after the style:
-//      /emotions/happy.webp -> /emotions/real/happy.webp
+//      /concepts/emotions/happy.webp -> /concepts/emotions/real/happy.webp
 //   2. List the style ids for the category in CATEGORY_IMAGE_STYLES below
 //      (first entry is the default and uses the original image path).
 // The Home tile then shows a StyleToggle automatically and CategoryPage
@@ -13,7 +13,7 @@ export const IMAGE_STYLES = {
 };
 
 export const CATEGORY_IMAGE_STYLES = {
-  emotions: ['cartoon', 'real'],
+  'concepts-emotions': ['cartoon', 'real'],
 };
 
 export const stylesForCategory = (category) =>

@@ -17,7 +17,6 @@ import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { conceptCategories, conceptItems } from '../data/concepts';
-import emotions from '../data/emotions';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 
 const categoryData = {
@@ -25,7 +24,6 @@ const categoryData = {
   numbers: { items: numbers, title: 'Numbers', objectIcons },
   colors: { items: colors, title: 'Colors' },
   shapes: { items: shapes, title: 'Shapes' },
-  emotions: { items: emotions, title: 'Emotions' },
 };
 
 conceptCategories.forEach((cat) => {

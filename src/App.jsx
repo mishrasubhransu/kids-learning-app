@@ -64,7 +64,8 @@ const App = () => {
         <Route path="/phonics/letters" element={<ProtectedRoute><LetterSoundsView /></ProtectedRoute>} />
         <Route path="/phonics/:family/*" element={<ProtectedRoute><PhonicsCategoryPage /></ProtectedRoute>} />
         <Route path="/opposites/*" element={<ProtectedRoute><OppositesPage /></ProtectedRoute>} />
-        <Route path="/emotions/*" element={<ProtectedRoute><CategoryPage category="emotions" /></ProtectedRoute>} />
+        {/* Emotions now lives under Concepts; keep old links working */}
+        <Route path="/emotions/*" element={<Navigate to="/concepts/emotions" replace />} />
         <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
         <Route path="/admin/*" element={<ProtectedRoute><AdminGate><AdminRoutes /></AdminGate></ProtectedRoute>} />
         {/* Unknown URLs land somewhere useful instead of a blank page */}

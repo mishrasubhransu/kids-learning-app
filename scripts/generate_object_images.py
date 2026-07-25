@@ -373,7 +373,7 @@ ITEMS = {
     },
     # Realistic variants of the emotions lesson (diverse adults, with a
     # visible cause for the emotion where it helps comprehension).
-    # Output goes to public/emotions/real/ — see OUTPUT_DIRS.
+    # Output goes to public/concepts/emotions/real/ — see OUTPUT_DIRS.
     "emotions-real": {
         "happy": "a young woman with a big genuine smile and bright sparkling eyes, holding a small wrapped gift box she has just received",
         "sad": "a middle-aged man sitting on a park bench with sad teary eyes and drooping shoulders, looking down at his dropped ice cream cone splattered on the ground beside the bench",
@@ -608,8 +608,8 @@ OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "concepts")
 # Custom output directories for non-object categories
 # Categories not listed here default to public/concepts/<category>/
 OUTPUT_DIRS = {
-    "emotions": os.path.join(PROJECT_ROOT, "public", "emotions"),
-    "emotions-real": os.path.join(PROJECT_ROOT, "public", "emotions", "real"),
+    "emotions": os.path.join(PROJECT_ROOT, "public", "concepts", "emotions"),
+    "emotions-real": os.path.join(PROJECT_ROOT, "public", "concepts", "emotions", "real"),
     "opposites": os.path.join(PROJECT_ROOT, "public", "opposites"),
     "opposites-scenes": os.path.join(PROJECT_ROOT, "public", "opposites", "scenes"),
     "letter-sounds": os.path.join(PROJECT_ROOT, "public", "phonics", "letters"),
