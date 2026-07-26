@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
 import preloadImages from '../../utils/preloadImages';
+import ItemMedia from '../ui/ItemMedia';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
 
@@ -296,11 +297,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
             </div>
           );
         }
-        if (currentItem.image) {
+        if (currentItem.image || currentItem.video) {
           return (
             <div className="flex flex-col items-center gap-6">
-              <img
-                src={currentItem.image}
+              <ItemMedia
+                item={currentItem}
                 alt={currentItem.name}
                 className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
               />

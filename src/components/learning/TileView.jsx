@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useRecordedAudio from '../../hooks/useRecordedAudio';
 import { recordingCategoryFor } from '../../lib/recordings';
+import ItemMedia from '../ui/ItemMedia';
 
 const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
   const [activeId, setActiveId] = useState(null);
@@ -118,15 +119,15 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
             </button>
           );
         }
-        if (item.image) {
+        if (item.image || item.video) {
           return (
             <button
               key={item.id}
               onClick={() => handleClick(item)}
               className={`${baseClasses} bg-white p-3 md:p-4 flex flex-col items-center justify-center gap-2`}
             >
-              <img
-                src={item.image}
+              <ItemMedia
+                item={item}
                 alt={item.name}
                 className="w-[var(--img-tile)] h-[var(--img-tile)] object-contain rounded-lg"
               />

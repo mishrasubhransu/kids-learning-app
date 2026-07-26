@@ -4,6 +4,7 @@ import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
+import ItemMedia from '../ui/ItemMedia';
 
 // autoStart skips the "Ready to Test?" screen — used when the child already
 // tapped through the post-autoplay interstitial (that tap is the user gesture
@@ -378,7 +379,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
             </button>
           );
         }
-        if (item.image) {
+        if (item.image || item.video) {
           return (
             <button
               key={item.id}
@@ -387,8 +388,8 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
               disabled={selectedAnswer !== null && isCorrect}
               className={`${baseClasses} p-1 flex flex-col items-center justify-center gap-1`}
             >
-              <img
-                src={item.image}
+              <ItemMedia
+                item={item}
                 alt={showResult ? item.name : ''}
                 className="w-full aspect-square object-contain rounded-lg"
               />

@@ -1,0 +1,178 @@
+#!/usr/bin/env python3
+"""
+Generate short action/verb video clips for the Kids Learning App using Veo.
+
+Clips are saved to public/concepts/actions/<name>.mp4 (or <name>-<tier>.mp4
+when comparing quality tiers). Convert to looping webm later once a tier is
+chosen.
+
+Usage:
+    # Generate every verb on the default tier (fast)
+    python scripts/generate_action_videos.py
+
+    # Quality comparison: selected items on both fast and lite
+    python scripts/generate_action_videos.py --item eating --tier fast lite --suffix-tier
+
+    # Single item, single tier
+    python scripts/generate_action_videos.py --item jumping --tier lite
+
+Pricing (checked July 2026, 720p): standard $0.40/s, fast $0.15/s, lite $0.05/s.
+A 6s clip: standard $2.40, fast $0.90, lite $0.30.
+"""
+
+import os
+import sys
+import argparse
+import time
+from google import genai
+from google.genai import types
+
+client = genai.Client(
+    api_key=os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+)
+
+TIER_MODELS = {
+    "standard": "veo-3.1-generate-preview",
+    "fast": "veo-3.1-fast-generate-preview",
+    "lite": "veo-3.1-lite-generate-preview",
+}
+
+DURATION_SECONDS = 6
+RESOLUTION = "720p"
+
+# Kid-friendly, single clear action, clean background — the verb must be
+# obvious with the sound off (clips play muted in the app).
+STYLE = (
+    "A bright, cheerful, high-quality video of {subject}. "
+    "Photorealistic, warm natural lighting, simple uncluttered background, "
+    "suitable for a toddler learning app. One single continuous action that "
+    "clearly shows the verb, the subject centered and fully visible. "
+    "Fixed camera, no cuts, no text, no captions, no watermarks."
+)
+
+VERBS = {
+    "running": "a happy young child running across a sunny green park lawn, arms swinging",
+    "jumping": "a joyful young child jumping up and down on a grassy lawn, both feet leaving the ground",
+    "eating": "a happy young child sitting at a table eating a bowl of colorful fruit pieces with a spoon, taking clear bites",
+    "sleeping": "a young child fast asleep in a cozy bed, eyes fully closed, completely relaxed neutral face with no smile, breathing slowly and gently, hugging a teddy bear",
+    "clapping": "a smiling young child clapping hands enthusiastically, claps clearly visible",
+    "waving": "a friendly young child waving hello with one raised hand, big smile",
+    "crying": "a young child crying softly, a single realistic tear rolling down each cheek from the eyes, gently wiping the tears away with the back of a hand, gentle non-frightening mood",
+    "laughing": "a young child laughing heartily with head tilted back, big joyful smile",
+    "climbing": "a young child seen from behind, back to the camera, actively climbing up a playground climbing frame ladder, moving upward hand over hand and step by step",
+    "hugging": "two happy young children giving each other a big warm hug",
+    "cycling": "a happy young child riding a small bicycle with training wheels along a park path, pedaling steadily",
+    "boating": "a happy family rowing a small colorful rowboat on a calm lake, oars dipping into the water",
+    "throwing": "a young child throwing a big red ball forward with both hands, the ball flying through the air",
+    "catching": "a young child catching a big colorful beach ball with both arms, hugging it to their chest",
+    "breaking": "a young child holding a dry brown stick with both hands and breaking it in half, the stick clearly snapping into two pieces",
+    "squeezing": "a young child squeezing half a yellow lemon over a clear glass with one hand, juice dripping down into the glass",
+    "flying": "a white bird flying across a clear blue sky, wings flapping steadily, full body visible from the side",
+    "swimming": "a happy young child swimming across a sunny outdoor pool, arms making clear swimming strokes with small splashes",
+    "driving": "a smiling parent driving a car, seen from the side through the open window, both hands on the steering wheel turning it slightly, scenery moving past",
+}
+
+PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
+OUTPUT_DIR = os.path.join(PROJECT_ROOT, "public", "concepts", "actions")
+
+GENLAB_DIR = "/mnt/data/genlab"
+
+
+def archive_to_genlab(output_path, prompt, model, item_name, notes=None):
+    try:
+        if GENLAB_DIR not in sys.path:
+            sys.path.insert(0, GENLAB_DIR)
+        import genlab
+        genlab.record(
+            output_path,
+            prompt=prompt,
+            provider="gemini",
+            model=model,
+            project="toddlearn",
+            category="actions",
+            item=item_name,
+            status="accepted",
+            notes=notes,
+        )
+    except Exception as e:
+        print(f"  ⚠  genlab archive failed for actions/{item_name}: {e}")
+
+
+def generate_video(item_name, subject_desc, tier, suffix_tier=False, force=False):
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    filename = f"{item_name}-{tier}.mp4" if suffix_tier else f"{item_name}.mp4"
+    output_path = os.path.join(OUTPUT_DIR, filename)
+
+    if os.path.exists(output_path) and not force:
+        print(f"  ⏭  Skipping {filename} (already exists)")
+        return True
+
+    model = TIER_MODELS[tier]
+    prompt = STYLE.format(subject=subject_desc)
+    print(f"  🎬 Generating {filename} via {model}...")
+
+    try:
+        operation = client.models.generate_videos(
+            model=model,
+            prompt=prompt,
+            config=types.GenerateVideosConfig(
+                aspect_ratio="16:9",
+                resolution=RESOLUTION,
+                duration_seconds=DURATION_SECONDS,
+                number_of_videos=1,
+            ),
+        )
+        while not operation.done:
+            time.sleep(15)
+            operation = client.operations.get(operation)
+
+        if operation.error:
+            print(f"  ❌ {filename}: {operation.error}")
+            return False
+
+        video = operation.response.generated_videos[0].video
+        client.files.download(file=video)
+        video.save(output_path)
+        size_mb = os.path.getsize(output_path) / (1024 * 1024)
+        print(f"  ✅ Saved: {output_path} ({size_mb:.1f}MB)")
+        archive_to_genlab(output_path, prompt, model, item_name, notes=f"tier={tier}")
+        return True
+
+    except Exception as e:
+        print(f"  ❌ Error generating {filename}: {e}")
+        return False
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate action videos via Veo")
+    parser.add_argument("--item", action="append", help="Generate only this verb (repeatable)")
+    parser.add_argument("--tier", nargs="+", choices=list(TIER_MODELS), default=["fast"],
+                        help="Quality tier(s) to generate")
+    parser.add_argument("--suffix-tier", action="store_true",
+                        help="Append -<tier> to filenames (for quality comparisons)")
+    parser.add_argument("--force", action="store_true", help="Overwrite existing videos")
+    args = parser.parse_args()
+
+    items = {name: VERBS[name] for name in (args.item or VERBS)}
+
+    cost_per_sec = {"standard": 0.40, "fast": 0.15, "lite": 0.05}
+    est = sum(cost_per_sec[t] for t in args.tier) * DURATION_SECONDS * len(items)
+    print(f"\n🎬 Generating {len(items)} verbs x {len(args.tier)} tier(s) "
+          f"({DURATION_SECONDS}s @ {RESOLUTION}) — estimated ${est:.2f}\n")
+
+    success = failed = 0
+    for item_name, subject_desc in items.items():
+        for tier in args.tier:
+            ok = generate_video(item_name, subject_desc, tier,
+                                suffix_tier=args.suffix_tier, force=args.force)
+            if ok:
+                success += 1
+            else:
+                failed += 1
+
+    print(f"\n📊 Results: {success} generated, {failed} failed\n")
+    return 0 if failed == 0 else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())
