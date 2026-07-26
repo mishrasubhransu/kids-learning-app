@@ -194,6 +194,23 @@ STYLE_PROMPTS = {
         "Captured as if by a professional landscape photographer. "
         "No people, no animals, no text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "bugs": (
+        "A beautiful, high-quality macro photograph of {subject}. "
+        "Photorealistic with vivid natural colors, soft natural lighting, "
+        "and a clean, slightly blurred green natural background. Centered and clearly visible. "
+        "Captured as if by a professional macro wildlife photographer. "
+        "Friendly and non-frightening appearance suitable for a toddler learning app. "
+        "Sharp focus on the subject, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "space": (
+        "A stunning, high-quality astronomy photograph of {subject}. "
+        "Photorealistic in the style of real NASA telescope and spacecraft imagery, "
+        "sharp detail against the deep black of space with faint stars. "
+        "The subject is centered, large in the frame, and instantly recognizable. "
+        "Scientifically accurate colors and surface features. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
     "traffic": (
         "A beautiful, high-quality photograph of {subject}. "
         "Photorealistic with vivid colors and bright natural outdoor daylight, "
@@ -534,6 +551,34 @@ ITEMS = {
         "snow-2": "snowflakes falling gently over a white winter meadow, snow-covered pine branches in the foreground",
         "lightning-2": "multiple branching lightning bolts lighting up a dark purple night sky over the sea",
         "glacier-2": "a vast glacier like a frozen river of ice winding between dark mountain ridges, seen from above, deep blue crevasses visible",
+    },
+    "bugs": {
+        "butterfly": "a colorful monarch butterfly with wings spread open, resting on a flower",
+        "bee": "a fuzzy honeybee collecting nectar on a bright yellow flower, wings and stripes clearly visible",
+        "ladybug": "a bright red ladybug with black spots crawling on a green leaf",
+        "ant": "a black garden ant walking on a twig, body segments clearly visible",
+        "snail": "a garden snail with a spiral brown shell gliding slowly on a leaf, eye stalks extended",
+        "grasshopper": "a bright green grasshopper perched on a blade of grass, long back legs clearly visible",
+        "dragonfly": "a dragonfly with transparent shimmering wings perched on a reed near water",
+        "caterpillar": "a plump green and yellow striped caterpillar crawling along a leafy branch",
+        "spider": "a small friendly-looking garden spider sitting in the center of a dew-covered web",
+        "firefly": "a firefly on a leaf at dusk with its abdomen glowing warm yellow-green light",
+        "beetle": "a shiny iridescent green jewel beetle standing on a leaf, rounded shell clearly visible",
+        "worm": "a pink earthworm crawling on rich brown garden soil next to small green sprouts",
+    },
+    "space": {
+        "sun": "the Sun as seen by a solar telescope, a glowing orange-yellow ball of plasma with visible solar flares and surface texture, filling most of the frame",
+        "moon": "the full Moon photographed through a telescope, grey cratered surface with maria and craters in crisp detail, filling most of the frame",
+        "mercury": "the planet Mercury from spacecraft imagery, a grey-brown heavily cratered rocky planet, full sphere visible",
+        "venus": "the planet Venus from spacecraft imagery, a full sphere wrapped in thick creamy yellow-white swirling clouds",
+        "earth": "the planet Earth from space, the classic blue marble with blue oceans, green-brown continents and white swirling clouds, full sphere visible",
+        "mars": "the planet Mars from spacecraft imagery, the red planet with rusty orange-red surface, dark markings and a white polar ice cap, full sphere visible",
+        "jupiter": "the planet Jupiter from spacecraft imagery, a full sphere with orange, brown and cream cloud bands and the Great Red Spot clearly visible",
+        "saturn": "the planet Saturn from spacecraft imagery, a pale golden sphere with its magnificent bright rings fully visible at a slight tilt",
+        "uranus": "the planet Uranus from spacecraft imagery, a smooth pale cyan-blue sphere with its faint thin rings tilted vertically",
+        "neptune": "the planet Neptune from spacecraft imagery, a deep vivid blue sphere with faint white streaked clouds, full sphere visible",
+        "stars": "a dense field of countless twinkling stars in deep space with the colorful glowing band of the Milky Way running across the frame",
+        "solar-system": "the whole solar system in one view: the glowing Sun on the left with all eight planets lined up in order to the right along their orbit lines, sizes clearly distinct, Saturn's rings visible",
     },
     "traffic": {
         "traffic-light": "a standard three-light traffic signal on a pole, with the red, amber yellow, and green lights all clearly visible from top to bottom, against a clear blue sky",

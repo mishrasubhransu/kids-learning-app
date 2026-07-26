@@ -24,6 +24,8 @@ export const conceptCategories = [
   { id: 'traffic', name: 'Traffic', emoji: '🚦', color: 'bg-yellow-500', hoverColor: 'hover:bg-yellow-600' },
   { id: 'emotions', name: 'Emotions', emoji: '😊', color: 'bg-pink-500', hoverColor: 'hover:bg-pink-600' },
   { id: 'nature', name: 'Nature', emoji: '🏞️', color: 'bg-green-500', hoverColor: 'hover:bg-green-600' },
+  { id: 'bugs', name: 'Bugs & Insects', emoji: '🐞', color: 'bg-fuchsia-500', hoverColor: 'hover:bg-fuchsia-600' },
+  { id: 'space', name: 'Space', emoji: '🪐', color: 'bg-violet-500', hoverColor: 'hover:bg-violet-600' },
 ];
 
 export const conceptItems = {
@@ -52,6 +54,36 @@ export const conceptItems = {
     { id: 17, name: 'Snow', images: ['/concepts/nature/snow-1.webp', '/concepts/nature/snow-2.webp'] },
     { id: 18, name: 'Lightning', images: ['/concepts/nature/lightning-1.webp', '/concepts/nature/lightning-2.webp'] },
     { id: 19, name: 'Glacier', images: ['/concepts/nature/glacier-1.webp', '/concepts/nature/glacier-2.webp'] },
+  ],
+  bugs: [
+    { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },
+    { id: 1, name: 'Bee', image: '/concepts/bugs/bee.webp' },
+    { id: 2, name: 'Ladybug', image: '/concepts/bugs/ladybug.webp' },
+    { id: 3, name: 'Ant', image: '/concepts/bugs/ant.webp' },
+    { id: 4, name: 'Snail', image: '/concepts/bugs/snail.webp' },
+    { id: 5, name: 'Grasshopper', image: '/concepts/bugs/grasshopper.webp' },
+    { id: 6, name: 'Dragonfly', image: '/concepts/bugs/dragonfly.webp' },
+    { id: 7, name: 'Caterpillar', image: '/concepts/bugs/caterpillar.webp' },
+    { id: 8, name: 'Spider', image: '/concepts/bugs/spider.webp' },
+    { id: 9, name: 'Firefly', image: '/concepts/bugs/firefly.webp' },
+    { id: 10, name: 'Beetle', image: '/concepts/bugs/beetle.webp' },
+    { id: 11, name: 'Worm', image: '/concepts/bugs/worm.webp' },
+  ],
+  // Space photos are telescope/NASA-style closeups, deliberately different
+  // framing from the landscape sun/moon/stars in nature.
+  space: [
+    { id: 0, name: 'Sun', image: '/concepts/space/sun.webp' },
+    { id: 1, name: 'Moon', image: '/concepts/space/moon.webp' },
+    { id: 2, name: 'Mercury', image: '/concepts/space/mercury.webp' },
+    { id: 3, name: 'Venus', image: '/concepts/space/venus.webp' },
+    { id: 4, name: 'Earth', image: '/concepts/space/earth.webp' },
+    { id: 5, name: 'Mars', image: '/concepts/space/mars.webp' },
+    { id: 6, name: 'Jupiter', image: '/concepts/space/jupiter.webp' },
+    { id: 7, name: 'Saturn', image: '/concepts/space/saturn.webp' },
+    { id: 8, name: 'Uranus', image: '/concepts/space/uranus.webp' },
+    { id: 9, name: 'Neptune', image: '/concepts/space/neptune.webp' },
+    { id: 10, name: 'Stars', image: '/concepts/space/stars.webp' },
+    { id: 11, name: 'Solar System', image: '/concepts/space/solar-system.webp' },
   ],
   animals: [
     { id: 0, name: 'Lion', image: '/concepts/animals/lion.webp' },
