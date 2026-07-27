@@ -72,6 +72,23 @@ VERBS = {
     "driving": "a smiling parent driving a car, seen from the side through the open window, both hands on the steering wheel turning it slightly, scenery moving past",
     "cleaning": "a young child happily pushing an upright vacuum cleaner back and forth across a living room rug, visibly cleaning",
     "pressing": "a young child's hand pressing a big round red button with one finger, the button clearly going down and lighting up when pressed",
+    "digging": "a happy young child crouching in a sunny garden, digging a hole in brown soil with a small hand shovel, scooping dirt out of the hole and piling it beside it",
+    "drinking": "a happy young child holding a clear cup of water with both hands, tilting it up and drinking, visibly swallowing with a satisfied smile",
+    "brushing": "a young child brushing teeth in front of a bathroom mirror, the toothbrush moving clearly back and forth over the teeth, a little white toothpaste foam",
+    "bathing": "a happy young child in a bubble bath, white foam covering up to the chest, gently splashing water and playing with a yellow rubber duck",
+    "dancing": "a joyful young child dancing in a sunny living room, bouncing on both feet and swaying arms side to side rhythmically",
+    "kicking": "a young child kicking a big colorful ball across a grassy lawn with one foot, the ball clearly rolling away after the kick",
+    "crawling": "a happy baby crawling steadily across a soft living room rug, moving forward hand over hand on all fours",
+    "swinging": "a young child gripping a thick rope hanging from a tall tree branch, swinging back and forth through the air like Tarzan, feet off the ground",
+    "spinning": "a joyful young child spinning around in place with arms stretched out wide, twirling in a sunny garden, hair and clothes flaring out",
+    "stacking": "a young child stacking colorful wooden blocks one on top of another on the floor, the tower clearly growing taller block by block",
+    "pouring": "a young child carefully pouring water from a small plastic jug into a clear cup on a table, the water stream clearly visible",
+    "cutting": "a young child cutting a sheet of bright colored paper with child-safe scissors, the paper clearly separating along the cut",
+    "peeling": "a pair of adult hands peeling a raw potato with a vegetable peeler over a wooden kitchen table, peel strips coming off one by one",
+    "kissing": "a mother with light Mediterranean white skin and brown hair kneeling to kiss her toddler on the cheek, the toddler giggling happily at the kiss",
+    "reading": "a parent and a young child sitting together on a cozy sofa reading a big colorful picture book, the parent turning a page while the child points at the pictures",
+    "hiding": "a young child running to a long window curtain and hiding behind it, the curtain swaying with small feet peeking out underneath",
+    "walking": "a happy young child walking calmly along a sunny park path toward the camera, taking steady unhurried steps",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
