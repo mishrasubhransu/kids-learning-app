@@ -60,16 +60,18 @@ VERBS = {
     "crying": "a young child crying softly, a single realistic tear rolling down each cheek from the eyes, gently wiping the tears away with the back of a hand, gentle non-frightening mood",
     "laughing": "a young child laughing heartily with head tilted back, big joyful smile",
     "climbing": "a young child seen from behind, back to the camera, actively climbing up a playground climbing frame ladder, moving upward hand over hand and step by step",
-    "hugging": "two happy young children giving each other a big warm hug",
+    "hugging": "a mother and her toddler daughter giving each other a big warm hug, both with light Mediterranean white skin and brown hair, the mother kneeling to the toddler's height",
     "cycling": "a happy young child riding a small bicycle with training wheels along a park path, pedaling steadily",
     "boating": "a happy family rowing a small colorful rowboat on a calm lake, oars dipping into the water",
     "throwing": "a young child throwing a big red ball forward with both hands, the ball flying through the air",
-    "catching": "a young child catching a big colorful beach ball with both arms, hugging it to their chest",
-    "breaking": "a young child holding a dry brown stick with both hands and breaking it in half, the stick clearly snapping into two pieces",
-    "squeezing": "a young child squeezing half a yellow lemon over a clear glass with one hand, juice dripping down into the glass",
+    "catching": "a young boy seen from the side, a big colorful ball flying in from the left side of the frame, the boy watching it and catching it with both arms",
+    "breaking": "a young boy gripping a dry brown stick with both hands, straining with visible effort as he bends it, until the stick snaps unevenly into two jagged pieces, breaking naturally with rough splintered ends",
+    "squeezing": "a young child squeezing half a yellow lemon with one hand over a clear glass cup half full of water, drops of lemon juice falling into the water",
     "flying": "a white bird flying across a clear blue sky, wings flapping steadily, full body visible from the side",
     "swimming": "a happy young child swimming across a sunny outdoor pool, arms making clear swimming strokes with small splashes",
     "driving": "a smiling parent driving a car, seen from the side through the open window, both hands on the steering wheel turning it slightly, scenery moving past",
+    "cleaning": "a young child happily pushing an upright vacuum cleaner back and forth across a living room rug, visibly cleaning",
+    "pressing": "a young child's hand pressing a big round red button with one finger, the button clearly going down and lighting up when pressed",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -78,7 +80,7 @@ OUTPUT_DIR = os.path.join(PROJECT_ROOT, "public", "concepts", "actions")
 GENLAB_DIR = "/mnt/data/genlab"
 
 
-def archive_to_genlab(output_path, prompt, model, item_name, notes=None):
+def archive_to_genlab(output_path, prompt, model, item_name, notes=None, provider="gemini"):
     try:
         if GENLAB_DIR not in sys.path:
             sys.path.insert(0, GENLAB_DIR)
@@ -86,7 +88,7 @@ def archive_to_genlab(output_path, prompt, model, item_name, notes=None):
         genlab.record(
             output_path,
             prompt=prompt,
-            provider="gemini",
+            provider=provider,
             model=model,
             project="toddlearn",
             category="actions",

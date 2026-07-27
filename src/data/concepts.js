@@ -26,6 +26,7 @@ export const conceptCategories = [
   { id: 'nature', name: 'Nature', emoji: '🏞️', color: 'bg-green-500', hoverColor: 'hover:bg-green-600' },
   { id: 'bugs', name: 'Bugs & Insects', emoji: '🐞', color: 'bg-fuchsia-500', hoverColor: 'hover:bg-fuchsia-600' },
   { id: 'space', name: 'Space', emoji: '🪐', color: 'bg-violet-500', hoverColor: 'hover:bg-violet-600' },
+  { id: 'actions', name: 'Actions', emoji: '🏃', color: 'bg-blue-500', hoverColor: 'hover:bg-blue-600' },
 ];
 
 export const conceptItems = {
@@ -54,6 +55,31 @@ export const conceptItems = {
     { id: 17, name: 'Snow', images: ['/concepts/nature/snow-1.webp', '/concepts/nature/snow-2.webp'] },
     { id: 18, name: 'Lightning', images: ['/concepts/nature/lightning-1.webp', '/concepts/nature/lightning-2.webp'] },
     { id: 19, name: 'Glacier', images: ['/concepts/nature/glacier-1.webp', '/concepts/nature/glacier-2.webp'] },
+  ],
+  // Verbs are shown as short silent looping video clips (Veo-generated);
+  // ItemMedia renders `video` items where the other lessons show `image`.
+  actions: [
+    { id: 0, name: 'Running', video: '/concepts/actions/running.mp4' },
+    { id: 1, name: 'Jumping', video: '/concepts/actions/jumping.mp4' },
+    { id: 2, name: 'Eating', video: '/concepts/actions/eating.mp4' },
+    { id: 3, name: 'Sleeping', video: '/concepts/actions/sleeping.mp4' },
+    { id: 4, name: 'Clapping', video: '/concepts/actions/clapping.mp4' },
+    { id: 5, name: 'Waving', video: '/concepts/actions/waving.mp4' },
+    { id: 6, name: 'Crying', video: '/concepts/actions/crying.mp4' },
+    { id: 7, name: 'Laughing', video: '/concepts/actions/laughing.mp4' },
+    { id: 8, name: 'Climbing', video: '/concepts/actions/climbing.mp4' },
+    { id: 9, name: 'Hugging', video: '/concepts/actions/hugging.mp4' },
+    { id: 10, name: 'Cycling', video: '/concepts/actions/cycling.mp4' },
+    { id: 11, name: 'Boating', video: '/concepts/actions/boating.mp4' },
+    { id: 12, name: 'Throwing', video: '/concepts/actions/throwing.mp4' },
+    { id: 13, name: 'Catching', video: '/concepts/actions/catching.mp4' },
+    { id: 14, name: 'Breaking', video: '/concepts/actions/breaking.mp4' },
+    { id: 15, name: 'Squeezing', video: '/concepts/actions/squeezing.mp4' },
+    { id: 16, name: 'Flying', video: '/concepts/actions/flying.mp4' },
+    { id: 17, name: 'Swimming', video: '/concepts/actions/swimming.mp4' },
+    { id: 18, name: 'Driving', video: '/concepts/actions/driving.mp4' },
+    { id: 19, name: 'Cleaning', video: '/concepts/actions/cleaning.mp4' },
+    { id: 20, name: 'Pressing', video: '/concepts/actions/pressing.mp4' },
   ],
   bugs: [
     { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },
