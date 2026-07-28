@@ -167,6 +167,45 @@ const opposites = [
       { question: 'Which one is day?', correctAnswer: 'Day', sceneImage: '/opposites/scenes/day-night-scene.webp' },
     ],
   },
+  {
+    id: 14,
+    name: 'Running and Walking',
+    pair: ['Running', 'Walking'],
+    images: {
+      Running: '/opposites/running.webp',
+      Walking: '/opposites/walking.webp',
+    },
+    tests: [
+      { question: 'Which one is running?', correctAnswer: 'Running', sceneImage: '/opposites/scenes/running-walking-scene.webp' },
+    ],
+  },
+  {
+    id: 15,
+    name: 'Fast and Slow',
+    pair: ['Fast', 'Slow'],
+    images: {
+      Fast: '/opposites/fast.webp',
+      Slow: '/opposites/slow.webp',
+    },
+    tests: [
+      { question: 'Which one is fast?', correctAnswer: 'Fast', sceneImage: '/opposites/scenes/fast-slow-scene.webp' },
+    ],
+  },
+  // Beautiful/ugly is deliberately anchored to gardens — a place whose state
+  // is fixable — never to people, bodies, or creatures, so the pair teaches
+  // an aesthetic word without teaching appearance judgment of beings.
+  {
+    id: 16,
+    name: 'Beautiful and Ugly',
+    pair: ['Beautiful', 'Ugly'],
+    images: {
+      Beautiful: '/opposites/beautiful.webp',
+      Ugly: '/opposites/ugly.webp',
+    },
+    tests: [
+      { question: 'Which one is beautiful?', correctAnswer: 'Beautiful', sceneImage: '/opposites/scenes/beautiful-ugly-scene.webp' },
+    ],
+  },
 ];
 
 export default opposites;

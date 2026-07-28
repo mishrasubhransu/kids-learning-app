@@ -489,6 +489,14 @@ ITEMS = {
         "new": "a brand-new shiny bicycle with sparkling paint, gleaming spokes, and a red gift bow on the handlebars",
         "day": "a sunny little farm under a bright blue sky, big cheerful sun, cows grazing on green grass",
         "night": "the same little farm under a deep starry sky, glowing crescent moon, cows asleep on the grass",
+        "running": "a happy young boy running fast across a park path, arms pumping and legs stretched mid-stride, motion lines and little dust puffs behind him",
+        "walking": "the same young boy walking calmly and slowly along the park path, relaxed easy pace, one foot gently in front of the other",
+        "fast": "a sleek red race car zooming by at top speed, big bold motion lines streaking behind it",
+        "slow": "a smiling little snail sliding along very slowly, a short gentle slime trail behind it",
+        # Beautiful/ugly stays on gardens (a fixable state of a place), never
+        # on people or creatures — see the note in src/data/opposites.js
+        "beautiful": "a beautiful blooming flower garden bursting with tidy colorful flowers, roses and tulips in neat beds, butterflies and gentle sparkles in the air",
+        "ugly": "a neglected scraggly garden patch choked with tangled grey-brown weeds, drooping thorny brambles and patchy dry dirt, unkempt and gloomy but not scary, no flowers anywhere, not a single bloom or bright color",
     },
     "opposites-scenes": {
         "big-small-scene": "a great big dog and a tiny kitten sitting side by side on the same rug, the size difference dramatic and clear",
@@ -505,6 +513,9 @@ ITEMS = {
         "clean-dirty-scene": "two red toy cars side by side: one sparkling clean and shiny, one caked in dripping brown mud",
         "old-new-scene": "two bicycles side by side: one rusty, faded and bent, one brand-new and shiny with a red gift bow",
         "day-night-scene": "a rolling hill landscape split by weather magic: bright sun and blue sky over one half, moon and stars over the other",
+        "running-walking-scene": "two children side by side on a park path: one running fast with motion lines and flying hair, the other strolling slowly and calmly",
+        "fast-slow-scene": "a red race car zooming past with big speed lines on one side while a smiling snail slides slowly along on the other side",
+        "beautiful-ugly-scene": "a garden split down the middle: one half bursting with tidy colorful blooming flowers and butterflies, the other half a scraggly patch of tangled thorny grey-brown weeds",
     },
     # Nature concepts support several photo variants per item; filenames are
     # suffixed -1, -2, … and listed in src/data/concepts.js `images` arrays.
