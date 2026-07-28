@@ -38,8 +38,7 @@ OUTPUT_DIR = os.path.join(PROJECT_ROOT, "public", "concepts", "actions")
 HEADERS = {"Content-Type": "application/json", "x-api-key": API_KEY}
 
 
-def submit_task(item_name, subject_desc, version, mode, duration, aspect):
-    prompt = STYLE.format(subject=subject_desc)
+def submit_task(item_name, prompt, version, mode, duration, aspect):
     body = {
         "model": "kling",
         "task_type": "video_generation",
@@ -121,9 +120,9 @@ def normalize(path):
     os.replace(tmp, path)
 
 
-def download(result, duration):
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
-    output_path = os.path.join(OUTPUT_DIR, f"{result['item']}.mp4")
+def download(result, duration, outdir):
+    os.makedirs(outdir, exist_ok=True)
+    output_path = os.path.join(outdir, f"{result['item']}.mp4")
     r = requests.get(result["url"], timeout=120)
     r.raise_for_status()
     with open(output_path, "wb") as f:
@@ -149,21 +148,30 @@ def main():
     parser.add_argument("--aspect", default=ASPECT_RATIO, choices=["1:1", "16:9", "9:16"],
                         help="Output aspect ratio")
     parser.add_argument("--force", action="store_true", help="Overwrite existing clips")
+    parser.add_argument("--prompt", help="Full prompt used verbatim (requires exactly one --item, "
+                        "which then only names the output file); bypasses VERBS/STYLE")
+    parser.add_argument("--outdir", default=OUTPUT_DIR,
+                        help="Output directory (default: public/concepts/actions)")
     args = parser.parse_args()
 
     if not API_KEY:
         sys.exit("PIAPI_API_KEY is not set")
 
-    unknown = [i for i in args.item if i not in VERBS]
-    if unknown:
-        sys.exit(f"No prompt in VERBS for: {', '.join(unknown)} — add it to generate_action_videos.py first")
+    if args.prompt:
+        if len(args.item) != 1:
+            sys.exit("--prompt requires exactly one --item (used as the output filename)")
+    else:
+        unknown = [i for i in args.item if i not in VERBS]
+        if unknown:
+            sys.exit(f"No prompt in VERBS for: {', '.join(unknown)} — add it to generate_action_videos.py first")
 
     tasks = []
     for item in args.item:
-        if not args.force and os.path.exists(os.path.join(OUTPUT_DIR, f"{item}.mp4")):
+        if not args.force and os.path.exists(os.path.join(args.outdir, f"{item}.mp4")):
             print(f"  ⏭  Skipping {item}.mp4 (already exists)")
             continue
-        t = submit_task(item, VERBS[item], args.version, args.mode, args.duration, args.aspect)
+        prompt = args.prompt if args.prompt else STYLE.format(subject=VERBS[item])
+        t = submit_task(item, prompt, args.version, args.mode, args.duration, args.aspect)
         if t:
             tasks.append(t)
 
@@ -174,7 +182,7 @@ def main():
     print(f"\n⏳ Polling {len(tasks)} task(s)...")
     results = poll_tasks(tasks)
     for res in results:
-        download(res, args.duration)
+        download(res, args.duration, args.outdir)
 
     print(f"\n📊 {len(results)}/{len(tasks)} clips done")
     return 0 if len(results) == len(tasks) else 1

@@ -3,6 +3,8 @@ import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import ItemMedia from '../ui/ItemMedia';
+import { pickPairExamples } from '../../data/opposites';
 
 // The two poles of every pair: warm for the first word, cool for its opposite.
 const POLES = [
@@ -23,6 +25,19 @@ function shuffle(arr) {
 // The right arrow always means "what comes next".
 const PairLearnView = ({ items }) => {
   const displayItems = useMemo(() => shuffle(items), [items]);
+  // One media example (image path or { video }) per word, fixed for this
+  // visit so cards never swap while the child is looking at them; both
+  // sides of a pair share a slot so the contrast stays apples-to-apples
+  const chosenMedia = useMemo(() => {
+    const chosen = {};
+    displayItems.forEach((item) => {
+      const examples = pickPairExamples(item);
+      item.pair.forEach((w) => {
+        chosen[`${item.id}:${w}`] = examples[w];
+      });
+    });
+    return chosen;
+  }, [displayItems]);
   const [step, setStep] = useState(0);
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useSpeech();
@@ -46,10 +61,15 @@ const PairLearnView = ({ items }) => {
   }, [step, displayItems, speak]);
 
   // Warm the next pair's images so the word never plays over blank cards
+  // (video examples stream on their own; only images preload)
   useEffect(() => {
     const next = displayItems[(pairIndex + 1) % displayItems.length];
-    if (next) preloadImages(next.pair.map((w) => next.images[w]));
-  }, [pairIndex, displayItems]);
+    if (!next) return;
+    const paths = next.pair
+      .map((w) => chosenMedia[`${next.id}:${w}`])
+      .filter((m) => typeof m === 'string');
+    if (paths.length) preloadImages(paths);
+  }, [pairIndex, displayItems, chosenMedia]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -124,11 +144,13 @@ const PairLearnView = ({ items }) => {
         }}
         aria-label={isActive ? `${word}, say it again` : `Show ${word}`}
       >
-        <img
-          src={currentItem.images[word]}
+        <ItemMedia
+          item={(() => {
+            const media = chosenMedia[`${currentItem.id}:${word}`];
+            return typeof media === 'string' ? { image: media } : media;
+          })()}
           alt={word}
           className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
-          draggable={false}
         />
         <span
           className="text-3xl md:text-5xl font-black tracking-wide uppercase transition-colors duration-300"

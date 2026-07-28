@@ -1,3 +1,30 @@
+// images[word] may be a single image path or an array of interchangeable
+// examples; an example is an image path string or { video: path }.
+export const wordExamples = (item, word) => {
+  const entry = item.images[word];
+  return Array.isArray(entry) ? entry : [entry];
+};
+
+// Image-only examples — the match/quiz games stay image-based, so a word
+// with video examples must also keep at least one image example.
+export const wordImages = (item, word) =>
+  wordExamples(item, word).filter((e) => typeof e === 'string');
+
+export const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
+
+// One example per word of a pair, with both words drawn from the SAME slot
+// so the two cards differ only along the dimension being taught (cartoon
+// with cartoon, video with video — never a video paired with a still).
+// listFor picks the example pool: wordExamples, or wordImages for the
+// image-only games. A shorter list clamps to its last example.
+export const pickPairExamples = (item, listFor = wordExamples) => {
+  const lists = item.pair.map((w) => listFor(item, w));
+  const slot = Math.floor(Math.random() * Math.max(...lists.map((l) => l.length)));
+  return Object.fromEntries(
+    item.pair.map((w, i) => [w, lists[i][Math.min(slot, lists[i].length - 1)]])
+  );
+};
+
 const opposites = [
   {
     id: 0,

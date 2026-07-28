@@ -5,6 +5,7 @@ import useAudioFeedback from '../../hooks/useAudioFeedback';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
+import { wordImages, pickRandom } from '../../data/opposites';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -42,15 +43,15 @@ function buildRounds(items, difficulty) {
       .slice(0, choiceCount - 1)
       .map((p) => {
         const side = Math.floor(Math.random() * 2);
-        return { word: p.pair[side], image: p.images[p.pair[side]] };
+        return { word: p.pair[side], image: pickRandom(wordImages(p, p.pair[side])) };
       });
 
     return {
       promptWord,
-      promptImage: pair.images[promptWord],
+      promptImage: pickRandom(wordImages(pair, promptWord)),
       answerWord,
       choices: shuffle([
-        { word: answerWord, image: pair.images[answerWord] },
+        { word: answerWord, image: pickRandom(wordImages(pair, answerWord)) },
         ...distractors,
       ]),
     };

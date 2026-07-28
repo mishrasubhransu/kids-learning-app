@@ -5,6 +5,7 @@ import useAudioFeedback from '../../hooks/useAudioFeedback';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
+import { wordImages, pickPairExamples } from '../../data/opposites';
 
 const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
@@ -27,8 +28,14 @@ const SceneQuiz = ({ items, difficulty }) => {
       default: pairCount = items.length;
     }
     const selected = items.slice(0, pairCount);
+    // Resolve one image example per word up front (both words from the same
+    // slot) so every consumer below keeps seeing a plain word -> path map
     const allTests = selected.flatMap((pair) =>
-      pair.tests.map((t) => ({ ...t, pair: pair.pair, images: pair.images }))
+      pair.tests.map((t) => ({
+        ...t,
+        pair: pair.pair,
+        images: pickPairExamples(pair, wordImages),
+      }))
     );
     for (let i = allTests.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
