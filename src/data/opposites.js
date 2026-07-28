@@ -211,8 +211,8 @@ const opposites = [
     name: 'Fast and Slow',
     pair: ['Fast', 'Slow'],
     images: {
-      Fast: '/opposites/fast.webp',
-      Slow: '/opposites/slow.webp',
+      Fast: ['/opposites/fast.webp', { video: '/opposites/fast-drive.mp4' }],
+      Slow: ['/opposites/slow.webp', { video: '/opposites/slow-drive.mp4' }],
     },
     tests: [
       { question: 'Which one is fast?', correctAnswer: 'Fast', sceneImage: '/opposites/scenes/fast-slow-scene.webp' },
