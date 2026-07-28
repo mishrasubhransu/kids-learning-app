@@ -72,11 +72,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
 
   // Speak the first item when entering the page. Queued, not spoken over:
   // arriving from ConceptsHome, the category name is still being announced.
+  // Ref-guarded because StrictMode double-runs mount effects in dev, and an
+  // enqueued utterance isn't canceled by the second run — the first word
+  // would play twice. Refs survive StrictMode's simulated remount.
+  const spokeOnMount = useRef(false);
   useEffect(() => {
-    if (!isAutoplay) {
-      speakCurrent({ enqueue: true });
-      hasInteracted.current = true;
-    }
+    if (spokeOnMount.current || isAutoplay) return;
+    spokeOnMount.current = true;
+    speakCurrent({ enqueue: true });
+    hasInteracted.current = true;
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Speak and change background when navigating manually (non-autoplay)
