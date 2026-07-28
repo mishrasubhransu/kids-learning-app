@@ -14,6 +14,7 @@ import OppositesPage from './components/opposites/OppositesPage';
 import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
+import LessonGuard from './components/LessonGuard';
 import LandingPage from './components/LandingPage';
 import usePageTracking from './hooks/usePageTracking';
 
@@ -21,6 +22,8 @@ import usePageTracking from './hooks/usePageTracking';
 // after AdminGate has confirmed the admin account, so other users never
 // download the admin UI or see which tools exist
 const AdminRoutes = lazy(() => import('./components/admin/AdminRoutes'));
+// Parent Zone is visited rarely — keep it out of the kid-facing bundle too
+const ParentZone = lazy(() => import('./components/parent/ParentZone'));
 
 const AdminGate = ({ children }) => {
   const { user } = useAuth();
@@ -52,21 +55,22 @@ const App = () => {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-        <Route path="/alphabets/*" element={<ProtectedRoute><CategoryPage category="alphabets" /></ProtectedRoute>} />
-        <Route path="/numbers/*" element={<ProtectedRoute><CategoryPage category="numbers" /></ProtectedRoute>} />
-        <Route path="/colors/*" element={<ProtectedRoute><CategoryPage category="colors" /></ProtectedRoute>} />
-        <Route path="/shapes/*" element={<ProtectedRoute><CategoryPage category="shapes" /></ProtectedRoute>} />
-        <Route path="/concepts" element={<ProtectedRoute><ConceptsHome /></ProtectedRoute>} />
-        <Route path="/concepts/:subcategory/*" element={<ProtectedRoute><ConceptsCategoryPage /></ProtectedRoute>} />
+        <Route path="/parent" element={<ProtectedRoute><Suspense fallback={null}><ParentZone /></Suspense></ProtectedRoute>} />
+        <Route path="/alphabets/*" element={<ProtectedRoute><LessonGuard lesson="alphabets"><CategoryPage category="alphabets" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/numbers/*" element={<ProtectedRoute><LessonGuard lesson="numbers"><CategoryPage category="numbers" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/colors/*" element={<ProtectedRoute><LessonGuard lesson="colors"><CategoryPage category="colors" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/shapes/*" element={<ProtectedRoute><LessonGuard lesson="shapes"><CategoryPage category="shapes" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/concepts" element={<ProtectedRoute><LessonGuard lesson="concepts"><ConceptsHome /></LessonGuard></ProtectedRoute>} />
+        <Route path="/concepts/:subcategory/*" element={<ProtectedRoute><LessonGuard prefix="concepts" param="subcategory"><ConceptsCategoryPage /></LessonGuard></ProtectedRoute>} />
         {/* Old bookmarks from before the Objects → Concepts rename */}
         <Route path="/objects/*" element={<Navigate to="/concepts" replace />} />
-        <Route path="/phonics" element={<ProtectedRoute><PhonicsHome /></ProtectedRoute>} />
-        <Route path="/phonics/letters" element={<ProtectedRoute><LetterSoundsView /></ProtectedRoute>} />
-        <Route path="/phonics/:family/*" element={<ProtectedRoute><PhonicsCategoryPage /></ProtectedRoute>} />
-        <Route path="/opposites/*" element={<ProtectedRoute><OppositesPage /></ProtectedRoute>} />
+        <Route path="/phonics" element={<ProtectedRoute><LessonGuard lesson="phonics"><PhonicsHome /></LessonGuard></ProtectedRoute>} />
+        <Route path="/phonics/letters" element={<ProtectedRoute><LessonGuard lesson="phonics.letters"><LetterSoundsView /></LessonGuard></ProtectedRoute>} />
+        <Route path="/phonics/:family/*" element={<ProtectedRoute><LessonGuard prefix="phonics" param="family"><PhonicsCategoryPage /></LessonGuard></ProtectedRoute>} />
+        <Route path="/opposites/*" element={<ProtectedRoute><LessonGuard lesson="opposites"><OppositesPage /></LessonGuard></ProtectedRoute>} />
         {/* Emotions now lives under Concepts; keep old links working */}
         <Route path="/emotions/*" element={<Navigate to="/concepts/emotions" replace />} />
-        <Route path="/typing" element={<ProtectedRoute><TypingMode /></ProtectedRoute>} />
+        <Route path="/typing" element={<ProtectedRoute><LessonGuard lesson="typing"><TypingMode /></LessonGuard></ProtectedRoute>} />
         <Route path="/admin/*" element={<ProtectedRoute><AdminGate><AdminRoutes /></AdminGate></ProtectedRoute>} />
         {/* Unknown URLs land somewhere useful instead of a blank page */}
         <Route path="*" element={<Navigate to="/" replace />} />

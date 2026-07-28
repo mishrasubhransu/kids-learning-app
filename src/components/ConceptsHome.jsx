@@ -3,10 +3,17 @@ import { conceptCategories, conceptItems } from '../data/concepts';
 import HomeButton from './ui/HomeButton';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
+import { isLessonEnabled } from '../data/lessons';
+import { useChildProfile } from '../context/ChildProfileContext';
 import useSpeech from '../hooks/useSpeech';
 
 const ConceptsHome = () => {
   const { speak } = useSpeech();
+  const { activeChild } = useChildProfile();
+  const enabledLessons = activeChild?.settings?.enabledLessons;
+  const visibleCategories = conceptCategories.filter((cat) =>
+    isLessonEnabled(enabledLessons, `concepts.${cat.id}`)
+  );
 
   return (
     <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
@@ -30,7 +37,7 @@ const ConceptsHome = () => {
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
-            {conceptCategories.map((cat) => {
+            {visibleCategories.map((cat) => {
               // Lessons with more than one art style (e.g. emotions
               // cartoon/real) get a toggle pill. It sits over the card as a
               // sibling of the Link, not inside it — nested interactive

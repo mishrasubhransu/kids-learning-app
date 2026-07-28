@@ -9,8 +9,9 @@ import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
 import DifficultySelector from './ui/DifficultySelector';
 import GameInterstitial from './ui/GameInterstitial';
-import { getImageStyle, applyImageStyle } from '../lib/imageStyles';
+import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
 import { setScreenContext } from '../lib/analytics';
+import useChildSetting from '../hooks/useChildSetting';
 
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
@@ -51,11 +52,14 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Entering test via that screen skips TestingMode's own "Ready to Test?" gate
   const [autoStartTest, setAutoStartTest] = useState(false);
   const [difficulty, setDifficulty] = useState('easy'); // 'easy' | 'medium' | 'hard'
-  // Chosen via the pill on the home Numbers card, persisted in localStorage
-  const savedObjectType = localStorage.getItem('objectType');
+  // Chosen via the pill on the home Numbers card, saved per child
+  const [savedObjectType] = useChildSetting('objectType', 'strawberries');
   const objectType = objectIcons[savedObjectType]
     ? savedObjectType
     : 'strawberries';
+  // Counting range and image style are per-child too (Parent Zone / pills)
+  const [numberMax] = useChildSetting('numberMax', '10');
+  const [savedImageStyle] = useChildSetting(`imageStyle-${category}`, null);
 
   const selectMode = (next) => {
     setShowGamePrompt(false);
@@ -111,9 +115,13 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const { title, objectIcons: icons } = data;
   const rawItems = resolvedItems;
   const sizedItems = category === 'numbers'
-    ? rawItems.slice(0, Number(localStorage.getItem('numberMax') || '10'))
+    ? rawItems.slice(0, Number(numberMax || '10'))
     : rawItems;
-  const items = applyImageStyle(sizedItems, category, getImageStyle(category));
+  const items = applyImageStyle(
+    sizedItems,
+    category,
+    resolveImageStyle(category, savedImageStyle)
+  );
 
   return (
     <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">

@@ -6,7 +6,7 @@
 
 2. **Achievement badges** - "Learned all animals!", "Got 10 in a row!", "Tried every category". Visual reward collection screen. Kids love collecting things.
 
-3. **Multi-child profiles** - Parents often have more than one kid. Let them switch between profiles so progress is tracked per child.
+3. **Multi-child profiles** ✅ SHIPPED - Child profiles with per-child lesson enable/disable, Parent Zone at /parent (hold-3s gate), per-child settings, and name-in-praise audio.
 
 4. **Adaptive difficulty** - Track what the child gets wrong and serve those items more frequently. If they always nail "A" but miss "Q", show "Q" more. Simple spaced-repetition lite.
 

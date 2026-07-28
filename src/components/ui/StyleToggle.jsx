@@ -1,26 +1,26 @@
-import { useState } from 'react';
 import {
   IMAGE_STYLES,
   stylesForCategory,
-  getImageStyle,
-  setImageStyle,
+  resolveImageStyle,
   nextImageStyle,
 } from '../../lib/imageStyles';
+import useChildSetting from '../../hooks/useChildSetting';
 
 // Small pill button that cycles through the image styles available for a
 // category (see CATEGORY_IMAGE_STYLES). Safe to render inside a Link —
 // clicks don't navigate. Renders nothing for single-style categories.
+// The choice is saved per child (falls back to this device pre-profile).
 const StyleToggle = ({ category, className }) => {
-  const [style, setStyle] = useState(() => getImageStyle(category));
+  const [saved, setSaved] = useChildSetting(`imageStyle-${category}`, null);
 
   if (!stylesForCategory(category)) return null;
+
+  const style = resolveImageStyle(category, saved);
 
   const handleClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    const next = nextImageStyle(category, style);
-    setStyle(next);
-    setImageStyle(category, next);
+    setSaved(nextImageStyle(category, style));
   };
 
   const { label, icon } = IMAGE_STYLES[style];

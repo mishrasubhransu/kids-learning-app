@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 import HomeButton from './ui/HomeButton';
-import useUserSetting from '../hooks/useUserSetting';
+import useChildSetting from '../hooks/useChildSetting';
+import { isLessonEnabled } from '../data/lessons';
+import { useChildProfile } from '../context/ChildProfileContext';
 
 const groups = [
   { id: '2-letter', title: '2-Letter Sounds', subtitle: 'Consonant + vowel' },
@@ -9,7 +11,12 @@ const groups = [
 ];
 
 const PhonicsHome = () => {
-  const [letterCase, setLetterCase] = useUserSetting('letterCase', 'capital');
+  const [letterCase, setLetterCase] = useChildSetting('letterCase', 'capital', {
+    legacyKey: 'setting-letterCase',
+  });
+  const { activeChild } = useChildProfile();
+  const enabledLessons = activeChild?.settings?.enabledLessons;
+  const showLetters = isLessonEnabled(enabledLessons, 'phonics.letters');
 
   const toggleLetterCase = () => {
     setLetterCase(letterCase === 'capital' ? 'small' : 'capital');
@@ -27,6 +34,7 @@ const PhonicsHome = () => {
       </div>
 
       <div className="flex-1 flex flex-col items-center p-6 md:p-10 gap-8 md:gap-10">
+        {showLetters && (
         <section className="w-full max-w-5xl">
           <div className="mb-4 px-1 flex items-end justify-between gap-4">
             <div>
@@ -61,9 +69,15 @@ const PhonicsHome = () => {
             </span>
           </Link>
         </section>
+        )}
 
         {groups.map((group) => {
-          const families = phonicsFamilies.filter((f) => f.group === group.id);
+          const families = phonicsFamilies.filter(
+            (f) =>
+              f.group === group.id &&
+              isLessonEnabled(enabledLessons, `phonics.${f.id}`)
+          );
+          if (families.length === 0) return null;
           return (
             <section key={group.id} className="w-full max-w-5xl">
               <div className="mb-4 px-1">

@@ -1,0 +1,113 @@
+import { homeCategories } from './categories';
+import { conceptCategories } from './concepts';
+import { phonicsFamilies } from './phonics';
+
+// Single source of truth for what counts as a "lesson" in the Parent Zone,
+// menu filtering, and the route guard. Keys are 'alphabets' at the top level
+// and 'concepts.animals' / 'phonics.at' one level down.
+//
+// Enablement lives in each child profile's settings.enabledLessons map.
+// Semantics: a key ABSENT from the map is DISABLED — so lessons added to the
+// app after a profile was created stay hidden until the parent turns them on
+// (they show a "New" badge in the Parent Zone). No map at all (profile not
+// loaded yet, or something went wrong) fails open: everything shows.
+
+export const lessonTree = homeCategories.map((cat) => ({
+  key: cat.id,
+  name: cat.name,
+  emoji: cat.preview,
+  children:
+    cat.id === 'concepts'
+      ? conceptCategories.map((c) => ({
+          key: `concepts.${c.id}`,
+          name: c.name,
+          emoji: c.emoji,
+        }))
+      : cat.id === 'phonics'
+        ? [
+            { key: 'phonics.letters', name: 'Letter Sounds', emoji: '🍎' },
+            ...phonicsFamilies.map((f) => ({
+              key: `phonics.${f.id}`,
+              name: f.name,
+              emoji: f.emoji || '🔤',
+            })),
+          ]
+        : null,
+}));
+
+export const allLessonKeys = lessonTree.flatMap((l) => [
+  l.key,
+  ...(l.children ? l.children.map((c) => c.key) : []),
+]);
+
+export const defaultEnabledLessons = () =>
+  Object.fromEntries(allLessonKeys.map((k) => [k, true]));
+
+// Sub-lessons need their parent on too, so unchecking a category hides the
+// whole subtree while the individual sub states survive for re-enabling.
+export const isLessonEnabled = (enabled, key) => {
+  if (!enabled) return true;
+  const top = key.split('.')[0];
+  if (key !== top && !enabled[top]) return false;
+  return Boolean(enabled[key]);
+};
+
+// What the menus use: a category whose children are all off hides itself,
+// derived at render time so it can never drift out of sync.
+export const isLessonVisible = (enabled, key) => {
+  if (!enabled) return true;
+  if (!isLessonEnabled(enabled, key)) return false;
+  const node = lessonTree.find((l) => l.key === key);
+  if (node?.children) {
+    return node.children.some((c) => isLessonEnabled(enabled, c.key));
+  }
+  return true;
+};
+
+// Registry keys the profile has never seen (neither true nor false) —
+// lessons shipped after the profile was created.
+export const newLessonKeys = (enabled) =>
+  enabled ? allLessonKeys.filter((k) => enabled[k] === undefined) : [];
+
+// Age-suggested starter set for NEW profiles (the parent adjusts it in the
+// creation flow). Every key gets an explicit true/false so a fresh profile
+// starts with zero "New" badges. Unknown age = everything on.
+export const starterLessonsForAge = (ageYears) => {
+  if (ageYears == null || Number.isNaN(ageYears)) return defaultEnabledLessons();
+
+  const under2 = [
+    'colors',
+    'shapes',
+    'concepts',
+    'concepts.animals',
+    'concepts.birds',
+    'concepts.food',
+    'concepts.fruits',
+    'concepts.vegetables',
+    'concepts.bodyparts',
+    'concepts.transportation',
+  ];
+  const under3 = [
+    ...under2,
+    'alphabets',
+    'numbers',
+    'opposites',
+    'concepts.emotions',
+    'concepts.household',
+    'concepts.nature',
+    'concepts.sea-creatures',
+    'concepts.actions',
+  ];
+
+  const starters = ageYears < 2 ? under2 : ageYears < 3 ? under3 : allLessonKeys;
+  return Object.fromEntries(
+    allLessonKeys.map((k) => [k, starters.includes(k)])
+  );
+};
+
+export const ageFromBirthdate = (birthdate) => {
+  if (!birthdate) return null;
+  const born = new Date(birthdate);
+  if (Number.isNaN(born.getTime())) return null;
+  return (Date.now() - born.getTime()) / (365.25 * 24 * 60 * 60 * 1000);
+};

@@ -16,6 +16,8 @@ const MAX_SEGMENT_MS = 30 * 60 * 1000;
 const sessionId = crypto.randomUUID();
 
 let auth = null; // { userId, email, token }
+// Active child profile, set by ChildProfileContext so events are per-kid
+let activeChildId = null;
 let queue = [];
 let flushTimer = null;
 let segment = null; // { path, category, mode, startedAt }
@@ -38,9 +40,14 @@ supabase.auth.onAuthStateChange((_event, session) => {
   }
 });
 
+export const setAnalyticsChild = (childId) => {
+  activeChildId = childId ?? null;
+};
+
 const row = (event, fields = {}) => ({
   user_id: auth.userId,
   email: auth.email,
+  child_id: activeChildId,
   session_id: sessionId,
   event,
   path: fields.path ?? null,

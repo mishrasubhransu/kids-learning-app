@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
-import useUserSetting from '../hooks/useUserSetting';
+import useChildSetting from '../hooks/useChildSetting';
 import {
   letterSounds,
   letterImageSrc,
@@ -42,7 +42,9 @@ const LetterSoundsView = () => {
   // Mirrors isAudioPlayingRef so the Next arrow can show the locked state
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   // 'capital' shows only uppercase everywhere; 'small' adds lowercase
-  const [letterCase] = useUserSetting('letterCase', 'capital');
+  const [letterCase] = useChildSetting('letterCase', 'capital', {
+    legacyKey: 'setting-letterCase',
+  });
   const audioRef = useRef(null);
   const isCoolingDownRef = useRef(false);
   const cooldownTimerRef = useRef(null);

@@ -1,137 +1,37 @@
-import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, LogOut, ArrowLeftRight, Volume2 } from 'lucide-react';
-import VoiceSelector from './ui/VoiceSelector';
+import { Settings } from 'lucide-react';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { objectIcons } from '../data/numbers';
-import { useAuth } from '../context/AuthContext';
-
-// Light backgrounds (yellow/amber/green/cyan/orange) need dark text to stay
-// readable; the darker card colors keep white text.
-const categories = [
-  {
-    id: 'alphabets',
-    name: 'Alphabets',
-    description: 'Learn A to Z',
-    icon: BookOpen,
-    color: 'bg-blue-600',
-    hoverColor: 'group-hover:bg-blue-700',
-    textColor: 'text-white',
-    preview: 'ABC',
-  },
-  {
-    id: 'numbers',
-    name: 'Numbers',
-    icon: Hash,
-    color: 'bg-green-500',
-    hoverColor: 'group-hover:bg-green-600',
-    textColor: 'text-gray-900',
-    preview: '123',
-  },
-  {
-    id: 'colors',
-    name: 'Colors',
-    description: 'Learn colors',
-    icon: Palette,
-    color: 'bg-pink-600',
-    hoverColor: 'group-hover:bg-pink-700',
-    textColor: 'text-white',
-    preview: '🎨',
-  },
-  {
-    id: 'shapes',
-    name: 'Shapes',
-    description: 'Learn shapes',
-    icon: Shapes,
-    color: 'bg-purple-600',
-    hoverColor: 'group-hover:bg-purple-700',
-    textColor: 'text-white',
-    preview: '⬟',
-  },
-  {
-    id: 'concepts',
-    name: 'Concepts',
-    description: 'Learn about the world',
-    icon: Image,
-    color: 'bg-amber-500',
-    hoverColor: 'group-hover:bg-amber-600',
-    textColor: 'text-gray-900',
-    preview: '🦁',
-  },
-  {
-    id: 'opposites',
-    name: 'Opposites',
-    icon: ArrowLeftRight,
-    color: 'bg-cyan-500',
-    hoverColor: 'group-hover:bg-cyan-600',
-    textColor: 'text-gray-900',
-    preview: '↔️',
-  },
-  {
-    id: 'phonics',
-    name: 'Phonics',
-    description: 'Learn 3-letter words',
-    icon: Volume2,
-    color: 'bg-indigo-600',
-    hoverColor: 'group-hover:bg-indigo-700',
-    textColor: 'text-white',
-    preview: '🔤',
-  },
-  {
-    id: 'typing',
-    name: 'Typing',
-    description: 'Type & hear letters',
-    icon: Keyboard,
-    color: 'bg-orange-500',
-    hoverColor: 'group-hover:bg-orange-600',
-    textColor: 'text-gray-900',
-    preview: '⌨️',
-  },
-];
+import { homeCategories } from '../data/categories';
+import { isLessonVisible, newLessonKeys } from '../data/lessons';
+import { useChildProfile, DEFAULT_CHILD_NAME } from '../context/ChildProfileContext';
+import useChildSetting from '../hooks/useChildSetting';
 
 const Home = () => {
-  const { signOut } = useAuth();
-  const [numberMax, setNumberMax] = useState(() => {
-    return localStorage.getItem('numberMax') || '10';
-  });
-
-  const toggleNumberMax = () => {
-    const next = numberMax === '10' ? '20' : '10';
-    setNumberMax(next);
-    localStorage.setItem('numberMax', next);
-  };
-
-  // Toddler-proofing: signing out takes two taps. The first arms the button
-  // (distinct red "tap again" state) and a stray single tap disarms itself.
-  const [confirmSignOut, setConfirmSignOut] = useState(false);
-  const confirmTimerRef = useRef(null);
-
-  const handleSignOut = () => {
-    if (!confirmSignOut) {
-      setConfirmSignOut(true);
-      clearTimeout(confirmTimerRef.current);
-      confirmTimerRef.current = setTimeout(() => setConfirmSignOut(false), 4000);
-      return;
-    }
-    clearTimeout(confirmTimerRef.current);
-    signOut();
-  };
-
-  useEffect(() => () => clearTimeout(confirmTimerRef.current), []);
+  const { activeChild } = useChildProfile();
+  const enabledLessons = activeChild?.settings?.enabledLessons;
 
   const objectKeys = Object.keys(objectIcons);
-  const [objectType, setObjectType] = useState(() => {
-    const saved = localStorage.getItem('objectType');
-    return objectIcons[saved] ? saved : 'strawberries';
-  });
+  const [savedObjectType, setObjectType] = useChildSetting('objectType', 'strawberries');
+  const objectType = objectIcons[savedObjectType] ? savedObjectType : 'strawberries';
 
   const cycleObjectType = () => {
-    const next =
-      objectKeys[(objectKeys.indexOf(objectType) + 1) % objectKeys.length];
-    setObjectType(next);
-    localStorage.setItem('objectType', next);
+    setObjectType(objectKeys[(objectKeys.indexOf(objectType) + 1) % objectKeys.length]);
   };
+
+  const [numberMax, setNumberMax] = useChildSetting('numberMax', '10');
+  const toggleNumberMax = () => {
+    setNumberMax(numberMax === '10' ? '20' : '10');
+  };
+
+  const visibleCategories = homeCategories.filter((cat) =>
+    isLessonVisible(enabledLessons, cat.id)
+  );
+
+  const greetName =
+    activeChild && activeChild.name !== DEFAULT_CHILD_NAME ? activeChild.name : null;
+  const hasNewLessons = newLessonKeys(enabledLessons).length > 0;
 
   return (
     // Outer div scrolls, inner div grows: with 9 cards the grid is taller
@@ -143,11 +43,17 @@ const Home = () => {
         ToddLearn
       </h1>
       <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 text-center">
-        Choose what you want to learn today!
+        {greetName ? (
+          <>
+            Hi {greetName}! 👋 What do you want to learn today?
+          </>
+        ) : (
+          'Choose what you want to learn today!'
+        )}
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
-        {categories.map((category) => {
+        {visibleCategories.map((category) => {
           const IconComponent = category.icon;
           const darkText = category.textColor === 'text-gray-900';
           const hasPill =
@@ -215,21 +121,22 @@ const Home = () => {
       </div>
 
       <div className="mt-8 md:mt-12 flex flex-col items-center gap-3">
-        <VoiceSelector />
         <span className="text-gray-500 text-sm">
           Use arrow keys or tap to navigate
         </span>
-        <button
-          onClick={handleSignOut}
-          className={`mt-2 flex items-center gap-2 text-sm transition-colors ${
-            confirmSignOut
-              ? 'text-red-600 hover:text-red-700 font-semibold'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
+        <Link
+          to="/parent"
+          className="relative mt-1 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
-          <LogOut size={16} />
-          {confirmSignOut ? 'Tap again to sign out' : 'Sign Out'}
-        </button>
+          <Settings size={16} />
+          Parents
+          {hasNewLessons && (
+            <span
+              className="absolute -top-1 -right-3 w-2.5 h-2.5 rounded-full bg-amber-400"
+              title="New lessons available"
+            />
+          )}
+        </Link>
       </div>
       </div>
     </div>

@@ -19,17 +19,13 @@ export const CATEGORY_IMAGE_STYLES = {
 export const stylesForCategory = (category) =>
   CATEGORY_IMAGE_STYLES[category] || null;
 
-const storageKey = (category) => `imageStyle-${category}`;
-
-export const getImageStyle = (category) => {
+// The saved value comes from the active child's settings (useChildSetting
+// key `imageStyle-<category>`, with the old localStorage key as fallback);
+// this just validates it against the category's style list.
+export const resolveImageStyle = (category, saved) => {
   const styles = stylesForCategory(category);
   if (!styles) return null;
-  const saved = localStorage.getItem(storageKey(category));
   return styles.includes(saved) ? saved : styles[0];
-};
-
-export const setImageStyle = (category, style) => {
-  localStorage.setItem(storageKey(category), style);
 };
 
 export const nextImageStyle = (category, current) => {

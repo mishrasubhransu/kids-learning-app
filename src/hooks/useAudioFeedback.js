@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from 'react';
 import { positiveTiers, encouragement, getTierForCount } from '../utils/feedback';
 import useSpeech from './useSpeech';
+import { useChildProfile } from '../context/ChildProfileContext';
 
 const TIER_COUNT = positiveTiers.length;
 const PHRASES_PER_TIER = positiveTiers[0].length;
@@ -10,6 +11,8 @@ const ENCOURAGEMENT_COUNT = encouragement.length;
  * Plays pre-generated ElevenLabs audio clips for test feedback.
  * Positive clips are tiered by correct-answer count — excitement escalates.
  * Falls back to Web Speech API if clips aren't available.
+ * Personalized praise ("Great job, Aarav!") is a planned follow-up —
+ * see CUSTOM_PRAISE_PLAN.md.
  */
 const pickAvoiding = (count, recent) => {
   let idx;
@@ -30,6 +33,8 @@ const useAudioFeedback = () => {
   const recentPositive = useRef([]);
   const recentEncouragement = useRef([]);
   const { speak } = useSpeech();
+  const { activeChild } = useChildProfile();
+  const soundsOff = activeChild?.settings?.soundEffects === false;
 
   useEffect(() => {
     let cancelled = false;
@@ -74,6 +79,7 @@ const useAudioFeedback = () => {
   }, []);
 
   const playPositive = useCallback((correctCount = 1) => {
+    if (soundsOff) return Promise.resolve();
     const tier = getTierForCount(correctCount);
     const idx = pickAvoiding(PHRASES_PER_TIER, recentPositive.current);
 
@@ -82,16 +88,17 @@ const useAudioFeedback = () => {
     }
     speak(positiveTiers[tier][idx]);
     return Promise.resolve();
-  }, [playClip, speak]);
+  }, [playClip, speak, soundsOff]);
 
   const playEncouragement = useCallback(() => {
+    if (soundsOff) return Promise.resolve();
     const idx = pickAvoiding(ENCOURAGEMENT_COUNT, recentEncouragement.current);
     if (audioAvailable.current && encouragementAudio.current[idx]) {
       return playClip(encouragementAudio.current[idx]);
     }
     speak(encouragement[idx]);
     return Promise.resolve();
-  }, [playClip, speak]);
+  }, [playClip, speak, soundsOff]);
 
   return { playPositive, playEncouragement };
 };
