@@ -23,7 +23,7 @@ function shuffle(arr) {
 
 // One linear sequence: pair 0 word 0, pair 0 word 1, pair 1 word 0, ...
 // The right arrow always means "what comes next".
-const PairLearnView = ({ items }) => {
+const PairLearnView = ({ items, holdIntro = false }) => {
   const displayItems = useMemo(() => shuffle(items), [items]);
   // One media example (image path or { video }) per word, fixed for this
   // visit so cards never swap while the child is looking at them; both
@@ -52,13 +52,15 @@ const PairLearnView = ({ items }) => {
   const activeWord = currentItem.pair[side];
   const pole = POLES[side];
 
-  // Speak whenever the highlight moves (and once on mount)
+  // Speak whenever the highlight moves (and once on mount — held while the
+  // category intro page is up, so the first word lands as the reveal opens)
   useEffect(() => {
+    if (holdIntro) return;
     if (prevStepRef.current !== step) {
       speak(displayItems[Math.floor(step / 2)].pair[step % 2]);
       prevStepRef.current = step;
     }
-  }, [step, displayItems, speak]);
+  }, [step, displayItems, speak, holdIntro]);
 
   // Warm the next pair's images so the word never plays over blank cards
   // (video examples stream on their own; only images preload)
@@ -107,10 +109,11 @@ const PairLearnView = ({ items }) => {
     }
   };
 
-  // Keyboard: right = next, left = back, space/enter = repeat
+  // Keyboard: right = next, left = back, space/enter = repeat — inert while
+  // the intro page is up (its own listener turns those keys into "skip")
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat || ownedByFocusedControl(e)) return;
+      if (holdIntro || e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {
@@ -122,7 +125,7 @@ const PairLearnView = ({ items }) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goNext, goPrev, speak, activeWord]);
+  }, [goNext, goPrev, speak, activeWord, holdIntro]);
 
   const renderCard = (cardSide) => {
     const word = currentItem.pair[cardSide];

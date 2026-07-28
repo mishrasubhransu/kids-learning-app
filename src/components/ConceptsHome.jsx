@@ -5,10 +5,8 @@ import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { isLessonEnabled } from '../data/lessons';
 import { useChildProfile } from '../context/ChildProfileContext';
-import useSpeech from '../hooks/useSpeech';
 
 const ConceptsHome = () => {
-  const { speak } = useSpeech();
   const { activeChild } = useChildProfile();
   const enabledLessons = activeChild?.settings?.enabledLessons;
   const visibleCategories = conceptCategories.filter((cat) =>
@@ -49,9 +47,10 @@ const ConceptsHome = () => {
                   key={cat.id}
                   className="group relative transform transition-transform duration-200 motion-safe:hover:scale-105"
                 >
+                  {/* No name callout on tap — the category's intro page
+                      announces it with the collage instead */}
                   <Link
                     to={`/concepts/${cat.id}`}
-                    onClick={() => speak(cat.name)}
                     className={`${cat.color} ${cat.hoverColor} h-full rounded-2xl p-6 md:p-8 text-white shadow-lg transition-all duration-200 group-hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
                   >
                     <span className="text-5xl md:text-6xl">{cat.emoji}</span>

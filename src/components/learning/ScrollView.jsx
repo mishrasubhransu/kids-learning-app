@@ -24,7 +24,7 @@ function shuffle(arr) {
   return a;
 }
 
-const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAutoplayComplete }) => {
+const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, holdIntro = false, onAutoplayComplete }) => {
   const displayItems = useMemo(
     () => orderedCategories.includes(category) ? items : shuffle(items),
     [items, category]
@@ -70,18 +70,19 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
     hasInteracted.current = true;
   }, []);
 
-  // Speak the first item when entering the page. Queued, not spoken over:
-  // arriving from ConceptsHome, the category name is still being announced.
+  // Speak the first item when entering the page — held while the category
+  // intro page is up (holdIntro), so the word lands as the reveal opens.
+  // Queued, not spoken over, in case an announcement is still playing.
   // Ref-guarded because StrictMode double-runs mount effects in dev, and an
   // enqueued utterance isn't canceled by the second run — the first word
   // would play twice. Refs survive StrictMode's simulated remount.
   const spokeOnMount = useRef(false);
   useEffect(() => {
-    if (spokeOnMount.current || isAutoplay) return;
+    if (holdIntro || spokeOnMount.current || isAutoplay) return;
     spokeOnMount.current = true;
     speakCurrent({ enqueue: true });
     hasInteracted.current = true;
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [holdIntro]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Speak and change background when navigating manually (non-autoplay)
   useEffect(() => {
@@ -184,10 +185,11 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
     speakCurrent();
   };
 
-  // Keyboard navigation
+  // Keyboard navigation — inert while the intro page is up (its own
+  // listener turns those keys into "skip the intro")
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.repeat || ownedByFocusedControl(e)) return;
+      if (holdIntro || e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') {
         goNext();
       } else if (e.key === 'ArrowLeft') {
@@ -202,7 +204,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, onAu
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goNext, goPrev, speakCurrent, stopAutoplay]);
+  }, [goNext, goPrev, speakCurrent, stopAutoplay, holdIntro]);
 
   // Cleanup cooldown timer on unmount
   useEffect(() => {

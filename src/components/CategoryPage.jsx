@@ -9,9 +9,11 @@ import TracingMode from './learning/TracingMode';
 import TestingMode from './testing/TestingMode';
 import DifficultySelector from './ui/DifficultySelector';
 import GameInterstitial from './ui/GameInterstitial';
+import CategoryIntro from './ui/CategoryIntro';
 import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
+import shuffle from '../utils/shuffle';
 
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
@@ -46,6 +48,11 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Recorded clips only play for the admin account (regional pronunciation
   // varies), so don't warm the audio cache for anyone else
   const isAdmin = user?.email === ADMIN_EMAIL;
+  // Concepts lessons open with the collage intro page ("Let's learn about
+  // animals!") that circle-reveals into the content; other categories (no
+  // photo assets yet) go straight in. 'intro' → 'revealing' → 'done'.
+  const hasIntro = category.startsWith('concepts-');
+  const [introState, setIntroState] = useState(hasIntro ? 'intro' : 'done');
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   // "Ready to play a game?" screen after autoplay, instead of a silent jump to test
   const [showGamePrompt, setShowGamePrompt] = useState(false);
@@ -87,6 +94,35 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     return categoryItems ? pickItemVariants(categoryItems) : null;
   }, [category]);
 
+  // Intro collage: a random sample of this visit's items in the active image
+  // style — memoized so the tiles don't reshuffle on re-render mid-intro
+  const introTiles = useMemo(() => {
+    if (!hasIntro || !resolvedItems) return [];
+    const styled = applyImageStyle(
+      resolvedItems,
+      category,
+      resolveImageStyle(category, savedImageStyle)
+    );
+    return shuffle(styled)
+      .slice(0, 8)
+      .map((item) =>
+        item.video ? { video: item.video } : { images: [item.image] }
+      );
+  }, [hasIntro, resolvedItems, category, savedImageStyle]);
+
+  // The reveal: content is clipped to a dot, then the circle grows over it.
+  // Reduced motion (or no intro) jumps straight to the content.
+  const reduceMotion = useMemo(
+    () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
+    []
+  );
+  const beginReveal = () => setIntroState(reduceMotion ? 'done' : 'revealing');
+  useEffect(() => {
+    if (introState !== 'revealing') return;
+    const t = setTimeout(() => setIntroState('done'), 750);
+    return () => clearTimeout(t);
+  }, [introState]);
+
   // Warm the audio cache when a category with parent recordings opens, so
   // playback never waits on the network mid-session
   useEffect(() => {
@@ -124,7 +160,31 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   );
 
   return (
-    <div className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden">
+    <div className="h-full relative">
+      {/* Intro page under the clipped content: the content circle starts at
+          zero size, so all taps land here until the reveal begins */}
+      {introState !== 'done' && (
+        <CategoryIntro
+          categoryKey={category}
+          title={title}
+          emoji={catInfo?.emoji}
+          tiles={introTiles}
+          onReveal={beginReveal}
+        />
+      )}
+      <div
+        className="h-full bg-gradient-to-br from-slate-50 to-gray-100 flex flex-col overflow-hidden relative"
+        style={
+          introState === 'intro'
+            ? { clipPath: 'circle(0% at 50% 50%)' }
+            : introState === 'revealing'
+              ? {
+                  clipPath: 'circle(75% at 50% 50%)',
+                  transition: 'clip-path 700ms ease-in-out',
+                }
+              : undefined
+        }
+      >
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
@@ -236,6 +296,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
             objectIcons={icons}
             shapeColor={shapeColor}
             objectType={objectType}
+            holdIntro={introState === 'intro'}
             onAutoplayComplete={() => setShowGamePrompt(true)}
           />
         )}
@@ -262,6 +323,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
             autoStart={autoStartTest}
           />
         )}
+      </div>
       </div>
     </div>
   );
