@@ -225,9 +225,11 @@ const opposites = [
     id: 16,
     name: 'Beautiful and Ugly',
     pair: ['Beautiful', 'Ugly'],
+    // Second examples are real buildings (St. Basil's cathedral vs a
+    // brutalist bank) — still places, not people or creatures
     images: {
-      Beautiful: '/opposites/beautiful.webp',
-      Ugly: '/opposites/ugly.webp',
+      Beautiful: ['/opposites/beautiful.webp', '/opposites/beautiful-2.webp'],
+      Ugly: ['/opposites/ugly.webp', '/opposites/ugly-2.webp'],
     },
     tests: [
       { question: 'Which one is beautiful?', correctAnswer: 'Beautiful', sceneImage: '/opposites/scenes/beautiful-ugly-scene.webp' },
