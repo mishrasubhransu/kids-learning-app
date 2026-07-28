@@ -8,6 +8,7 @@ import {
   useRef,
 } from 'react';
 import { supabase } from '../lib/supabase';
+import { isPraiseManifest } from '../lib/nameAudio';
 import { useAuth } from './AuthContext';
 import { setAnalyticsChild } from '../lib/analytics';
 import { defaultEnabledLessons } from '../data/lessons';
@@ -73,8 +74,10 @@ export const ChildProfileProvider = ({ children }) => {
     () => localStorage.getItem(LS_ACTIVE) || null
   );
   const [loading, setLoading] = useState(true);
-  // childId -> { state: 'generating' | 'ready' | 'error', message? } so the
-  // Parent Zone can show clip progress and surface real error messages
+  // childId -> { state: 'generating' | 'ready' | 'error', message?,
+  // praise?: 'generating' | 'ready' | 'error' } so the Parent Zone can show
+  // clip progress and surface real error messages. `state` tracks the quick
+  // neutral name clip; `praise` the slower personalized phrases that follow.
   const [nameAudioStatus, setNameAudioStatus] = useState({});
   const bootstrapping = useRef(false);
 
@@ -86,22 +89,32 @@ export const ChildProfileProvider = ({ children }) => {
     []
   );
 
-  // Ask the serverless function to generate the ElevenLabs name clip for
-  // praise splicing. Never blocks the app; progress and errors land in
-  // nameAudioStatus so the Parent Zone can show them (and offer retry).
+  // Children whose generation already ran (or is running) this session —
+  // requestNameAudio marks them so the self-heal effect below never doubles
+  // up on an in-flight two-phase run (mid-run the profile still has a
+  // non-manifest path, which self-heal would otherwise treat as broken).
+  const nameAudioAttempts = useRef(new Set());
+
+  // Ask the serverless function for this child's voice clips, two-phase:
+  // the quick neutral name clip first (parent gets fast confirmation), then
+  // the personalized praise phrases (~20 s) that nothing waits on — if a
+  // game starts before they're ready, plain praise plays. Never blocks the
+  // app; progress and errors land in nameAudioStatus so the Parent Zone can
+  // show them (and offer retry).
   const requestNameAudio = useCallback(
     async (childId) => {
       const token = session?.access_token;
       if (!token || !childId) return;
-      setNameAudioStatus((s) => ({ ...s, [childId]: { state: 'generating' } }));
-      try {
+      nameAudioAttempts.current.add(childId);
+
+      const call = async (action) => {
         const res = await fetch('/api/generate-name-audio', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ childId }),
+          body: JSON.stringify({ childId, action }),
         });
         let data = null;
         try {
@@ -110,27 +123,60 @@ export const ChildProfileProvider = ({ children }) => {
           // Not JSON — e.g. the Vite dev server answered because no
           // serverless runtime is attached (vercel dev not running)
         }
-        if (res.ok && data?.path) {
-          setProfiles((prev) => {
-            const next = (prev || []).map((p) =>
-              p.id === childId ? { ...p, name_audio_path: data.path } : p
-            );
-            if (user) writeCache(user.id, next);
-            return next;
-          });
-          setNameAudioStatus((s) => ({ ...s, [childId]: { state: 'ready' } }));
-        } else {
-          const message =
-            data?.error || `Audio service unavailable (HTTP ${res.status})`;
+        return {
+          ok: res.ok && !!data?.path,
+          path: data?.path,
+          message: data?.error || `Audio service unavailable (HTTP ${res.status})`,
+        };
+      };
+
+      const applyPath = (path) =>
+        setProfiles((prev) => {
+          const next = (prev || []).map((p) =>
+            p.id === childId ? { ...p, name_audio_path: path } : p
+          );
+          if (user) writeCache(user.id, next);
+          return next;
+        });
+
+      setNameAudioStatus((s) => ({ ...s, [childId]: { state: 'generating' } }));
+      try {
+        const name = await call('name');
+        if (!name.ok) {
           setNameAudioStatus((s) => ({
             ...s,
-            [childId]: { state: 'error', message },
+            [childId]: { state: 'error', message: name.message },
           }));
+          return;
         }
+        applyPath(name.path);
+        setNameAudioStatus((s) => ({
+          ...s,
+          [childId]: { state: 'ready', praise: 'generating' },
+        }));
       } catch {
         setNameAudioStatus((s) => ({
           ...s,
           [childId]: { state: 'error', message: 'Network error' },
+        }));
+        return;
+      }
+
+      try {
+        const praise = await call('praise');
+        if (praise.ok) applyPath(praise.path);
+        setNameAudioStatus((s) => ({
+          ...s,
+          [childId]: {
+            state: 'ready',
+            praise: praise.ok ? 'ready' : 'error',
+            ...(praise.ok ? {} : { message: praise.message }),
+          },
+        }));
+      } catch {
+        setNameAudioStatus((s) => ({
+          ...s,
+          [childId]: { state: 'ready', praise: 'error', message: 'Network error' },
         }));
       }
     },
@@ -214,14 +260,14 @@ export const ChildProfileProvider = ({ children }) => {
   // Self-heal: generation only fires on create/rename, so a one-time failure
   // (dev server without /api, missing env vars, network) would otherwise
   // leave a profile silent forever. Retry once per session for named
-  // profiles that still have no clip.
-  const nameAudioAttempts = useRef(new Set());
+  // profiles without a praise manifest — that covers no clip at all AND the
+  // legacy neutral-only .mp3 format, which regenerates into the full set.
   useEffect(() => {
     if (!profiles || !session) return;
     profiles.forEach((p) => {
       if (
         p.name !== DEFAULT_CHILD_NAME &&
-        !p.name_audio_path &&
+        !isPraiseManifest(p.name_audio_path) &&
         !nameAudioAttempts.current.has(p.id)
       ) {
         nameAudioAttempts.current.add(p.id);
@@ -303,9 +349,27 @@ export const ChildProfileProvider = ({ children }) => {
         const remaining = profiles.filter((p) => p.id !== childId);
         if (remaining[0]) setActiveChild(remaining[0].id);
       }
+      // Voice clips live under the service-role-only bucket, so the API
+      // deletes them — before the row delete, which its ownership check
+      // needs. Best-effort: a failure only orphans a few unguessable files.
+      const token = session?.access_token;
+      if (token) {
+        try {
+          await fetch('/api/generate-name-audio', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ childId, action: 'delete' }),
+          });
+        } catch {
+          /* storage cleanup is best-effort */
+        }
+      }
       await supabase.from('child_profiles').delete().eq('id', childId);
     },
-    [user, profiles, activeChildId, setActiveChild]
+    [user, profiles, activeChildId, setActiveChild, session]
   );
 
   // Merge-patch of settings keys, optimistic locally, per-key merge on the

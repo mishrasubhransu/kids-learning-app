@@ -1,11 +1,14 @@
 # Custom Praise — Handover Plan
 
-Status: **not built yet.** This commit ships child profiles + a *neutral*
-name clip ("Veronica", plain tone) that is generated on profile
-create/rename and playable from the Parent Zone — as confirmation for the
-parent that the name is recorded. It is deliberately NOT used in praise.
-Praise playback (`src/hooks/useAudioFeedback.js`) is stock: tiered
-pre-generated clips, no name.
+Status: **BUILT (2026-07-28).** Everything below is implemented as
+specified: two-phase generation in `api/generate-name-audio.js` (actions
+`name`/`praise`/`delete`), manifest storage layout, cache-first client
+playback in `src/lib/nameAudio.js`, personalized pick logic in
+`src/hooks/useAudioFeedback.js` (first praise of a game, then ~1-in-3),
+Parent Zone secondary "making praise clips…" state, legacy-path self-heal,
+and storage cleanup on regeneration and profile delete (via the API delete
+action — no client storage policy was added). The doc is kept for the
+rationale and the env gotchas at the bottom.
 
 ## Why (history)
 

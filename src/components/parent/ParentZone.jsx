@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Home as HomeIcon,
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../../context/ChildProfileContext';
-import { nameAudioUrl } from '../../lib/nameAudio';
+import { loadPraiseClips, neutralNameUrl, playClipUrl } from '../../lib/nameAudio';
 import {
   starterLessonsForAge,
   defaultEnabledLessons,
@@ -55,9 +55,9 @@ const SectionTitle = ({ children }) => (
 
 // Voice-clip state for one child: generating spinner, play button when the
 // clip exists, or the actual error + retry — so testing the name never
-// requires playing a game and hoping.
+// requires playing a game and hoping. Once praise clips exist, the play
+// button demos a personalized tier-0 cheer instead of the bare name.
 const NameAudioStatus = ({ child, status, onGenerate }) => {
-  const audioRef = useRef(null);
   const [playing, setPlaying] = useState(false);
 
   if (child.name === DEFAULT_CHILD_NAME) return null;
@@ -71,24 +71,46 @@ const NameAudioStatus = ({ child, status, onGenerate }) => {
   }
 
   if (child.name_audio_path) {
-    const playName = () => {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(nameAudioUrl(child.name_audio_path));
-        audioRef.current.onended = () => setPlaying(false);
-        audioRef.current.onerror = () => setPlaying(false);
-      }
+    const playName = async () => {
+      if (playing) return;
       setPlaying(true);
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => setPlaying(false));
+      try {
+        const clips = await loadPraiseClips(child.name_audio_path);
+        const tier0 = clips?.tiers?.[0];
+        const url = tier0?.length
+          ? tier0[Math.floor(Math.random() * tier0.length)]
+          : neutralNameUrl(child.name_audio_path);
+        await playClipUrl(url);
+      } finally {
+        setPlaying(false);
+      }
     };
     return (
-      <button
-        onClick={playName}
-        className="flex items-center gap-1.5 text-xs text-green-700 font-semibold hover:text-green-800"
-      >
-        <Play size={13} className={playing ? 'animate-pulse' : ''} />
-        {playing ? 'Playing…' : `Play "${child.name}!"`}
-      </button>
+      <span className="flex flex-wrap items-center gap-3">
+        <button
+          onClick={playName}
+          className="flex items-center gap-1.5 text-xs text-green-700 font-semibold hover:text-green-800"
+        >
+          <Play size={13} className={playing ? 'animate-pulse' : ''} />
+          {playing ? 'Playing…' : `Play "${child.name}!"`}
+        </button>
+        {status?.praise === 'generating' && (
+          <span className="flex items-center gap-1.5 text-xs text-indigo-600 font-semibold">
+            <Loader2 size={13} className="animate-spin" /> Making praise clips…
+          </span>
+        )}
+        {status?.praise === 'error' && (
+          <span className="flex items-center gap-2 text-xs text-red-600">
+            Praise clips failed: {status.message}
+            <button
+              onClick={onGenerate}
+              className="flex items-center gap-1 font-semibold text-indigo-600 hover:text-indigo-800"
+            >
+              <RefreshCw size={12} /> Retry
+            </button>
+          </span>
+        )}
+      </span>
     );
   }
 
