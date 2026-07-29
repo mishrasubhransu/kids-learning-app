@@ -370,15 +370,17 @@ export const conceptItems = {
     { id: 5, name: 'Snowy', image: '/concepts/weather/snowy.webp' },
     { id: 6, name: 'Stormy', image: '/concepts/weather/stormy.webp' },
   ],
+  // Each machine is shown as a silent looping clip of its signature job
+  // (Kling via generate_construction_videos_piapi.py), like the actions lesson.
   construction: [
-    { id: 0, name: 'Digger', image: '/concepts/construction/digger.webp' },
-    { id: 1, name: 'Crane', image: '/concepts/construction/crane.webp' },
-    { id: 2, name: 'Bulldozer', image: '/concepts/construction/bulldozer.webp' },
-    { id: 3, name: 'Dump Truck', image: '/concepts/construction/dump-truck.webp' },
-    { id: 4, name: 'Concrete Mixer', image: '/concepts/construction/concrete-mixer.webp' },
-    { id: 5, name: 'Steam Roller', image: '/concepts/construction/steam-roller.webp' },
-    { id: 6, name: 'Forklift', image: '/concepts/construction/forklift.webp' },
-    { id: 7, name: 'Wrecking Ball', image: '/concepts/construction/wrecking-ball.webp' },
+    { id: 0, name: 'Digger', video: '/concepts/construction/digger.mp4' },
+    { id: 1, name: 'Crane', video: '/concepts/construction/crane.mp4' },
+    { id: 2, name: 'Bulldozer', video: '/concepts/construction/bulldozer.mp4' },
+    { id: 3, name: 'Dump Truck', video: '/concepts/construction/dump-truck.mp4' },
+    { id: 4, name: 'Concrete Mixer', video: '/concepts/construction/concrete-mixer.mp4' },
+    { id: 5, name: 'Steam Roller', video: '/concepts/construction/steam-roller.mp4' },
+    { id: 6, name: 'Forklift', video: '/concepts/construction/forklift.mp4' },
+    { id: 7, name: 'Wrecking Ball', video: '/concepts/construction/wrecking-ball.mp4' },
   ],
   gadgets: [
     { id: 0, name: 'Phone', image: '/concepts/gadgets/phone.webp' },
