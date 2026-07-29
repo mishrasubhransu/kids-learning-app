@@ -10,34 +10,10 @@ const BUCKET = 'family-photos';
 export const familyPhotoUrl = (path) =>
   path ? supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl : null;
 
-// Phone photos are huge; the lesson shows at most a few hundred px. Decode,
-// fit inside maxDim, re-encode as JPEG (canvas WebP encode is not universal).
-const downscale = (file, maxDim = 900) =>
-  new Promise((resolve, reject) => {
-    const url = URL.createObjectURL(file);
-    const img = new Image();
-    img.onload = () => {
-      URL.revokeObjectURL(url);
-      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
-      const canvas = document.createElement('canvas');
-      canvas.width = Math.round(img.width * scale);
-      canvas.height = Math.round(img.height * scale);
-      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-      canvas.toBlob(
-        (blob) => (blob ? resolve(blob) : reject(new Error('Could not process photo'))),
-        'image/jpeg',
-        0.85
-      );
-    };
-    img.onerror = () => {
-      URL.revokeObjectURL(url);
-      reject(new Error('Could not read photo'));
-    };
-    img.src = url;
-  });
-
-export const uploadFamilyPhoto = async (userId, memberId, file) => {
-  const blob = await downscale(file);
+// The blob arrives already framed and sized: every pick goes through
+// PhotoCropper, which exports an exact square JPEG (default 900×900) —
+// re-encoding here would only lose quality.
+export const uploadFamilyPhoto = async (userId, memberId, blob) => {
   const path = `${userId}/${memberId}/${Date.now()}.jpg`;
   const { error } = await supabase.storage
     .from(BUCKET)

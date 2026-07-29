@@ -1,8 +1,23 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Pencil, Trash2, Camera } from 'lucide-react';
+import { Plus, Pencil, Trash2, Camera, Loader2 } from 'lucide-react';
 import useFamilyMembers from '../../hooks/useFamilyMembers';
 import { familyPhotoUrl } from '../../lib/familyPhotos';
 import { RELATIONS, relationByValue, relationLabel } from '../../data/relations';
+import PhotoCropper from './PhotoCropper';
+
+// iPhone photos are HEIC, which non-Safari browsers can't decode — convert
+// to JPEG first via heic2any (wasm libheif, loaded only when needed).
+// Pickers on some platforms also refuse to offer .heic under image/*, hence
+// the explicit extensions in the accept attribute.
+const isHeic = (file) =>
+  /\.hei[cf]$/i.test(file.name || '') || /^image\/hei[cf]$/.test(file.type);
+
+const toDecodableBlob = async (file) => {
+  if (!isHeic(file)) return file;
+  const { default: heic2any } = await import('heic2any');
+  const out = await heic2any({ blob: file, toType: 'image/jpeg', quality: 0.9 });
+  return Array.isArray(out) ? out[0] : out;
+};
 
 // Round photo (or relation emoji stand-in) used in both the list and editor
 const MemberFace = ({ member, size = 'w-12 h-12', textSize = 'text-2xl' }) => {
@@ -34,15 +49,30 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Preview the freshly picked photo; fall back to the stored one. The
-  // object URL is made at pick time (not in an effect) and revoked on
-  // replace/unmount via the ref.
+  // Picked photos go through the crop frame first (converting HEIC → JPEG
+  // when needed), so photoFile is always an exactly-sized square JPEG. The
+  // preview object URL is made when the crop lands (not in an effect) and
+  // revoked on replace/unmount via the ref.
+  const [cropSource, setCropSource] = useState(null); // Blob awaiting crop
+  const [converting, setConverting] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(null);
   const previewUrlRef = useRef(null);
-  const pickPhoto = (file) => {
+  const pickPhoto = async (file) => {
+    setError(null);
+    setConverting(true);
+    try {
+      setCropSource(await toDecodableBlob(file));
+    } catch {
+      setError("Couldn't read that photo — try a JPG or PNG.");
+    } finally {
+      setConverting(false);
+    }
+  };
+  const applyCropped = (blob) => {
+    setCropSource(null);
     if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    previewUrlRef.current = URL.createObjectURL(file);
-    setPhotoFile(file);
+    previewUrlRef.current = URL.createObjectURL(blob);
+    setPhotoFile(blob);
     setPreviewUrl(previewUrlRef.current);
   };
   useEffect(
@@ -74,28 +104,38 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
       <div className="flex items-center gap-4">
         <button
           onClick={() => fileInputRef.current?.click()}
+          disabled={converting}
           aria-label={photoSrc ? 'Change photo' : 'Add photo'}
           className="relative w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden ring-2 ring-gray-200 hover:ring-indigo-400 transition-shadow shrink-0"
         >
-          {photoSrc ? (
+          {converting ? (
+            <Loader2 size={28} className="text-gray-400 animate-spin" />
+          ) : photoSrc ? (
             <img src={photoSrc} alt="" className="w-full h-full object-cover" />
           ) : (
             <Camera size={28} className="text-gray-400" />
           )}
           <span className="absolute bottom-0 inset-x-0 bg-black/40 text-white text-[10px] font-semibold py-0.5">
-            {photoSrc ? 'Change' : 'Photo'}
+            {converting ? 'Reading…' : photoSrc ? 'Change' : 'Photo'}
           </span>
         </button>
         <input
           ref={fileInputRef}
           type="file"
-          accept="image/*"
+          accept="image/*,.heic,.heif"
           className="hidden"
           onChange={(e) => {
             if (e.target.files?.[0]) pickPhoto(e.target.files[0]);
             e.target.value = '';
           }}
         />
+        {cropSource && (
+          <PhotoCropper
+            source={cropSource}
+            onDone={applyCropped}
+            onCancel={() => setCropSource(null)}
+          />
+        )}
         <label className="flex flex-col gap-1 flex-1 min-w-0">
           <span className="text-sm font-semibold text-gray-600">Name</span>
           <input
