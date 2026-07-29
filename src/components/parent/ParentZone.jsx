@@ -380,6 +380,30 @@ const ParentZone = () => {
                 value={settings.soundEffects !== false}
                 onChange={(v) => patch({ soundEffects: v })}
               />
+              <OptionRow
+                label="Lesson size"
+                hint="Pictures per lesson visit — the rest rotate in next time"
+                options={[
+                  { value: '5', label: '5' },
+                  { value: '8', label: '8' },
+                  { value: '12', label: '12' },
+                  { value: 'all', label: 'All' },
+                ]}
+                value={settings.lessonItemCap || 'all'}
+                onChange={(v) => patch({ lessonItemCap: v })}
+              />
+              <OptionRow
+                label="Test length"
+                hint="Questions per test — unseen ones come first next visit"
+                options={[
+                  { value: '3', label: '3' },
+                  { value: '5', label: '5' },
+                  { value: '8', label: '8' },
+                  { value: 'all', label: 'All' },
+                ]}
+                value={settings.testItemCap || 'all'}
+                onChange={(v) => patch({ testItemCap: v })}
+              />
             </div>
 
             <div className="mt-4 bg-white rounded-2xl border border-gray-100 p-4 flex items-center justify-between gap-4">

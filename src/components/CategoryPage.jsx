@@ -13,6 +13,7 @@ import CategoryIntro from './ui/CategoryIntro';
 import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
+import useSessionItems from '../hooks/useSessionItems';
 import shuffle from '../utils/shuffle';
 
 import alphabets from '../data/alphabets';
@@ -94,6 +95,41 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     return categoryItems ? pickItemVariants(categoryItems) : null;
   }, [category]);
 
+  // Numbers honor the per-child counting range before any session capping
+  const sizedItems = useMemo(() => {
+    if (!resolvedItems) return null;
+    return category === 'numbers'
+      ? resolvedItems.slice(0, Number(numberMax || '10'))
+      : resolvedItems;
+  }, [resolvedItems, category, numberMax]);
+
+  // Parent-configured session sizes; capped pools rotate unseen-first
+  // across visits. Lesson modes (scroll/tile/trace) share one pool so the
+  // visit is coherent; the test rotates on its own track and only counts
+  // as "shown" once test mode is actually opened.
+  const [lessonCap] = useChildSetting('lessonItemCap', 'all');
+  const [testCap] = useChildSetting('testItemCap', 'all');
+  const lessonPool = useSessionItems(category, 'lesson', sizedItems, lessonCap, mode !== 'test');
+  const testPool = useSessionItems(category, 'test', sizedItems, testCap, mode === 'test');
+
+  // Memoized so re-renders (e.g. the rotation persist updating the profile
+  // context) don't hand the views a fresh array identity — TestingMode
+  // resets its question state when `items` changes
+  const items = useMemo(
+    () =>
+      lessonPool
+        ? applyImageStyle(lessonPool, category, resolveImageStyle(category, savedImageStyle))
+        : null,
+    [lessonPool, category, savedImageStyle]
+  );
+  const testItems = useMemo(
+    () =>
+      testPool
+        ? applyImageStyle(testPool, category, resolveImageStyle(category, savedImageStyle))
+        : null,
+    [testPool, category, savedImageStyle]
+  );
+
   // Intro collage: a random sample of this visit's items in the active image
   // style — memoized so the tiles don't reshuffle on re-render mid-intro
   const introTiles = useMemo(() => {
@@ -149,15 +185,6 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   }
 
   const { title, objectIcons: icons } = data;
-  const rawItems = resolvedItems;
-  const sizedItems = category === 'numbers'
-    ? rawItems.slice(0, Number(numberMax || '10'))
-    : rawItems;
-  const items = applyImageStyle(
-    sizedItems,
-    category,
-    resolveImageStyle(category, savedImageStyle)
-  );
 
   return (
     <div className="h-full relative">
@@ -314,7 +341,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
         )}
         {mode === 'test' && (
           <TestingMode
-            items={items}
+            items={testItems}
             category={category}
             difficulty={difficulty}
             objectIcons={icons}

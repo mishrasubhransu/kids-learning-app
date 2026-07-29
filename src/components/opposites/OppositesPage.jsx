@@ -9,6 +9,8 @@ import DifficultySelector from '../ui/DifficultySelector';
 import CategoryIntro from '../ui/CategoryIntro';
 import opposites, { wordImages } from '../../data/opposites';
 import shuffle from '../../utils/shuffle';
+import useChildSetting from '../../hooks/useChildSetting';
+import useSessionItems from '../../hooks/useSessionItems';
 
 const modes = [
   { id: 'learn', label: 'Learn', icon: BookOpen },
@@ -19,6 +21,20 @@ const modes = [
 const OppositesPage = ({ backTo = '/home' }) => {
   const [mode, setMode] = useState('learn');
   const [difficulty, setDifficulty] = useState('easy');
+
+  // Parent-configured session sizes with unseen-first rotation (same keys
+  // as CategoryPage). The games already size their rounds by difficulty, so
+  // the effective game pool is the tighter of the two — rotated, which also
+  // stops easy mode from replaying the identical first pairs every visit.
+  const [lessonCap] = useChildSetting('lessonItemCap', 'all');
+  const [testCap] = useChildSetting('testItemCap', 'all');
+  const roundCount = { easy: 5, medium: 10 }[difficulty] ?? opposites.length;
+  const gameCap = Math.min(
+    roundCount,
+    !testCap || testCap === 'all' ? Infinity : Number(testCap) || Infinity
+  );
+  const learnPairs = useSessionItems('opposites', 'lesson', opposites, lessonCap, mode === 'learn');
+  const gamePairs = useSessionItems('opposites', 'test', opposites, gameCap, mode !== 'learn');
   // Collage intro page that circle-reveals into the lesson (same flow as the
   // concepts categories in CategoryPage): 'intro' → 'revealing' → 'done'
   const [introState, setIntroState] = useState('intro');
@@ -118,10 +134,12 @@ const OppositesPage = ({ backTo = '/home' }) => {
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {mode === 'learn' && (
-          <PairLearnView items={opposites} holdIntro={introState === 'intro'} />
+          <PairLearnView items={learnPairs} holdIntro={introState === 'intro'} />
         )}
-        {mode === 'match' && <MatchGame items={opposites} difficulty={difficulty} />}
-        {mode === 'quiz' && <SceneQuiz items={opposites} difficulty={difficulty} />}
+        {mode === 'match' && (
+          <MatchGame items={gamePairs} allItems={opposites} difficulty={difficulty} />
+        )}
+        {mode === 'quiz' && <SceneQuiz items={gamePairs} difficulty={difficulty} />}
       </div>
       </div>
     </div>

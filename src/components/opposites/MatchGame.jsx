@@ -17,8 +17,10 @@ function shuffle(arr) {
   return a;
 }
 
-// Each round: one prompt word, its opposite among distractors from other pairs.
-function buildRounds(items, difficulty) {
+// Each round: one prompt word, its opposite among distractors from other
+// pairs — drawn from allItems (the full pair list) so a session-capped
+// `items` pool doesn't shrink distractor variety.
+function buildRounds(items, difficulty, allItems) {
   let roundCount;
   let choiceCount;
   switch (difficulty) {
@@ -40,7 +42,7 @@ function buildRounds(items, difficulty) {
     const promptWord = pair.pair[promptSide];
     const answerWord = pair.pair[1 - promptSide];
 
-    const distractors = shuffle(items.filter((p) => p.id !== pair.id))
+    const distractors = shuffle(allItems.filter((p) => p.id !== pair.id))
       .slice(0, choiceCount - 1)
       .map((p) => {
         const side = Math.floor(Math.random() * 2);
@@ -59,7 +61,7 @@ function buildRounds(items, difficulty) {
   });
 }
 
-const MatchGame = ({ items, difficulty }) => {
+const MatchGame = ({ items, difficulty, allItems = items }) => {
   const [rounds, setRounds] = useState([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [selected, setSelected] = useState(null);
@@ -76,13 +78,13 @@ const MatchGame = ({ items, difficulty }) => {
   const current = rounds[currentIdx];
 
   const resetGame = useCallback(() => {
-    setRounds(buildRounds(items, difficulty));
+    setRounds(buildRounds(items, difficulty, allItems));
     setCurrentIdx(0);
     setSelected(null);
     setIsCorrect(null);
     setCorrectCount(0);
     setGameComplete(false);
-  }, [items, difficulty]);
+  }, [items, difficulty, allItems]);
 
   useEffect(() => {
     resetGame();
@@ -114,7 +116,7 @@ const MatchGame = ({ items, difficulty }) => {
   };
 
   const handleRestart = () => {
-    const fresh = buildRounds(items, difficulty);
+    const fresh = buildRounds(items, difficulty, allItems);
     setRounds(fresh);
     setCurrentIdx(0);
     setSelected(null);
