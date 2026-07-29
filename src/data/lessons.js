@@ -76,6 +76,7 @@ export const starterLessonsForAge = (ageYears) => {
   if (ageYears == null || Number.isNaN(ageYears)) return defaultEnabledLessons();
 
   const under2 = [
+    'family',
     'colors',
     'shapes',
     'concepts',

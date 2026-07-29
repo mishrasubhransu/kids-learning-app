@@ -1,4 +1,4 @@
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2 } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2, Users } from 'lucide-react';
 
 // Top-level lesson cards on the Home screen. Light backgrounds
 // (yellow/amber/green/cyan/orange) need dark text to stay readable; the
@@ -61,6 +61,16 @@ export const homeCategories = [
     hoverColor: 'group-hover:bg-cyan-600',
     textColor: 'text-gray-900',
     preview: '↔️',
+  },
+  {
+    id: 'family',
+    name: 'My Family',
+    description: 'The people you love',
+    icon: Users,
+    color: 'bg-rose-600',
+    hoverColor: 'group-hover:bg-rose-700',
+    textColor: 'text-white',
+    preview: '👪',
   },
   {
     id: 'phonics',

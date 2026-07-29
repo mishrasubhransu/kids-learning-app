@@ -10,7 +10,7 @@ Until the current audio clip finishes, disable/ignore answer button presses so a
 - Both caps configurable in Parent Zone settings (per-child settings jsonb already exists via `useChildSetting`).
 - Rotation rule: next session must show the items that were NOT shown last time first (persist per-child "last shown" set, e.g. in child settings or usage data), so the child cycles through the whole category across sessions instead of seeing the same first N.
 
-## 3. [ ] "My Family" lesson (main page)
+## 3. [x] "My Family" lesson (main page)
 - New lesson on the main page: parents add family members (name + relation) and upload photos.
 - Reuse the custom-praise infra: per-child storage manifest + two-phase upload API + Parent Zone management UI.
 - Category entry page shows a **family tree** layout (instead of the standard collage intro).

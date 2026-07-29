@@ -21,6 +21,7 @@ import {
 import HoldGate from './HoldGate';
 import LessonTree from './LessonTree';
 import ProfileEditor from './ProfileEditor';
+import FamilyManager from './FamilyManager';
 import VoiceSelector from '../ui/VoiceSelector';
 
 // Pill-style option picker for a per-child setting
@@ -417,6 +418,15 @@ const ParentZone = () => {
             </div>
           </>
         )}
+
+        {/* ---- Family ---- */}
+        <SectionTitle>Family</SectionTitle>
+        <p className="text-sm text-gray-500 -mt-2 mb-3">
+          The people (and pets) in the My Family lesson — shared by all your
+          children. Use the name your child actually says, and add a photo so
+          they recognize the real face.
+        </p>
+        <FamilyManager />
 
         {/* ---- Account ---- */}
         <SectionTitle>Account</SectionTitle>

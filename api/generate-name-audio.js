@@ -19,6 +19,11 @@ import { createClient } from '@supabase/supabase-js';
 //
 // A name_audio_path ending in .mp3 = neutral-only (praise not ready);
 // ending in manifest.json = personalized praise exists.
+//
+// The same endpoint also voices FAMILY MEMBERS (the My Family lesson):
+// pass memberId instead of childId. Members get the neutral name clip and
+// delete only (no praise tiers), under <uid>/family/<member_id>/<ts>/ —
+// the 'family' literal can never collide with a child uuid prefix.
 
 const BUCKET = 'name-audio';
 const VOICE_ID = 'FGY2WhTYpPnrIDTdsKH5'; // Laura — matches public/audio praise clips
@@ -112,11 +117,13 @@ export default async function handler(req, res) {
     return res.status(401).json({ error: 'Not signed in' });
   }
 
-  const { childId, action = 'name' } = req.body || {};
-  if (!childId || typeof childId !== 'string') {
-    return res.status(400).json({ error: 'childId is required' });
+  const { childId, memberId, action = 'name' } = req.body || {};
+  const subjectId = childId ?? memberId;
+  if (!subjectId || typeof subjectId !== 'string') {
+    return res.status(400).json({ error: 'childId or memberId is required' });
   }
-  if (!['name', 'praise', 'delete'].includes(action)) {
+  const allowed = memberId ? ['name', 'delete'] : ['name', 'praise', 'delete'];
+  if (!allowed.includes(action)) {
     return res.status(400).json({ error: 'Unknown action' });
   }
 
@@ -162,6 +169,54 @@ export default async function handler(req, res) {
           `Invalid session — auth said: "${userError?.message || 'no user'}" ` +
           `(server key: ${kind}/${k.length}/#${keyHash}${keyClaims}, url: ${urlHost}, token: ${tokenInfo})`,
       });
+    }
+
+    if (memberId) {
+      const { data: member } = await admin
+        .from('family_members')
+        .select('id, user_id, name')
+        .eq('id', memberId)
+        .maybeSingle();
+      if (!member || member.user_id !== userData.user.id) {
+        return res.status(404).json({ error: 'Member not found' });
+      }
+      const prefix = `${member.user_id}/family/${member.id}`;
+
+      if (action === 'delete') {
+        const files = await listFilesDeep(admin, prefix);
+        if (files.length) {
+          const { error } = await admin.storage.from(BUCKET).remove(files);
+          if (error) {
+            console.error('name-audio member delete failed:', error.message);
+            return res.status(502).json({ error: 'Storage delete failed' });
+          }
+        }
+        return res.status(200).json({ deleted: files.length });
+      }
+
+      const memberName = member.name.trim().slice(0, 30);
+      if (!memberName) {
+        return res.status(400).json({ error: 'Member has no name' });
+      }
+      const audio = await tts(ELEVENLABS_API_KEY, memberName, {
+        stability: 0.5,
+        similarity_boost: 0.8,
+        style: 0.3,
+        speed: 1.0,
+        use_speaker_boost: true,
+      });
+      const ts = `${Date.now()}`;
+      const path = `${prefix}/${ts}/name.mp3`;
+      await upload(admin, path, audio, 'audio/mpeg');
+      const { error: memberUpdateError } = await admin
+        .from('family_members')
+        .update({ name_audio_path: path, updated_at: new Date().toISOString() })
+        .eq('id', member.id);
+      if (memberUpdateError) {
+        throw new Error(`Member update: ${memberUpdateError.message}`);
+      }
+      await cleanupOldVersions(admin, prefix, ts);
+      return res.status(200).json({ path });
     }
 
     const { data: child } = await admin

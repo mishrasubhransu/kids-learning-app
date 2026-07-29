@@ -11,6 +11,7 @@ import PhonicsHome from './components/PhonicsHome';
 import PhonicsCategoryPage from './components/PhonicsCategoryPage';
 import LetterSoundsView from './components/LetterSoundsView';
 import OppositesPage from './components/opposites/OppositesPage';
+import FamilyPage from './components/family/FamilyPage';
 import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -68,6 +69,7 @@ const App = () => {
         <Route path="/phonics/letters" element={<ProtectedRoute><LessonGuard lesson="phonics.letters"><LetterSoundsView /></LessonGuard></ProtectedRoute>} />
         <Route path="/phonics/:family/*" element={<ProtectedRoute><LessonGuard prefix="phonics" param="family"><PhonicsCategoryPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/opposites/*" element={<ProtectedRoute><LessonGuard lesson="opposites"><OppositesPage /></LessonGuard></ProtectedRoute>} />
+        <Route path="/family" element={<ProtectedRoute><LessonGuard lesson="family"><FamilyPage /></LessonGuard></ProtectedRoute>} />
         {/* Emotions now lives under Concepts; keep old links working */}
         <Route path="/emotions/*" element={<Navigate to="/concepts/emotions" replace />} />
         <Route path="/typing" element={<ProtectedRoute><LessonGuard lesson="typing"><TypingMode /></LessonGuard></ProtectedRoute>} />
