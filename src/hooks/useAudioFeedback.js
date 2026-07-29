@@ -128,8 +128,7 @@ const useAudioFeedback = () => {
     if (audioAvailable.current && positiveAudio.current[tier]?.[idx]) {
       return playClip(positiveAudio.current[tier][idx]);
     }
-    speak(positiveTiers[tier][idx]);
-    return Promise.resolve();
+    return speak(positiveTiers[tier][idx]);
   }, [playClip, speak, soundsOff]);
 
   const playEncouragement = useCallback(() => {
@@ -138,8 +137,7 @@ const useAudioFeedback = () => {
     if (audioAvailable.current && encouragementAudio.current[idx]) {
       return playClip(encouragementAudio.current[idx]);
     }
-    speak(encouragement[idx]);
-    return Promise.resolve();
+    return speak(encouragement[idx]);
   }, [playClip, speak, soundsOff]);
 
   return { playPositive, playEncouragement };

@@ -128,8 +128,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
 
     if (handle.kind === 'audio') {
       handle.audio.addEventListener('ended', onSpeechEnd);
-    } else if (handle.utterance) {
-      handle.utterance.onend = onSpeechEnd;
+    } else if (handle.ended) {
+      handle.ended.then(onSpeechEnd);
     }
 
     // Fallback in case the ended/onend event doesn't fire

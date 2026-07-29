@@ -3,6 +3,7 @@ import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
 import useSpeech from '../hooks/useSpeech';
 import useAudioFeedback from '../hooks/useAudioFeedback';
+import useAudioLock from '../hooks/useAudioLock';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
@@ -59,8 +60,9 @@ const TypingMode = () => {
   const [currentLetter, setCurrentLetter] = useState(null);
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [mode, setMode] = useState('read'); // 'read' | 'music' | 'test'
-  const { speak } = useSpeech();
+  const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
+  const { locked, withLock } = useAudioLock();
   const audioCtxRef = useRef(null);
 
   // Test mode state
@@ -150,13 +152,17 @@ const TypingMode = () => {
     // Test mode handling
     if (mode === 'test') {
       if (!testTarget || testResult !== null || testComplete) return;
+      // Ignore keys while feedback audio is playing — a fast second press
+      // would start another clip on top of the one still speaking.
+      if (locked()) return;
+      cancel(); // an in-flight prompt shouldn't keep talking under the feedback
 
       if (char === testTarget) {
         setTestResult('correct');
         const newCount = testCorrectCount + 1;
         setTestCorrectCount(newCount);
         setBgColor('#2ecc71');
-        playPositive(newCount);
+        withLock(() => playPositive(newCount));
 
         clearTimeout(testResultTimerRef.current);
         testResultTimerRef.current = setTimeout(() => {
@@ -176,15 +182,17 @@ const TypingMode = () => {
       } else {
         setTestResult('wrong');
         setBgColor('#e74c3c');
-        playEncouragement().then(() => {
-          speak(`That was ${char}, try to find ${testTarget}.`);
-        });
-
         clearTimeout(testResultTimerRef.current);
-        testResultTimerRef.current = setTimeout(() => {
-          setTestResult(null);
-          setBgColor('#2c3e50');
-        }, 1500);
+        withLock(() =>
+          playEncouragement().then(() => speak(`That was ${char}, try to find ${testTarget}.`))
+        ).then(() => {
+          // Reset only after the spoken correction ends, so the moment keys
+          // work again is also the moment the screen looks ready for a retry.
+          testResultTimerRef.current = setTimeout(() => {
+            setTestResult(null);
+            setBgColor('#2c3e50');
+          }, 300);
+        });
       }
       return;
     }
@@ -200,7 +208,7 @@ const TypingMode = () => {
     } else {
       speak(char);
     }
-  }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, testComplete, testSeenLetters, speak, playTone, playPositive, playEncouragement, generateTestTarget]);
+  }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, testComplete, testSeenLetters, speak, cancel, locked, withLock, playTone, playPositive, playEncouragement, generateTestTarget]);
 
   const handleKeyPress = useCallback((event) => {
     // Ignore key repeats (holding down)

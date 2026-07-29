@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
@@ -15,8 +16,9 @@ const SceneQuiz = ({ items, difficulty }) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
-  const { speak } = useSpeech();
+  const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
+  const { locked, withLock } = useAudioLock();
   const autoAdvanceTimerRef = useRef(null);
   const wrongResetTimerRef = useRef(null);
 
@@ -73,8 +75,8 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, [questions, currentIdx]);
 
   const askQuestion = useCallback(() => {
-    if (current) speak(current.question);
-  }, [current, speak]);
+    if (current && !locked()) speak(current.question);
+  }, [current, speak, locked]);
 
   const handleStart = () => {
     setHasStarted(true);
@@ -111,10 +113,14 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, [currentIdx, questions, speak]);
 
   const handleSelect = (word) => {
+    // Ignore taps while feedback audio is playing — a fast second tap would
+    // start another clip on top of the one still speaking.
+    if (locked()) return;
     // Only lock input after a correct answer — during wrong-answer feedback
     // the highlighted correct card invites a retry, so let it through.
     if (selectedAnswer !== null && isCorrect) return;
     clearTimeout(wrongResetTimerRef.current);
+    cancel(); // an in-flight question shouldn't keep talking under the feedback
     setSelectedAnswer(word);
 
     if (word === current.correctAnswer) {
@@ -127,7 +133,7 @@ const SceneQuiz = ({ items, difficulty }) => {
         item: current.correctAnswer,
         meta: { correct: true, difficulty },
       });
-      playPositive(newCount).then(() => {
+      withLock(() => playPositive(newCount)).then(() => {
         autoAdvanceTimerRef.current = setTimeout(() => nextQuestion(), 800);
       });
     } else {
@@ -140,13 +146,16 @@ const SceneQuiz = ({ items, difficulty }) => {
       });
       // Name what they picked but don't reveal the answer — the dashed
       // hint plus immediate retry lets them find it themselves.
-      playEncouragement().then(() => {
-        speak(`That was ${word}.`);
+      withLock(() =>
+        playEncouragement().then(() => speak(`That was ${word}.`))
+      ).then(() => {
+        // Reset only after the spoken correction ends, so the moment taps
+        // work again is also the moment the board looks ready for a retry.
+        wrongResetTimerRef.current = setTimeout(() => {
+          setSelectedAnswer(null);
+          setIsCorrect(null);
+        }, 600);
       });
-      wrongResetTimerRef.current = setTimeout(() => {
-        setSelectedAnswer(null);
-        setIsCorrect(null);
-      }, 2000);
     }
   };
 

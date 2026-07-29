@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
@@ -66,8 +67,9 @@ const MatchGame = ({ items, difficulty }) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
-  const { speak } = useSpeech();
+  const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
+  const { locked, withLock } = useAudioLock();
   const advanceTimerRef = useRef(null);
   const wrongResetTimerRef = useRef(null);
 
@@ -103,8 +105,8 @@ const MatchGame = ({ items, difficulty }) => {
   }, [rounds, currentIdx]);
 
   const askRound = useCallback((round) => {
-    if (round) speak(`What is the opposite of ${round.promptWord}?`);
-  }, [speak]);
+    if (round && !locked()) speak(`What is the opposite of ${round.promptWord}?`);
+  }, [speak, locked]);
 
   const handleStart = () => {
     setHasStarted(true);
@@ -138,10 +140,14 @@ const MatchGame = ({ items, difficulty }) => {
   }, [currentIdx, rounds, askRound]);
 
   const handleSelect = (word) => {
+    // Ignore taps while feedback audio is playing — a fast second tap would
+    // start another clip on top of the one still speaking.
+    if (locked()) return;
     if (selected !== null && isCorrect) return;
     // A retry during wrong-answer feedback must kill the pending reset,
     // or the stale timer wipes the new selection mid-celebration.
     clearTimeout(wrongResetTimerRef.current);
+    cancel(); // an in-flight question shouldn't keep talking under the feedback
     setSelected(word);
 
     if (word === current.answerWord) {
@@ -154,7 +160,7 @@ const MatchGame = ({ items, difficulty }) => {
         item: current.answerWord,
         meta: { correct: true, difficulty },
       });
-      playPositive(newCount).then(() => {
+      withLock(() => playPositive(newCount)).then(() => {
         advanceTimerRef.current = setTimeout(() => nextRound(), 800);
       });
     } else {
@@ -165,13 +171,18 @@ const MatchGame = ({ items, difficulty }) => {
         item: current.answerWord,
         meta: { correct: false, picked: word, difficulty },
       });
-      playEncouragement().then(() => {
-        speak(`${word} is not the opposite of ${current.promptWord}. Try again!`);
+      withLock(() =>
+        playEncouragement().then(() =>
+          speak(`${word} is not the opposite of ${current.promptWord}. Try again!`)
+        )
+      ).then(() => {
+        // Reset only after the spoken correction ends, so the moment taps
+        // work again is also the moment the board looks ready for a retry.
+        wrongResetTimerRef.current = setTimeout(() => {
+          setSelected(null);
+          setIsCorrect(null);
+        }, 600);
       });
-      wrongResetTimerRef.current = setTimeout(() => {
-        setSelected(null);
-        setIsCorrect(null);
-      }, 2000);
     }
   };
 

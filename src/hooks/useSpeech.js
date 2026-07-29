@@ -47,8 +47,10 @@ export const useSpeech = () => {
     setSelectedVoiceURIState(uri);
   }, []);
 
+  // Resolves when the utterance finishes (or errors/gets cancelled), so
+  // callers can sequence audio without stacking clips.
   const speak = useCallback((text, options = {}) => {
-    if (!text) return;
+    if (!text) return Promise.resolve();
 
     // Cancel any ongoing speech — unless the caller wants to queue behind it
     // (speechSynthesis plays queued utterances back to back natively)
@@ -87,9 +89,11 @@ export const useSpeech = () => {
     // Debug logging (can remove later)
     console.log('Speaking:', text);
 
-    window.speechSynthesis.speak(utterance);
-
-    return utterance;
+    return new Promise((resolve) => {
+      utterance.onend = resolve;
+      utterance.onerror = resolve;
+      window.speechSynthesis.speak(utterance);
+    });
   }, []);
 
   const cancel = useCallback(() => {

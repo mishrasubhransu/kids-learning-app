@@ -43,8 +43,7 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
         return;
       }
       spokeFallback.current = true;
-      const utterance = speak(stripAudioTags(line.text));
-      if (utterance) utterance.onend = lineEnded;
+      speak(stripAudioTags(line.text)).then(lineEnded);
     };
     audioRef.current = clip;
     clip.onended = lineEnded;

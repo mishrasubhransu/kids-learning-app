@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
+import useAudioLock from '../../hooks/useAudioLock';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
 import ItemMedia from '../ui/ItemMedia';
@@ -17,8 +18,9 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
-  const { speak } = useSpeech();
+  const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
+  const { locked, withLock } = useAudioLock();
   const autoAdvanceTimerRef = useRef(null);
   const wrongResetTimerRef = useRef(null);
   const askedIdsRef = useRef(new Set());
@@ -111,10 +113,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
 
   // Speak the question - uses current correctAnswer state
   const askQuestion = useCallback(() => {
-    if (correctAnswer) {
+    if (correctAnswer && !locked()) {
       speak(`Which one is ${correctAnswer.name}?`);
     }
-  }, [correctAnswer, speak]);
+  }, [correctAnswer, speak, locked]);
 
   // Start the test
   const handleStart = () => {
@@ -162,15 +164,21 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
 
   // Handle answer selection
   const handleSelect = (item) => {
+    // Ignore taps while feedback audio is playing — a fast second tap would
+    // start another clip on top of the one still speaking.
+    if (locked()) return;
     // Only lock input after a correct answer — during wrong-answer feedback
     // the dash-highlighted correct option invites a retry, so let it through.
     if (selectedAnswer !== null && isCorrect) return;
     clearTimeout(wrongResetTimerRef.current);
+    cancel(); // an in-flight question shouldn't keep talking under the feedback
 
     setSelectedAnswer(item.id);
+    const isRight = item.id === correctAnswer.id;
 
-    setTimeout(() => {
-      if (item.id === correctAnswer.id) {
+    withLock(async () => {
+      await new Promise((resolve) => setTimeout(resolve, 50));
+      if (isRight) {
         setIsCorrect(true);
         const newCount = correctCount + 1;
         setCorrectCount(newCount);
@@ -180,13 +188,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           item: correctAnswer.name,
           meta: { correct: true, difficulty },
         });
-
-        // Play praise, then wait a beat before advancing
-        playPositive(newCount).then(() => {
-          autoAdvanceTimerRef.current = setTimeout(() => {
-            nextQuestion();
-          }, 800);
-        });
+        await playPositive(newCount);
       } else {
         setIsCorrect(false);
         track('answer', {
@@ -195,15 +197,24 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           item: correctAnswer.name,
           meta: { correct: false, picked: item.name, difficulty },
         });
-        playEncouragement().then(() => {
-          speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
-        });
+        await playEncouragement();
+        await speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
+      }
+    }).then(() => {
+      if (isRight) {
+        // Wait a beat before advancing
+        autoAdvanceTimerRef.current = setTimeout(() => {
+          nextQuestion();
+        }, 800);
+      } else {
+        // Reset only after the spoken correction ends, so the moment taps
+        // work again is also the moment the board looks ready for a retry.
         wrongResetTimerRef.current = setTimeout(() => {
           setSelectedAnswer(null);
           setIsCorrect(null);
-        }, 2000);
+        }, 600);
       }
-    }, 50);
+    });
   };
 
   // Touch handlers for long-press support on mobile

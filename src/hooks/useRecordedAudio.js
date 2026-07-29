@@ -9,8 +9,9 @@ import { ADMIN_EMAIL, hasRecording, getRecordingObjectUrl } from '../lib/recordi
 // runs as a late fallback when the clip's bytes turn out to be unreachable
 // (no cache and no network), i.e. when no audio ever started.
 //
-// speakItem returns { kind: 'audio', audio } or { kind: 'tts', utterance } so
-// callers that need an "ended" signal (autoplay) can attach to either.
+// speakItem returns { kind: 'audio', audio } or { kind: 'tts', ended } (a
+// promise) so callers that need an "ended" signal (autoplay) can attach to
+// either.
 const useRecordedAudio = (rawCategory) => {
   const { speak, cancel } = useSpeech();
   const { user } = useAuth();
@@ -47,7 +48,7 @@ const useRecordedAudio = (rawCategory) => {
         });
         return { kind: 'audio', audio };
       }
-      return { kind: 'tts', utterance: speak(name, options) };
+      return { kind: 'tts', ended: speak(name, options) };
     },
     [category, speak, cancel]
   );
