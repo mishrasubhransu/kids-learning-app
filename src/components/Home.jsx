@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Settings } from 'lucide-react';
+import StickerShelf from './ui/StickerShelf';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { objectIcons } from '../data/numbers';
@@ -119,6 +120,8 @@ const Home = () => {
           );
         })}
       </div>
+
+      <StickerShelf />
 
       <div className="mt-8 md:mt-12 flex flex-col items-center gap-3">
         <span className="text-gray-500 text-sm">

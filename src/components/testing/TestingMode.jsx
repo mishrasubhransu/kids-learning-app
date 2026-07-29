@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
@@ -6,6 +6,8 @@ import useAudioLock from '../../hooks/useAudioLock';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
 import ItemMedia from '../ui/ItemMedia';
+import SessionRecap from '../ui/SessionRecap';
+import { recapTilesForItems } from '../../lib/recapTiles';
 
 // autoStart skips the "Ready to Test?" screen — used when the child already
 // tapped through the post-autoplay interstitial (that tap is the user gesture
@@ -18,6 +20,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
+  const [showRecap, setShowRecap] = useState(false);
   const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -56,6 +59,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     const remaining = items.filter((item) => !askedIdsRef.current.has(item.id));
     if (remaining.length === 0) {
       setTestComplete(true);
+      setShowRecap(true); // recap sticker moment over the trophy screen
       return null;
     }
 
@@ -162,6 +166,14 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     });
   }, [testComplete, category, correctCount, items.length, difficulty]);
 
+  // Memoized so re-renders while the recap is open (the sticker persist
+  // updates the profile context) don't reshuffle the collage mid-view
+  const recapTiles = useMemo(
+    () =>
+      testComplete ? recapTilesForItems(category, items, { shapeColor }) : [],
+    [testComplete, category, items, shapeColor]
+  );
+
   // Handle answer selection
   const handleSelect = (item) => {
     // Ignore taps while feedback audio is playing — a fast second tap would
@@ -255,7 +267,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
       if (!hasStarted && (e.key === ' ' || e.key === 'Enter')) {
         e.preventDefault();
         handleStart();
-      } else if (e.key === 'ArrowRight' && isCorrect === true) {
+      } else if (e.key === 'ArrowRight' && isCorrect === true && !testComplete) {
+        // !testComplete: after the final answer the arrow belongs to the
+        // recap overlay — re-running nextQuestion here would re-open it
+        // (and award a second sticker)
         nextQuestion();
       } else if (e.key === 'r' || e.key === 'R') {
         askQuestion();
@@ -430,6 +445,15 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Test complete screen
   if (testComplete) {
     return (
+      <>
+      {showRecap && (
+        <SessionRecap
+          category={category}
+          mode="test"
+          tiles={recapTiles}
+          onDone={() => setShowRecap(false)}
+        />
+      )}
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
@@ -448,6 +472,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           </button>
         </div>
       </div>
+      </>
     );
   }
 

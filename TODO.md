@@ -25,5 +25,5 @@ Add to existing lessons where they fit, or create new lessons:
 - **Gadgets** (likely its own lesson): phone, headphone, earphone, camera, remote, drone, laptop, keyboard, mouse, ...
 Use the established image pipeline (Gemini per billing constraint, genlab.record() on every generation, style folders per CATEGORY_IMAGE_STYLES).
 
-## 5. [ ] Recap sticker (end-of-session payoff)
+## 5. [x] Recap sticker (end-of-session payoff)
 When a quiz/category session finishes, show a recap moment — reuse the `CategoryIntro.jsx` collage/circle-reveal machinery in reverse (collage of what the child just saw) — and award a sticker that persists per child (sticker shelf, toddler-appropriate progress).

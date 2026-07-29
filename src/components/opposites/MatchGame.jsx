@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
@@ -6,6 +6,7 @@ import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
+import SessionRecap from '../ui/SessionRecap';
 import { wordImages, pickRandom } from '../../data/opposites';
 
 function shuffle(arr) {
@@ -69,6 +70,9 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [gameComplete, setGameComplete] = useState(false);
+  // Completion payoff is the recap sticker moment; its spoken line replaces
+  // the old "Great job! You found N opposites!" callout.
+  const [showRecap, setShowRecap] = useState(false);
   const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -132,6 +136,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
     clearTimeout(wrongResetTimerRef.current);
     if (currentIdx >= rounds.length - 1) {
       setGameComplete(true);
+      setShowRecap(true); // recap sticker moment over the trophy screen
       return;
     }
     const nextIdx = currentIdx + 1;
@@ -188,13 +193,17 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
     }
   };
 
-  // The completion screen was a silent static trophy — say the praise out
-  // loud, matching the spoken feedback everywhere else in the game.
-  useEffect(() => {
-    if (gameComplete) {
-      speak(`Great job! You found ${rounds.length} opposites!`);
-    }
-  }, [gameComplete, rounds.length, speak]);
+  // Each tile shows a round's pair — prompt and answer in one frame, same
+  // two-up format as the opposites intro collage
+  const recapTiles = useMemo(() => {
+    if (!gameComplete) return [];
+    return rounds.slice(0, 6).map((r) => ({
+      images: [
+        r.promptImage,
+        r.choices.find((c) => c.word === r.answerWord)?.image,
+      ].filter(Boolean),
+    }));
+  }, [gameComplete, rounds]);
 
   // Keyboard: space/enter to start, R to repeat
   useEffect(() => {
@@ -214,6 +223,15 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
 
   if (gameComplete) {
     return (
+      <>
+      {showRecap && (
+        <SessionRecap
+          category="opposites"
+          mode="match"
+          tiles={recapTiles}
+          onDone={() => setShowRecap(false)}
+        />
+      )}
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-4 motion-safe:animate-bounce" aria-hidden="true">🏆</div>
@@ -233,6 +251,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           </button>
         </div>
       </div>
+      </>
     );
   }
 

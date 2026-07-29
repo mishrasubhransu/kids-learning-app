@@ -192,3 +192,22 @@ input, textarea {
     animation: none;
   }
 }
+
+/* Recap sticker lands after the recap's circle-reveal finishes (~700ms) —
+   hidden until then via fill-mode both */
+@keyframes recap-sticker-pop {
+  0% { transform: scale(0) rotate(-20deg); opacity: 0; }
+  70% { transform: scale(1.2) rotate(6deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.recap-sticker {
+  display: inline-block;
+  animation: recap-sticker-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .recap-sticker {
+    animation: none;
+  }
+}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
@@ -6,6 +6,7 @@ import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
+import SessionRecap from '../ui/SessionRecap';
 import { wordImages, pickPairExamples } from '../../data/opposites';
 
 const SceneQuiz = ({ items, difficulty }) => {
@@ -16,6 +17,7 @@ const SceneQuiz = ({ items, difficulty }) => {
   const [hasStarted, setHasStarted] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
+  const [showRecap, setShowRecap] = useState(false);
   const { speak, cancel } = useSpeech();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -101,6 +103,7 @@ const SceneQuiz = ({ items, difficulty }) => {
     clearTimeout(wrongResetTimerRef.current);
     if (currentIdx >= questions.length - 1) {
       setTestComplete(true);
+      setShowRecap(true); // recap sticker moment over the trophy screen
       return;
     }
     const nextIdx = currentIdx + 1;
@@ -174,8 +177,33 @@ const SceneQuiz = ({ items, difficulty }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hasStarted, askQuestion]);
 
+  // Several questions share a pair — one tile per pair, both sides in one
+  // frame like the opposites intro collage
+  const recapTiles = useMemo(() => {
+    if (!testComplete) return [];
+    const seen = new Set();
+    const tiles = [];
+    for (const q of questions) {
+      const key = q.pair.join('|');
+      if (seen.has(key)) continue;
+      seen.add(key);
+      tiles.push({ images: q.pair.map((w) => q.images[w]) });
+      if (tiles.length >= 6) break;
+    }
+    return tiles;
+  }, [testComplete, questions]);
+
   if (testComplete) {
     return (
+      <>
+      {showRecap && (
+        <SessionRecap
+          category="opposites"
+          mode="quiz"
+          tiles={recapTiles}
+          onDone={() => setShowRecap(false)}
+        />
+      )}
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
@@ -192,6 +220,7 @@ const SceneQuiz = ({ items, difficulty }) => {
           </button>
         </div>
       </div>
+      </>
     );
   }
 

@@ -1,10 +1,12 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
+import SessionRecap from './ui/SessionRecap';
 import useSpeech from '../hooks/useSpeech';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 import useAudioLock from '../hooks/useAudioLock';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
+import shuffle from '../utils/shuffle';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const colors = [
@@ -73,6 +75,7 @@ const TypingMode = () => {
   const [testCorrectCount, setTestCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [testSeenLetters, setTestSeenLetters] = useState(() => new Set());
+  const [showRecap, setShowRecap] = useState(false);
   const testResultTimerRef = useRef(null);
 
   // Initialize audio context on first interaction
@@ -138,9 +141,18 @@ const TypingMode = () => {
       setTestIndex(0);
       setTestComplete(false);
       setTestSeenLetters(new Set());
+      setShowRecap(false);
       clearTimeout(testResultTimerRef.current);
     }
   }, [mode]);
+
+  const recapTiles = useMemo(
+    () =>
+      testComplete
+        ? shuffle(allLetters).slice(0, 8).map((letter) => ({ text: letter }))
+        : [],
+    [testComplete]
+  );
 
   // Cleanup on unmount
   useEffect(() => {
@@ -175,6 +187,7 @@ const TypingMode = () => {
           if (nextSeen.size >= allLetters.length) {
             setTestComplete(true);
             setTestTarget(null);
+            setShowRecap(true); // recap sticker moment over the trophy screen
           } else {
             generateTestTarget(testOrder, nextIndex);
           }
@@ -307,6 +320,14 @@ const TypingMode = () => {
       className="h-full flex flex-col transition-colors duration-300 relative overflow-hidden"
       style={{ backgroundColor: bgColor }}
     >
+      {showRecap && (
+        <SessionRecap
+          category="typing"
+          mode="test"
+          tiles={recapTiles}
+          onDone={() => setShowRecap(false)}
+        />
+      )}
       {/* Home button */}
       <div className="absolute top-4 left-4">
         <HomeButton />
