@@ -220,6 +220,42 @@ STYLE_PROMPTS = {
         "accurate, correctly spelled, and clearly legible. "
         "No extra labels, no captions, no watermarks. Square 1:1 composition."
     ),
+    "weather": (
+        "A breathtaking, high-quality photograph of a landscape in {subject} weather. "
+        "Photorealistic, and the weather condition is the unmistakable star of the "
+        "picture — obvious at a single glance to a two-year-old. "
+        "Simple, uncluttered composition with vivid natural colors. "
+        "Captured as if by a professional landscape photographer. "
+        "Friendly and non-frightening mood suitable for a toddler learning app. "
+        "No people, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "construction": (
+        "A beautiful, high-quality photograph of {subject} at a tidy construction site. "
+        "Photorealistic with vivid colors and bright natural outdoor daylight, "
+        "and a clean, slightly blurred construction-site background. "
+        "The vehicle is centered, fills most of the frame, and is clearly visible from "
+        "a three-quarter view so its working parts are easy to recognize. "
+        "Captured as if by a professional vehicle photographer. "
+        "Sharp focus on the vehicle, shallow depth of field. "
+        "No people in the foreground, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "gadgets": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid colors, soft studio lighting, "
+        "and a clean, slightly blurred white or light grey background. Centered and clearly visible. "
+        "Professional product photography style, clean and well-lit. "
+        "Sharp focus on the gadget, shallow depth of field. "
+        "No brand logos, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    "outside": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid colors and bright, cheerful natural daylight. "
+        "The subject is instantly recognizable at a glance and dominates the frame, "
+        "with a simple, uncluttered composition. "
+        "Captured as if by a professional photographer on a pleasant sunny day. "
+        "Sharp focus on the subject, shallow depth of field. "
+        "No text, no labels, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -444,6 +480,54 @@ ITEMS = {
         "jacket": "a child's cozy winter jacket with a hood, hanging on a hanger or laid flat",
         "shoe-stand": "a wooden shoe rack with several pairs of shoes neatly arranged on its shelves, three-quarter view",
         "umbrella": "an open colorful umbrella with a curved handle, three-quarter view",
+        "clock": "a round analog wall clock with large clear numbers and easy-to-see hands, hanging on a plain wall, front view",
+    },
+    "weather": {
+        "sunny": "a real photograph of bright sunny weather over a green meadow, the real sun blazing in a clear blue sky with natural glare and lens flare, everything bathed in golden sunlight — strictly photographic, absolutely no cartoon or illustrated elements",
+        "cloudy": "cloudy weather over rolling green hills, the sky completely filled with big puffy grey and white clouds",
+        "rainy": "rainy weather on a quiet street, heavy rain falling with visible raindrops, wet shiny pavement and puddles with ripples",
+        "foggy": "foggy weather in a quiet park, thick white fog softening trees and a path into pale silhouettes",
+        "windy": "windy weather in a park, trees bending strongly in the wind with leaves flying through the air",
+        "snowy": "snowy weather over a cottage and pine trees, thick snowflakes falling, ground and roofs covered in fresh white snow",
+        "stormy": "stormy weather over a field, dark dramatic storm clouds and a bright lightning bolt in the distance, edge-to-edge full-bleed photograph with no border or frame",
+    },
+    "construction": {
+        "digger": "a yellow excavator digger with its articulated arm and bucket raised mid-dig",
+        "crane": "a tall yellow mobile crane with its long boom extended up into the sky, lifting a load on a hook",
+        "bulldozer": "a yellow bulldozer with a wide front blade pushing a small mound of earth",
+        "dump-truck": "a large yellow dump truck with its open cargo bed full of earth",
+        "concrete-mixer": "a concrete mixer truck with a large striped rotating drum",
+        "steam-roller": "a yellow road roller with a big smooth metal drum flattening fresh asphalt",
+        "forklift": "a yellow forklift lifting a wooden pallet on its two front forks",
+        "wrecking-ball": "a crane swinging a huge heavy wrecking ball on a chain",
+    },
+    "gadgets": {
+        "phone": "a modern smartphone standing upright with a colorful home screen visible, front view",
+        "tablet": "a modern tablet computer propped at a slight angle with a colorful screen visible, front view",
+        "laptop": "a modern silver laptop computer, open with a colorful screen on, three-quarter view",
+        "keyboard": "a computer keyboard with clearly visible keys, top-down three-quarter view",
+        "mouse": "a computer mouse with a scroll wheel, three-quarter view",
+        "headphones": "a pair of large over-ear headphones with a padded headband, three-quarter view",
+        "earphones": "a pair of small white wireless earbuds next to their open charging case",
+        "camera": "a digital camera with a prominent round lens, three-quarter view",
+        "remote": "a TV remote control with colorful rubber buttons, three-quarter view",
+        "drone": "a quadcopter camera drone with four rotors, hovering in the air, three-quarter view",
+        "smartwatch": "a smartwatch with a colorful watch face, strap open, three-quarter view",
+        "speaker": "a portable wireless speaker with a visible fabric grille, three-quarter view",
+    },
+    "outside": {
+        "road": "an empty two-lane road with a yellow center line curving gently through green countryside",
+        "fence": "a white wooden picket fence along a garden with green grass and a few flowers",
+        "gate": "a garden gate in a low fence, slightly ajar, with a path leading through it",
+        "tunnel": "the arched entrance of a road tunnel going into a green hillside",
+        "bridge": "a small arched stone footbridge crossing a calm stream in a park",
+        "street-lamp": "a classic black street lamp glowing warmly at dusk on a tidy sidewalk",
+        "drain": "a metal storm drain grate at the edge of a street curb, seen from above at an angle",
+        "playground": "a colorful children's playground with a slide, swings, and a climbing frame on soft ground",
+        "swing": "a children's swing set with two swings in a sunny playground",
+        "slide": "a colorful children's slide in a sunny playground",
+        "park-bench": "a classic wooden park bench on a path under a leafy tree",
+        "mailbox": "a cheerful red curbside mailbox on a wooden post with its little flag up",
     },
     "sea-creatures": {
         "fish": "a colorful tropical clownfish with bright orange and white stripes, swimming gracefully, full body visible",

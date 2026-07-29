@@ -94,6 +94,26 @@ export const intros = {
     "Run, jump, dance — let's move!",
     "Ready to wiggle? Let's learn actions!",
   ],
+  'concepts-weather': [
+    "Let's look at the weather!",
+    "Sun, rain, or snow — what's it like today?",
+    "[gasps] Look at the sky! What's the weather doing?",
+  ],
+  'concepts-construction': [
+    "Let's meet the construction vehicles!",
+    'Beep beep! Big machines at work!',
+    "Diggers and cranes — let's build something big!",
+  ],
+  'concepts-gadgets': [
+    "Let's learn about gadgets!",
+    'Beep boop! Time for some cool gadgets!',
+    "What does this button do? [laughs] Let's find out!",
+  ],
+  'concepts-outside': [
+    "Let's go outside!",
+    'So much to see on our street!',
+    "[gasps] Look around! What can we spot outside?",
+  ],
   opposites: [
     "Let's learn about opposites!",
     "Big and small, up and down — let's play with opposites!",

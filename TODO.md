@@ -16,7 +16,7 @@ Until the current audio clip finishes, disable/ignore answer button presses so a
 - Category entry page shows a **family tree** layout (instead of the standard collage intro).
 - Name audio: recorded/TTS per member name, same pattern as child name audio.
 
-## 4. [ ] New content: things kids see outside + household/gadgets
+## 4. [x] New content: things kids see outside + household/gadgets
 Add to existing lessons where they fit, or create new lessons:
 - **Roads/outside**: roads, fence, tunnel, street lamp, drain, playground
 - **Weather** (likely its own lesson): cloudy, sunny, rainy, foggy, windy, snowy, stormy
