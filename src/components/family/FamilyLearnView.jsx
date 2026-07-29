@@ -8,7 +8,10 @@ import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 // One family member at a time: big photo, their name said out loud (the
 // ElevenLabs name clip when it exists, TTS otherwise), arrows to move on —
 // right arrow drives everything, tap the photo to hear the name again.
-const FamilyLearnView = ({ items }) => {
+// holdIntro keeps this view silent and deaf to keys while the family-tree
+// intro is up (it's mounted underneath the reveal), same contract as
+// ScrollView/PairLearnView — the first name lands as the reveal opens.
+const FamilyLearnView = ({ items, holdIntro = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { speak, cancel } = useSpeech();
   const audioRef = useRef(null);
@@ -38,10 +41,10 @@ const FamilyLearnView = ({ items }) => {
   }, []);
 
   useEffect(() => {
-    if (!current) return;
+    if (holdIntro || !current) return;
     const timer = setTimeout(() => sayName(current), 250);
     return () => clearTimeout(timer);
-  }, [currentIndex, current, sayName]);
+  }, [holdIntro, currentIndex, current, sayName]);
 
   const goTo = useCallback(
     (delta) => {
@@ -54,7 +57,7 @@ const FamilyLearnView = ({ items }) => {
 
   useEffect(() => {
     const onKey = (e) => {
-      if (e.repeat || ownedByFocusedControl(e)) return;
+      if (holdIntro || e.repeat || ownedByFocusedControl(e)) return;
       if (e.key === 'ArrowRight') goTo(1);
       else if (e.key === 'ArrowLeft') goTo(-1);
       else if (e.key === 'r' || e.key === 'R') {
@@ -63,7 +66,7 @@ const FamilyLearnView = ({ items }) => {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goTo, sayName, current]);
+  }, [goTo, sayName, current, holdIntro]);
 
   if (!current) return null;
 
