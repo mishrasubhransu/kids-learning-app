@@ -2,19 +2,26 @@ import { useCallback, useEffect, useRef } from 'react';
 import { positiveTiers, encouragement, getTierForCount } from '../utils/feedback';
 import useSpeech from './useSpeech';
 import { useChildProfile } from '../context/ChildProfileContext';
+import { useLocale } from '../context/LocaleContext';
+import { getPack, getTtsLang } from '../lib/locale';
 import { isPraiseManifest, loadPraiseClips, playClipUrl } from '../lib/nameAudio';
-
-const TIER_COUNT = positiveTiers.length;
-const PHRASES_PER_TIER = positiveTiers[0].length;
-const ENCOURAGEMENT_COUNT = encouragement.length;
+import { hasVoiceClip, getVoiceClipUrl } from '../lib/voice';
 
 /**
- * Plays pre-generated ElevenLabs audio clips for test feedback.
- * Positive clips are tiered by correct-answer count — excitement escalates.
- * Falls back to Web Speech API if clips aren't available.
+ * Plays pre-generated audio clips for test feedback. Positive clips are
+ * tiered by correct-answer count — excitement escalates. Falls back to Web
+ * Speech API if clips aren't available.
+ *
+ * English clips are static files under public/audio; other locales keep
+ * theirs in the voice bucket (feedback/positive/tier<t>/<i>,
+ * feedback/encouragement/<i>) with the phrase lists coming from the locale
+ * pack — counts may differ per language.
+ *
  * When the active child has personalized praise clips ("Great job, Aarav!"),
  * the first praise of a game uses one, then ~1-in-3 — stock clips otherwise.
- * Encouragement stays name-free on purpose (a name there reads as scolding).
+ * Personalized clips only play when they were generated in the active
+ * language (manifest.locale, absent = en). Encouragement stays name-free on
+ * purpose (a name there reads as scolding).
  */
 const pickAvoiding = (count, recent) => {
   let idx;
@@ -36,12 +43,17 @@ const useAudioFeedback = () => {
   const recentEncouragement = useRef([]);
   const { speak } = useSpeech();
   const { activeChild } = useChildProfile();
+  const { locale } = useLocale();
   const soundsOff = activeChild?.settings?.soundEffects === false;
   const nameOff = activeChild?.settings?.useNameInPraise === false;
   const manifestPath =
     !nameOff && isPraiseManifest(activeChild?.name_audio_path)
       ? activeChild.name_audio_path
       : null;
+
+  const packFeedback = getPack()?.feedback;
+  const tiers = packFeedback?.positiveTiers ?? positiveTiers;
+  const encouragements = packFeedback?.encouragement ?? encouragement;
 
   // Personalized praise: the manifest is tiny and cache-first (module-level
   // memo in nameAudio), the mp3s themselves are fetched on play. If loading
@@ -54,13 +66,19 @@ const useAudioFeedback = () => {
     if (!manifestPath) return;
     let cancelled = false;
     loadPraiseClips(manifestPath).then((clips) => {
-      if (!cancelled) praiseClips.current = clips;
+      // Wrong-language praise ("¡Muy bien!" game, "Great job, Aarav!" clip)
+      // is worse than none — keep stock clips until regeneration catches up
+      if (!cancelled && clips && (clips.locale ?? 'en') === locale) {
+        praiseClips.current = clips;
+      }
     });
     return () => {
       cancelled = true;
     };
-  }, [manifestPath]);
+  }, [manifestPath, locale]);
 
+  // English static files, preloaded once (locale switches don't need them
+  // re-probed; non-en locales stream from the voice bucket cache instead)
   useEffect(() => {
     let cancelled = false;
 
@@ -69,16 +87,16 @@ const useAudioFeedback = () => {
         const testRes = await fetch('/audio/positive/tier0/0.mp3', { method: 'HEAD' });
         if (!testRes.ok) return;
 
-        for (let tier = 0; tier < TIER_COUNT; tier++) {
+        for (let tier = 0; tier < positiveTiers.length; tier++) {
           positiveAudio.current[tier] = [];
-          for (let i = 0; i < PHRASES_PER_TIER; i++) {
+          for (let i = 0; i < positiveTiers[tier].length; i++) {
             if (cancelled) return;
             const audio = new Audio(`/audio/positive/tier${tier}/${i}.mp3`);
             audio.preload = 'auto';
             positiveAudio.current[tier][i] = audio;
           }
         }
-        for (let i = 0; i < ENCOURAGEMENT_COUNT; i++) {
+        for (let i = 0; i < encouragement.length; i++) {
           if (cancelled) return;
           const audio = new Audio(`/audio/encouragement/${i}.mp3`);
           audio.preload = 'auto';
@@ -103,8 +121,23 @@ const useAudioFeedback = () => {
     });
   }, []);
 
-  const playPositive = useCallback((correctCount = 1) => {
-    if (soundsOff) return Promise.resolve();
+  // Non-en stock feedback lives in the voice bucket; resolves false when the
+  // clip isn't there so the caller falls through to TTS.
+  const playBucketClip = useCallback(async (key) => {
+    if (!hasVoiceClip(key)) return false;
+    const url = await getVoiceClipUrl(key);
+    if (!url) return false;
+    await new Promise((resolve) => {
+      const audio = new Audio(url);
+      audio.onended = resolve;
+      audio.onerror = resolve;
+      audio.play().catch(resolve);
+    });
+    return true;
+  }, []);
+
+  const playPositive = useCallback(async (correctCount = 1) => {
+    if (soundsOff) return;
     const tier = getTierForCount(correctCount);
 
     // First praise of this game is personalized (guaranteed, once clips are
@@ -124,21 +157,29 @@ const useAudioFeedback = () => {
       return playClipUrl(tierClips[idx]);
     }
 
-    const idx = pickAvoiding(PHRASES_PER_TIER, recentPositive.current);
-    if (audioAvailable.current && positiveAudio.current[tier]?.[idx]) {
-      return playClip(positiveAudio.current[tier][idx]);
+    const idx = pickAvoiding(tiers[tier].length, recentPositive.current);
+    if (locale === 'en') {
+      if (audioAvailable.current && positiveAudio.current[tier]?.[idx]) {
+        return playClip(positiveAudio.current[tier][idx]);
+      }
+    } else if (await playBucketClip(`feedback/positive/tier${tier}/${idx}`)) {
+      return;
     }
-    return speak(positiveTiers[tier][idx]);
-  }, [playClip, speak, soundsOff]);
+    return speak(tiers[tier][idx], { lang: getTtsLang() });
+  }, [playClip, playBucketClip, speak, soundsOff, locale, tiers]);
 
-  const playEncouragement = useCallback(() => {
-    if (soundsOff) return Promise.resolve();
-    const idx = pickAvoiding(ENCOURAGEMENT_COUNT, recentEncouragement.current);
-    if (audioAvailable.current && encouragementAudio.current[idx]) {
-      return playClip(encouragementAudio.current[idx]);
+  const playEncouragement = useCallback(async () => {
+    if (soundsOff) return;
+    const idx = pickAvoiding(encouragements.length, recentEncouragement.current);
+    if (locale === 'en') {
+      if (audioAvailable.current && encouragementAudio.current[idx]) {
+        return playClip(encouragementAudio.current[idx]);
+      }
+    } else if (await playBucketClip(`feedback/encouragement/${idx}`)) {
+      return;
     }
-    return speak(encouragement[idx]);
-  }, [playClip, speak, soundsOff]);
+    return speak(encouragements[idx], { lang: getTtsLang() });
+  }, [playClip, playBucketClip, speak, soundsOff, locale, encouragements]);
 
   return { playPositive, playEncouragement };
 };

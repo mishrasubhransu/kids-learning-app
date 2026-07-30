@@ -18,6 +18,7 @@ import {
   defaultEnabledLessons,
   ageFromBirthdate,
 } from '../../data/lessons';
+import { availableLocales } from '../../locales';
 import HoldGate from './HoldGate';
 import LessonTree from './LessonTree';
 import ProfileEditor from './ProfileEditor';
@@ -165,6 +166,13 @@ const ParentZone = () => {
     profiles.find((c) => c.id === selectedId) || activeChild || profiles[0];
   const settings = selected?.settings || {};
   const enabledLessons = settings.enabledLessons;
+  // Only clip-complete languages are offered; incomplete ones surface in dev
+  // builds for review, marked beta. One option = nothing to choose = no row.
+  const languageOptions = availableLocales(import.meta.env.DEV).map((l) => ({
+    value: l.id,
+    label: l.complete ? l.label : `${l.label} (beta)`,
+  }));
+  const language = settings.language || 'en';
 
   const patch = (p) => selected && patchChildSettings(selected.id, p);
 
@@ -346,11 +354,21 @@ const ParentZone = () => {
             <LessonTree
               enabled={enabledLessons || defaultEnabledLessons()}
               onChange={(next) => patch({ enabledLessons: next })}
+              locale={language}
             />
 
             {/* ---- Personalization ---- */}
             <SectionTitle>Personalization</SectionTitle>
             <div className="bg-white rounded-2xl border border-gray-100 px-4 divide-y divide-gray-100">
+              {languageOptions.length > 1 && (
+                <OptionRow
+                  label="Language"
+                  hint="Lessons, questions and praise in this language"
+                  options={languageOptions}
+                  value={language}
+                  onChange={(v) => patch({ language: v })}
+                />
+              )}
               <OptionRow
                 label="Use name in praise"
                 hint={`Sometimes cheer "Great job, ${selected.name === DEFAULT_CHILD_NAME ? '…' : selected.name}!"`}

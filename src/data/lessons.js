@@ -40,6 +40,23 @@ export const allLessonKeys = lessonTree.flatMap((l) => [
   ...(l.children ? l.children.map((c) => c.key) : []),
 ]);
 
+// Lessons that don't exist in a locale's curriculum (phonics teaches English
+// letter sounds; Chinese has no alphabet). Hiding a top-level key hides its
+// whole subtree. This is availability, not enablement — the parent's
+// enabledLessons map keeps its entries, so switching languages back restores
+// their choices untouched.
+const LOCALE_HIDDEN_LESSONS = {
+  es: ['phonics'],
+  zh: ['alphabets', 'phonics', 'typing'],
+};
+
+export const isLessonAvailable = (locale, key) => {
+  const hidden = LOCALE_HIDDEN_LESSONS[locale];
+  if (!hidden) return true;
+  const top = key.split('.')[0];
+  return !hidden.includes(top) && !hidden.includes(key);
+};
+
 export const defaultEnabledLessons = () =>
   Object.fromEntries(allLessonKeys.map((k) => [k, true]));
 

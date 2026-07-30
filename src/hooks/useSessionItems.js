@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import useChildSetting from './useChildSetting';
+import { voiceSlug } from '../lib/locale';
 
 // Caps how many items a lesson or test session shows, preferring the ones
 // the child did NOT see last session — so a capped category cycles fully
@@ -20,7 +21,11 @@ const parseShown = (raw) => {
   }
 };
 
-const itemKey = (item) => String(item.name ?? item.id);
+// Keyed by the locale-independent slug (English-derived), so a language
+// switch never resets a child's rotation. Pre-split state stored raw names
+// ("Ice Cream"); those keys just read as unseen once — a one-time reshuffle,
+// not data loss.
+const itemKey = (item) => item.slug ?? voiceSlug(String(item.name ?? item.id));
 
 const useSessionItems = (category, kind, items, cap, active = true) => {
   const storageKey = `${kind}Shown-${category}`;

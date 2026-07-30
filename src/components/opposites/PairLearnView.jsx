@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
 import { itemPart } from '../../lib/voiceKeys';
+import { localizedName } from '../../lib/locale';
+import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import ItemMedia from '../ui/ItemMedia';
@@ -42,6 +44,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const [step, setStep] = useState(0);
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useVoice();
+  const { t } = useLocale();
   const prevStepRef = useRef(null);
   const isCoolingDownRef = useRef(false);
   const cooldownTimerRef = useRef(null);
@@ -146,21 +149,21 @@ const PairLearnView = ({ items, holdIntro = false }) => {
           borderColor: isActive ? cardPole.accent : 'transparent',
           '--spotlight-color': cardPole.accent,
         }}
-        aria-label={isActive ? `${word}, say it again` : `Show ${word}`}
+        aria-label={isActive ? `${localizedName(word)}, say it again` : `Show ${localizedName(word)}`}
       >
         <ItemMedia
           item={(() => {
             const media = chosenMedia[`${currentItem.id}:${word}`];
             return typeof media === 'string' ? { image: media } : media;
           })()}
-          alt={word}
+          alt={localizedName(word)}
           className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
         />
         <span
           className="text-3xl md:text-5xl font-black tracking-wide uppercase transition-colors duration-300"
           style={{ color: isActive ? cardPole.accent : '#9CA3AF' }}
         >
-          {word}
+          {localizedName(word)}
         </span>
       </button>
     );
@@ -240,7 +243,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
       </div>
 
       <div className="absolute bottom-6 text-xs md:text-sm text-gray-400">
-        Press the right arrow to keep going
+        {t('pair.hint')}
       </div>
     </div>
   );

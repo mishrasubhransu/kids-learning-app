@@ -5,6 +5,7 @@ import { whichOnePart, thatWasPart, tryToFindPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
+import { useLocale } from '../../context/LocaleContext';
 import { track } from '../../lib/analytics';
 import ItemMedia from '../ui/ItemMedia';
 import SessionRecap from '../ui/SessionRecap';
@@ -22,6 +23,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
+  const { t } = useLocale();
   const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -90,7 +92,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Speak question for a specific answer (used after generating new question)
   const askQuestionFor = useCallback((answer) => {
     if (answer) {
-      speak(whichOnePart(answer.name));
+      speak(whichOnePart(answer));
     }
   }, [speak]);
 
@@ -119,7 +121,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Speak the question - uses current correctAnswer state
   const askQuestion = useCallback(() => {
     if (correctAnswer && !locked()) {
-      speak(whichOnePart(correctAnswer.name));
+      speak(whichOnePart(correctAnswer));
     }
   }, [correctAnswer, speak, locked]);
 
@@ -198,7 +200,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         track('answer', {
           category,
           mode: 'test',
-          item: correctAnswer.name,
+          item: correctAnswer.enName ?? correctAnswer.name,
           meta: { correct: true, difficulty },
         });
         await playPositive(newCount);
@@ -207,11 +209,11 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         track('answer', {
           category,
           mode: 'test',
-          item: correctAnswer.name,
-          meta: { correct: false, picked: item.name, difficulty },
+          item: correctAnswer.enName ?? correctAnswer.name,
+          meta: { correct: false, picked: item.enName ?? item.name, difficulty },
         });
         await playEncouragement();
-        await speak([thatWasPart(item.name), tryToFindPart(correctAnswer.name)]);
+        await speak([thatWasPart(item), tryToFindPart(correctAnswer)]);
       }
     }).then(() => {
       if (isRight) {
@@ -459,17 +461,17 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
           <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">
-            Test Complete!
+            {t('test.complete')}
           </h2>
           <p className="text-lg md:text-xl text-gray-500 mb-8">
-            You went through all {items.length} items. Great job!
+            {t('test.completeMsg', { count: items.length })}
           </p>
           <button
             onClick={handleRestart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start Again
+            {t('test.startAgain')}
           </button>
         </div>
       </div>
@@ -483,19 +485,19 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">
-            Ready to Test?
+            {t('test.ready')}
           </h2>
           <p className="text-lg text-gray-500 mb-8">
-            Click the button below to start. Listen to the question and click the correct answer!
+            {t('test.readyHint')}
           </p>
           <button
             onClick={handleStart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start Test
+            {t('test.start')}
           </button>
-          <p className="text-gray-400 text-sm mt-4">or press Space / Enter</p>
+          <p className="text-gray-400 text-sm mt-4">{t('test.orPress')}</p>
         </div>
       </div>
     );
@@ -507,11 +509,22 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     // (justify-center would clip the top of an overflowing flex column)
     <div className="flex-1 min-h-0 flex flex-col items-center overflow-y-auto p-4 md:p-8">
       <div className="my-auto w-full max-w-5xl flex flex-col items-center">
-        {/* Question prompt */}
+        {/* Question prompt — the template splits around {name} so the
+            answer word keeps its highlight in any word order */}
         <div className="mb-8 text-center">
           <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-4">
-            Which one is{' '}
-            <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>?
+            {(() => {
+              // Sentinel split keeps the answer word highlighted wherever
+              // the locale's word order puts it
+              const [before, after = ''] = t('test.whichOne', { name: '\u0000' }).split('\u0000');
+              return (
+                <>
+                  {before}
+                  <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>
+                  {after}
+                </>
+              );
+            })()}
           </h2>
           <div className="flex items-center gap-3 justify-center">
             <button
@@ -519,7 +532,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
               className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors"
             >
               <Volume2 size={20} />
-              Repeat question
+              {t('test.repeat')}
             </button>
           </div>
         </div>
@@ -536,14 +549,14 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           {isCorrect === true && <div className="text-4xl md:text-6xl">🎉</div>}
           {isCorrect === false && (
             <span className="text-xl text-orange-600 font-medium">
-              Try again! Find {correctAnswer?.name}
+              {t('test.tryAgain', { name: correctAnswer?.name })}
             </span>
           )}
         </div>
 
         {/* Instructions */}
         <div className="mt-2 text-gray-400 text-xs md:text-sm text-center">
-          Press 1–{Math.min(options.length, 9)} to answer | R to repeat the question
+          {t('test.keysHint', { max: Math.min(options.length, 9) })}
         </div>
       </div>
     </div>

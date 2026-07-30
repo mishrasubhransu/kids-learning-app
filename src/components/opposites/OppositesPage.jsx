@@ -13,16 +13,18 @@ import { itemPart, thatWasPart, oppositeOfPart, scenePart } from '../../lib/voic
 import shuffle from '../../utils/shuffle';
 import useChildSetting from '../../hooks/useChildSetting';
 import useSessionItems from '../../hooks/useSessionItems';
+import { useLocale } from '../../context/LocaleContext';
 
 const modes = [
-  { id: 'learn', label: 'Learn', icon: BookOpen },
-  { id: 'match', label: 'Match', icon: Puzzle },
-  { id: 'quiz', label: 'Quiz', icon: Gamepad2 },
+  { id: 'learn', labelKey: 'opposites.learn', icon: BookOpen },
+  { id: 'match', labelKey: 'opposites.match', icon: Puzzle },
+  { id: 'quiz', labelKey: 'opposites.quiz', icon: Gamepad2 },
 ];
 
 const OppositesPage = ({ backTo = '/home' }) => {
   const [mode, setMode] = useState('learn');
   const [difficulty, setDifficulty] = useState('easy');
+  const { locale, t } = useLocale();
 
   // Parent-configured session sizes with unseen-first rotation (same keys
   // as CategoryPage). The games already size their rounds by difficulty, so
@@ -75,17 +77,17 @@ const OppositesPage = ({ backTo = '/home' }) => {
     preloadVoiceClips(
       opposites.flatMap((pair) => [
         ...pair.pair.flatMap((w) => [itemPart(w), thatWasPart(w), oppositeOfPart(w)]),
-        ...pair.tests.map((t) => scenePart(t.question)),
+        ...pair.tests.map((test) => scenePart(test.question)),
       ])
     );
-  }, []);
+  }, [locale]);
 
   return (
     <div className="h-full relative">
       {introState !== 'done' && (
         <CategoryIntro
           categoryKey="opposites"
-          title="Opposites"
+          title={t('cat.opposites')}
           emoji="↔️"
           tiles={introTiles}
           onReveal={beginReveal}
@@ -109,7 +111,7 @@ const OppositesPage = ({ backTo = '/home' }) => {
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-4">
             <HomeButton to={backTo} />
-            <h1 className="text-2xl font-bold text-gray-800">Opposites</h1>
+            <h1 className="text-2xl font-bold text-gray-800">{t('cat.opposites')}</h1>
           </div>
 
           <div className="flex items-center gap-2">
@@ -127,7 +129,7 @@ const OppositesPage = ({ backTo = '/home' }) => {
                     }`}
                   >
                     <Icon size={16} />
-                    {m.label}
+                    {t(m.labelKey)}
                   </button>
                 );
               })}

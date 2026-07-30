@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { Gamepad2, BookOpen } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
 import { fixedLinePart } from '../../data/voiceLines';
+import { useLocale } from '../../context/LocaleContext';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 // Shown when Scroll-mode autoplay finishes, instead of dropping the child
@@ -9,6 +10,7 @@ import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 // app) accepts, so a toddler mashing forward still reaches the game.
 const GameInterstitial = ({ onPlay, onKeepLearning }) => {
   const { speak, cancel } = useVoice();
+  const { t } = useLocale();
   const playButtonRef = useRef(null);
 
   useEffect(() => {
@@ -37,7 +39,7 @@ const GameInterstitial = ({ onPlay, onKeepLearning }) => {
         🎉
       </div>
       <h2 className="text-3xl md:text-5xl font-bold text-gray-700 text-center">
-        Ready to play a game?
+        {t('interstitial.title')}
       </h2>
       <div className="flex flex-col sm:flex-row items-center gap-4">
         <button
@@ -46,18 +48,18 @@ const GameInterstitial = ({ onPlay, onKeepLearning }) => {
           className="flex items-center gap-3 px-10 py-5 rounded-2xl bg-purple-600 text-white text-2xl md:text-3xl font-bold shadow-lg hover:bg-purple-700 motion-safe:active:scale-95 transition-all"
         >
           <Gamepad2 size={32} />
-          Let's play!
+          {t('interstitial.play')}
         </button>
         <button
           onClick={onKeepLearning}
           className="flex items-center gap-2 px-6 py-4 rounded-2xl bg-white text-gray-600 text-lg md:text-xl font-medium shadow hover:bg-gray-50 motion-safe:active:scale-95 transition-all"
         >
           <BookOpen size={22} />
-          Keep learning
+          {t('interstitial.keep')}
         </button>
       </div>
       <div className="text-xs md:text-sm text-gray-400">
-        Press → to play | ← to keep learning
+        {t('interstitial.keysHint')}
       </div>
     </div>
   );

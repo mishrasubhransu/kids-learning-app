@@ -5,12 +5,14 @@ import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { objectIcons } from '../data/numbers';
 import { homeCategories } from '../data/categories';
-import { isLessonVisible, newLessonKeys } from '../data/lessons';
+import { isLessonVisible, isLessonAvailable, newLessonKeys } from '../data/lessons';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../context/ChildProfileContext';
+import { useLocale } from '../context/LocaleContext';
 import useChildSetting from '../hooks/useChildSetting';
 
 const Home = () => {
   const { activeChild } = useChildProfile();
+  const { locale, t } = useLocale();
   const enabledLessons = activeChild?.settings?.enabledLessons;
 
   const objectKeys = Object.keys(objectIcons);
@@ -26,8 +28,9 @@ const Home = () => {
     setNumberMax(numberMax === '10' ? '20' : '10');
   };
 
-  const visibleCategories = homeCategories.filter((cat) =>
-    isLessonVisible(enabledLessons, cat.id)
+  const visibleCategories = homeCategories.filter(
+    (cat) =>
+      isLessonAvailable(locale, cat.id) && isLessonVisible(enabledLessons, cat.id)
   );
 
   const greetName =
@@ -44,13 +47,9 @@ const Home = () => {
         ToddLearn
       </h1>
       <p className="text-lg md:text-xl text-gray-600 mb-8 md:mb-12 text-center">
-        {greetName ? (
-          <>
-            Hi {greetName}! 👋 What do you want to learn today?
-          </>
-        ) : (
-          'Choose what you want to learn today!'
-        )}
+        {greetName
+          ? t('home.greeting', { name: greetName })
+          : t('home.choose')}
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
@@ -84,7 +83,7 @@ const Home = () => {
                   {category.preview}
                 </span>
                 <span className="text-lg md:text-xl font-semibold">
-                  {category.name}
+                  {t(`cat.${category.id}`)}
                 </span>
                 {hasPill ? (
                   <span className="h-9" aria-hidden="true" />
@@ -92,7 +91,7 @@ const Home = () => {
                   <span
                     className={`text-sm hidden md:block ${darkText ? 'text-gray-900/80' : 'text-white/90'}`}
                   >
-                    {category.description}
+                    {t(`cat.${category.id}.desc`)}
                   </span>
                 ) : null}
               </Link>
@@ -125,14 +124,14 @@ const Home = () => {
 
       <div className="mt-8 md:mt-12 flex flex-col items-center gap-3">
         <span className="text-gray-500 text-sm">
-          Use arrow keys or tap to navigate
+          {t('home.navHint')}
         </span>
         <Link
           to="/parent"
           className="relative mt-1 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
         >
           <Settings size={16} />
-          Parents
+          {t('home.parents')}
           {hasNewLessons && (
             <span
               className="absolute -top-1 -right-3 w-2.5 h-2.5 rounded-full bg-amber-400"

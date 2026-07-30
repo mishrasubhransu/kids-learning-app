@@ -4,6 +4,7 @@ import { BrowserRouter } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider } from './context/AuthContext'
 import { ChildProfileProvider } from './context/ChildProfileContext'
+import { LocaleProvider } from './context/LocaleContext'
 import './index.css'
 import App from './App.jsx'
 
@@ -12,8 +13,10 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <AuthProvider>
         <ChildProfileProvider>
-          <App />
-          <Analytics />
+          <LocaleProvider>
+            <App />
+            <Analytics />
+          </LocaleProvider>
         </ChildProfileProvider>
       </AuthProvider>
     </BrowserRouter>

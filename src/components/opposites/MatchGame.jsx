@@ -8,6 +8,8 @@ import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
 import SessionRecap from '../ui/SessionRecap';
+import { localizedName } from '../../lib/locale';
+import { useLocale } from '../../context/LocaleContext';
 import { wordImages, pickRandom } from '../../data/opposites';
 
 function shuffle(arr) {
@@ -74,6 +76,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   // Completion payoff is the recap sticker moment; its spoken line replaces
   // the old "Great job! You found N opposites!" callout.
   const [showRecap, setShowRecap] = useState(false);
+  const { t } = useLocale();
   const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -240,17 +243,17 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           <div className="text-6xl md:text-8xl mb-4 motion-safe:animate-bounce" aria-hidden="true">🏆</div>
           <div className="text-3xl md:text-4xl mb-4 opposites-pop" aria-hidden="true">🎉 🎈 ⭐ 🎈 🎉</div>
           <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">
-            All Matched!
+            {t('opposites.allMatched')}
           </h2>
           <p className="text-lg md:text-xl text-gray-500 mb-8">
-            You found {rounds.length} opposites. Great job!
+            {t('opposites.matchedMsg', { count: rounds.length })}
           </p>
           <button
             onClick={handleRestart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Play Again
+            {t('opposites.playAgain')}
           </button>
         </div>
       </div>
@@ -263,19 +266,19 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">
-            Match the Opposites!
+            {t('opposites.matchTitle')}
           </h2>
           <p className="text-lg text-gray-500 mb-8">
-            Look at the picture, then find its opposite.
+            {t('opposites.matchHint')}
           </p>
           <button
             onClick={handleStart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start
+            {t('opposites.start')}
           </button>
-          <p className="text-gray-400 text-sm mt-4">or press Space / Enter</p>
+          <p className="text-gray-400 text-sm mt-4">{t('test.orPress')}</p>
         </div>
       </div>
     );
@@ -307,12 +310,12 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
         <div className="rounded-3xl bg-white shadow-xl border-8 border-orange-300 p-3 md:p-4 flex flex-col items-center gap-1">
           <img
             src={current.promptImage}
-            alt={current.promptWord}
+            alt={localizedName(current.promptWord)}
             className="w-[var(--img-prompt)] h-[var(--img-prompt)] object-contain rounded-xl"
             draggable={false}
           />
           <span className="text-2xl md:text-3xl font-black uppercase text-orange-500">
-            {current.promptWord}
+            {localizedName(current.promptWord)}
           </span>
         </div>
         <button
@@ -320,7 +323,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm md:text-base"
         >
           <Volume2 size={18} />
-          What is the opposite of {current.promptWord}?
+          {t('opposites.oppositeOf', { name: localizedName(current.promptWord) })}
         </button>
       </div>
 
@@ -335,12 +338,12 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           >
             <img
               src={choice.image}
-              alt={choice.word}
+              alt={localizedName(choice.word)}
               className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
             <span className="text-xl md:text-2xl font-bold text-gray-700">
-              {choice.word}
+              {localizedName(choice.word)}
             </span>
           </button>
         ))}
@@ -350,12 +353,12 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
       <div className="h-12 md:h-16 flex items-center justify-center mt-4">
         {isCorrect === true && <div className="text-4xl md:text-5xl">🎉</div>}
         {isCorrect === false && (
-          <span className="text-xl text-orange-600 font-medium">Try again!</span>
+          <span className="text-xl text-orange-600 font-medium">{t('opposites.tryAgain')}</span>
         )}
       </div>
 
       <div className="absolute bottom-3 text-gray-400 text-xs md:text-sm">
-        Press R to hear the question again
+        {t('opposites.repeatHint')}
       </div>
     </div>
   );

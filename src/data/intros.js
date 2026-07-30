@@ -7,6 +7,7 @@
 // (scripts/generate-intro-audio.mjs → public/audio/intros/<key>/<i>.mp3);
 // stripAudioTags() removes them for on-screen text and the TTS fallback.
 // Keys match CategoryPage keys (concepts-<id>, opposites).
+import { getPack } from '../lib/locale';
 
 export const intros = {
   'concepts-animals': [
@@ -121,8 +122,16 @@ export const intros = {
   ],
 };
 
-export const introLines = (categoryKey, title) =>
-  intros[categoryKey] || [`Let's learn about ${title}!`];
+// The active locale pack overrides line-for-line (same keys, same line
+// count, so clip indexes stay aligned with the English ones).
+export const introLines = (categoryKey, title) => {
+  const pack = getPack();
+  return (
+    pack?.intros?.[categoryKey] ||
+    intros[categoryKey] ||
+    [pack?.intros?.generic?.replace('{title}', title) || `Let's learn about ${title}!`]
+  );
+};
 
 export const stripAudioTags = (text) =>
   text.replace(/\[[^\]]*\]\s*/g, '').trim();

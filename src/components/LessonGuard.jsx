@@ -1,6 +1,6 @@
 import { Navigate, useParams } from 'react-router-dom';
 import { useChildProfile } from '../context/ChildProfileContext';
-import { isLessonEnabled } from '../data/lessons';
+import { isLessonEnabled, isLessonAvailable } from '../data/lessons';
 
 // Blocks direct URLs to lessons the active child has disabled — the menus
 // already hide them, this covers bookmarks and typed URLs. Waits for the
@@ -29,7 +29,11 @@ const LessonGuard = ({ lesson, prefix, param, children }) => {
     );
   }
 
-  if (!isLessonEnabled(activeChild?.settings?.enabledLessons, key)) {
+  const language = activeChild?.settings?.language || 'en';
+  if (
+    !isLessonAvailable(language, key) ||
+    !isLessonEnabled(activeChild?.settings?.enabledLessons, key)
+  ) {
     return <Navigate to="/home" replace />;
   }
 

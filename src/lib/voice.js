@@ -1,10 +1,12 @@
 import { supabase } from './supabase';
 import manifest from '../data/voiceManifest.json';
+import { getActiveLocale } from './locale';
 
-// Pre-generated ElevenLabs voice clips, stored in the public "voice" bucket
-// at <locale>/<key>.mp3 (keys built in lib/voiceKeys.js). The manifest ships
-// with the app bundle — the clip set is derived from the same source data,
-// so it versions with the code and needs no per-load meta fetch.
+// Pre-generated voice clips (ElevenLabs for en, Gemini TTS for the other
+// locales), stored in the public "voice" bucket at <locale>/<key>.mp3 (keys
+// built in lib/voiceKeys.js). The manifest ships with the app bundle — the
+// clip set is derived from the same source data, so it versions with the
+// code and needs no per-load meta fetch.
 //
 // Playback is cache-first (Cache Storage API), same pattern as
 // lib/recordings.js: the fetch URL carries the clip's generation stamp, so
@@ -12,12 +14,11 @@ import manifest from '../data/voiceManifest.json';
 
 const BUCKET = 'voice';
 const CACHE_NAME = 'voice-v1';
-const LOCALE = 'en';
 
 const clips = manifest.clips || {};
 const objectUrls = new Map();
 
-const entryFor = (key) => clips[`${LOCALE}/${key}`];
+const entryFor = (key) => clips[`${getActiveLocale()}/${key}`];
 
 export const hasVoiceClip = (key) => Boolean(entryFor(key));
 
@@ -31,7 +32,7 @@ const cacheUrl = (fullKey, entry) => `${publicUrl(`${fullKey}.mp3`)}?v=${entry.v
 export async function getVoiceClipUrl(key) {
   const entry = entryFor(key);
   if (!entry) return null;
-  const fullKey = `${LOCALE}/${key}`;
+  const fullKey = `${getActiveLocale()}/${key}`;
   const urlKey = `${fullKey}@${entry.v}`;
   if (objectUrls.has(urlKey)) return objectUrls.get(urlKey);
   try {

@@ -8,6 +8,8 @@ import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import { track } from '../../lib/analytics';
 import SessionRecap from '../ui/SessionRecap';
+import { localizedName, sceneQuestionText } from '../../lib/locale';
+import { useLocale } from '../../context/LocaleContext';
 import { wordImages, pickPairExamples } from '../../data/opposites';
 
 const SceneQuiz = ({ items, difficulty }) => {
@@ -19,6 +21,7 @@ const SceneQuiz = ({ items, difficulty }) => {
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
+  const { t } = useLocale();
   const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
@@ -208,16 +211,16 @@ const SceneQuiz = ({ items, difficulty }) => {
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">Quiz Complete!</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-4">{t('opposites.quizComplete')}</h2>
           <p className="text-lg md:text-xl text-gray-500 mb-8">
-            You answered {questions.length} questions. Great job!
+            {t('opposites.quizMsg', { count: questions.length })}
           </p>
           <button
             onClick={handleRestart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start Again
+            {t('test.startAgain')}
           </button>
         </div>
       </div>
@@ -229,18 +232,18 @@ const SceneQuiz = ({ items, difficulty }) => {
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-4 md:p-8">
         <div className="text-center">
-          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">Ready for the Quiz?</h2>
+          <h2 className="text-3xl md:text-5xl font-bold text-gray-700 mb-6">{t('opposites.quizReady')}</h2>
           <p className="text-lg text-gray-500 mb-8">
-            Look at the picture, listen, and tap the right answer!
+            {t('opposites.quizHint')}
           </p>
           <button
             onClick={handleStart}
             className="inline-flex items-center gap-3 px-8 py-4 bg-blue-500 text-white rounded-xl font-semibold text-xl hover:bg-blue-600 transition-colors shadow-lg"
           >
             <Play size={28} />
-            Start Quiz
+            {t('opposites.startQuiz')}
           </button>
-          <p className="text-gray-400 text-sm mt-4">or press Space / Enter</p>
+          <p className="text-gray-400 text-sm mt-4">{t('test.orPress')}</p>
         </div>
       </div>
     );
@@ -275,14 +278,14 @@ const SceneQuiz = ({ items, difficulty }) => {
       {/* Question */}
       <div className="mb-4 text-center">
         <h2 className="text-2xl md:text-4xl font-bold text-gray-700 mb-3">
-          {current.question}
+          {sceneQuestionText(current.question)}
         </h2>
         <button
           onClick={askQuestion}
           className="inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm md:text-base"
         >
           <Volume2 size={18} />
-          Repeat question
+          {t('test.repeat')}
         </button>
       </div>
 
@@ -297,11 +300,11 @@ const SceneQuiz = ({ items, difficulty }) => {
           >
             <img
               src={current.images[word]}
-              alt={word}
+              alt={localizedName(word)}
               className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
-            <span className="text-xl md:text-3xl font-bold text-gray-700">{word}</span>
+            <span className="text-xl md:text-3xl font-bold text-gray-700">{localizedName(word)}</span>
           </button>
         ))}
       </div>
@@ -310,12 +313,12 @@ const SceneQuiz = ({ items, difficulty }) => {
       <div className="h-12 md:h-14 flex items-center justify-center mt-3">
         {isCorrect === true && <div className="text-4xl md:text-5xl">🎉</div>}
         {isCorrect === false && (
-          <span className="text-xl text-orange-600 font-medium">Try again!</span>
+          <span className="text-xl text-orange-600 font-medium">{t('opposites.tryAgain')}</span>
         )}
       </div>
 
       <div className="absolute bottom-3 text-gray-400 text-xs md:text-sm">
-        Press R to repeat the question
+        {t('opposites.repeatHint')}
       </div>
     </div>
   );

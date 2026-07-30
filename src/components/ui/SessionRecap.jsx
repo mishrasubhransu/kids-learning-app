@@ -3,6 +3,7 @@ import useVoice from '../../hooks/useVoice';
 import useChildSetting from '../../hooks/useChildSetting';
 import { appendSticker, pickSticker, pickRecapLine } from '../../lib/stickers';
 import { fixedLinePart } from '../../data/voiceLines';
+import { useLocale } from '../../context/LocaleContext';
 import { track } from '../../lib/analytics';
 
 // End-of-session payoff, the lesson intro in reverse: where CategoryIntro's
@@ -70,6 +71,7 @@ const renderTile = (tile) => {
 
 const SessionRecap = ({ category, mode, tiles, onDone }) => {
   const { speak, cancel } = useVoice();
+  const { t } = useLocale();
   const [stickersRaw, setStickersRaw] = useChildSetting('stickers', null);
   const reduceMotion = useMemo(
     () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
@@ -169,10 +171,10 @@ const SessionRecap = ({ category, mode, tiles, onDone }) => {
           {sticker}
         </span>
         <span className="text-2xl md:text-4xl font-bold text-gray-800 text-center max-w-2xl leading-snug">
-          You earned a sticker!
+          {t('recap.sticker')}
         </span>
         <span className="text-sm md:text-base text-gray-500">
-          Tap anywhere to keep playing
+          {t('recap.tapHint')}
         </span>
       </span>
     </button>

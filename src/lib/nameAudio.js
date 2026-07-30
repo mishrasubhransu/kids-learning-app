@@ -84,7 +84,9 @@ export const loadPraiseClips = (path) => {
         tiers[tier] = files.map((f) => nameAudioUrl(folder + f));
       });
       pruneStaleEntries(path);
-      return { name: manifest.name, tiers };
+      // locale was stamped from the child's language at generation time;
+      // manifests older than the field are English
+      return { name: manifest.name, locale: manifest.locale ?? 'en', tiers };
     };
     manifests.set(
       path,

@@ -3,6 +3,7 @@ import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
 import SessionRecap from './ui/SessionRecap';
 import useVoice from '../hooks/useVoice';
+import { useLocale } from '../context/LocaleContext';
 import { itemPart, thatWasPart, tryToFindPart, typeLetterPart } from '../lib/voiceKeys';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 import useAudioLock from '../hooks/useAudioLock';
@@ -64,6 +65,7 @@ const TypingMode = () => {
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [mode, setMode] = useState('read'); // 'read' | 'music' | 'test'
   const { speak, cancel } = useVoice();
+  const { t } = useLocale();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const audioCtxRef = useRef(null);
@@ -252,16 +254,16 @@ const TypingMode = () => {
       return (
         <div className="text-center">
           <div className="text-6xl md:text-8xl mb-6">🏆</div>
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">Test Complete!</h2>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-4">{t('test.complete')}</h2>
           <p className="text-xl text-white/70 mb-8">
-            You typed all {allLetters.length} letters. Great job!
+            {t('typing.completeMsg', { count: allLetters.length })}
           </p>
           <button
             onClick={startTest}
             className="inline-flex items-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-xl font-semibold text-xl transition-colors"
           >
             <Play size={28} />
-            Start Again
+            {t('test.startAgain')}
           </button>
         </div>
       );
@@ -271,16 +273,16 @@ const TypingMode = () => {
       // Start screen
       return (
         <div className="text-center">
-          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">Typing Test</h2>
-          <p className="text-xl text-white/70 mb-8">Tap or type the letter shown on screen!</p>
+          <h2 className="text-4xl md:text-6xl font-bold text-white mb-6">{t('typing.testTitle')}</h2>
+          <p className="text-xl text-white/70 mb-8">{t('typing.testHint')}</p>
           <div className="flex justify-center mb-8">
             <select
               value={testOrder}
               onChange={(e) => setTestOrder(e.target.value)}
               className="bg-white/20 text-white rounded-lg px-4 py-2 text-sm cursor-pointer border border-white/20 focus-visible:outline-white/70"
             >
-              <option value="random" className="text-gray-800">Random</option>
-              <option value="sequential" className="text-gray-800">A to Z</option>
+              <option value="random" className="text-gray-800">{t('typing.random')}</option>
+              <option value="sequential" className="text-gray-800">{t('typing.atoz')}</option>
             </select>
           </div>
           <button
@@ -288,7 +290,7 @@ const TypingMode = () => {
             className="inline-flex items-center gap-3 px-8 py-4 bg-white/20 hover:bg-white/30 text-white rounded-xl font-semibold text-xl transition-colors"
           >
             <Play size={28} />
-            Start Test
+            {t('test.start')}
           </button>
         </div>
       );
@@ -297,7 +299,7 @@ const TypingMode = () => {
     // Active test
     return (
       <div className="flex flex-col items-center gap-4">
-        <p className="text-2xl text-white/60">Tap or type this letter:</p>
+        <p className="text-2xl text-white/60">{t('typing.tapType')}</p>
         <div className="text-white font-bold select-none" style={{
           fontSize: 'min(20vw, 28vh)',
           textShadow: '4px 4px 10px rgba(0,0,0,0.3)',
@@ -309,9 +311,9 @@ const TypingMode = () => {
           <div className="text-4xl md:text-6xl">🎉</div>
         )}
         {testResult === 'wrong' && (
-          <div className="text-2xl text-white/80 font-medium">Try again!</div>
+          <div className="text-2xl text-white/80 font-medium">{t('opposites.tryAgain')}</div>
         )}
-        <div className="text-white/50 text-lg">Score: {testCorrectCount}</div>
+        <div className="text-white/50 text-lg">{t('typing.score', { count: testCorrectCount })}</div>
       </div>
     );
   };
@@ -345,7 +347,7 @@ const TypingMode = () => {
           }`}
         >
           <Volume2 size={18} />
-          <span className="hidden md:inline">Read</span>
+          <span className="hidden md:inline">{t('typing.read')}</span>
         </button>
         <button
           onClick={() => { initAudio(); setMode('music'); }}
@@ -356,7 +358,7 @@ const TypingMode = () => {
           }`}
         >
           <Music size={18} />
-          <span className="hidden md:inline">Music</span>
+          <span className="hidden md:inline">{t('typing.music')}</span>
         </button>
         <button
           onClick={() => setMode('test')}
@@ -367,7 +369,7 @@ const TypingMode = () => {
           }`}
         >
           <Gamepad2 size={18} />
-          <span className="hidden md:inline">Test</span>
+          <span className="hidden md:inline">{t('mode.test')}</span>
         </button>
       </div>
 
@@ -389,10 +391,10 @@ const TypingMode = () => {
             {/* Instructions */}
             <div className="text-white/50 text-base md:text-xl text-center px-4">
               {mode === 'music'
-                ? 'Tap or type A-Z to play Twinkle Twinkle Little Star!'
+                ? t('typing.musicHint')
                 : currentLetter
-                  ? 'Keep going! Each letter will be spoken.'
-                  : 'Tap or type any letter or number!'
+                  ? t('typing.keepGoing')
+                  : t('typing.tapAny')
               }
             </div>
           </>

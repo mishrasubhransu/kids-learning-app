@@ -1,12 +1,15 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Check, Minus } from 'lucide-react';
-import { lessonTree } from '../../data/lessons';
+import { lessonTree, isLessonAvailable } from '../../data/lessons';
 
 // Two-level checkbox tree over the lesson registry. Tri-state parents:
 // full check when every child is on, dash when only some are. Sub states
 // are preserved when a category is toggled off, so re-enabling restores
 // exactly what was on before. Keys the profile has never seen (added to
 // the app after profile creation) get a "New" badge.
+//
+// `locale` hides lessons that don't exist in the child's language (phonics
+// for Spanish) — hidden, not disabled, because there is nothing to decide.
 
 const CheckBox = ({ state, onClick, label }) => (
   <button
@@ -31,8 +34,11 @@ const NewBadge = () => (
   </span>
 );
 
-const LessonTree = ({ enabled, onChange }) => {
+const LessonTree = ({ enabled, onChange, locale = 'en' }) => {
   const [open, setOpen] = useState({});
+  const visibleTree = lessonTree.filter((node) =>
+    isLessonAvailable(locale, node.key)
+  );
 
   const toggleTop = (node) => {
     const turningOn = !enabled[node.key];
@@ -60,7 +66,7 @@ const LessonTree = ({ enabled, onChange }) => {
 
   return (
     <div className="flex flex-col gap-1">
-      {lessonTree.map((node) => {
+      {visibleTree.map((node) => {
         const topOn = Boolean(enabled[node.key]);
         let state = 'off';
         if (topOn && !node.children) {

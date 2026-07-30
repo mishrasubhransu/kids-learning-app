@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
+import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ItemMedia from '../ui/ItemMedia';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
@@ -39,6 +40,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
   // browser TTS as the last resort (2-letter syllables stay TTS by design)
   const { speakItem } = useVoice(recordingCategoryFor(category));
+  const { t } = useLocale();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
   const isCoolingDownRef = useRef(false);
@@ -57,7 +59,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
 
   const speakCurrent = useCallback((options) => {
     if (currentItem) {
-      speakItem(currentItem.name, options);
+      speakItem(currentItem, options);
     }
   }, [currentItem, speakItem]);
 
@@ -105,7 +107,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     let fallbackTimer;
     let cancelled = false;
 
-    const ended = speakItem(currentItem.name);
+    const ended = speakItem(currentItem);
     if (category === 'alphabets') {
       setBgColor((c) => nextBgColor(bgColors, c));
     }
@@ -441,10 +443,10 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
 
       <div className={`absolute bottom-6 text-xs md:text-sm ${isAlphabets ? 'text-white/40' : 'text-gray-400'}`}>
         {isAutoplay
-          ? `Autoplay: ${currentIndex + 1} / ${displayItems.length}`
+          ? `${t('scroll.autoplay')}: ${currentIndex + 1} / ${displayItems.length}`
           : isRevealCategory && !revealed
-            ? 'Press → to see the picture!'
-            : 'Click the letter or use Arrow Keys | Space to hear'}
+            ? t('scroll.revealHint')
+            : t('scroll.hint')}
       </div>
     </div>
   );

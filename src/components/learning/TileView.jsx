@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
+import { useLocale } from '../../context/LocaleContext';
 import ItemMedia from '../ui/ItemMedia';
 
 const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
@@ -8,12 +9,13 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
   // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
   // browser TTS as the last resort
   const { speakItem } = useVoice(recordingCategoryFor(category));
+  const { t } = useLocale();
 
   const handleClick = (item) => {
     setActiveId(item.id);
     // Small delay to ensure click event completes before speech
     setTimeout(() => {
-      speakItem(item.name);
+      speakItem(item);
     }, 50);
     // Reset animation after 400ms
     setTimeout(() => setActiveId(null), 400);
@@ -168,7 +170,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
       </div>
 
       <div className="text-center mt-8 text-gray-400 text-sm">
-        Click any item to hear its name
+        {t('tile.hint')}
       </div>
     </div>
   );

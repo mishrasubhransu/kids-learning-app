@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { ADMIN_EMAIL, hasRecording, getRecordingObjectUrl } from '../lib/recordings';
 import { hasVoiceClip, getVoiceClipUrl } from '../lib/voice';
 import { itemPart } from '../lib/voiceKeys';
+import { getTtsLang } from '../lib/locale';
 import { track } from '../lib/analytics';
 
 // Speaks pre-generated voice clips with browser TTS as the fallback.
@@ -63,7 +64,7 @@ const useVoice = (recordingCategory = null) => {
       const ttsRemaining = (fromIndex) => {
         if (tokenRef.current !== token) return Promise.resolve();
         const text = parts.slice(fromIndex).map((p) => p.text).join(' ');
-        return tts(text, options);
+        return tts(text, { lang: getTtsLang(), ...options });
       };
 
       return (async () => {
@@ -102,10 +103,15 @@ const useVoice = (recordingCategory = null) => {
     [category, tts, cancelTts, playUrl]
   );
 
-  // Item names: recording → items/<slug> clip → TTS. Recordings are keyed
-  // by the raw name, clips by its slug.
+  // Item names: recording → items/<slug> clip → TTS. Takes a localized item
+  // or a canonical-English string. Recordings are keyed by the raw ENGLISH
+  // name (the admin recorded against English data), clips by its slug.
   const speakItem = useCallback(
-    (name, options) => speak(itemPart(name), { ...options, recordingName: name }),
+    (item, options) => {
+      const recName =
+        typeof item === 'string' ? item : (item.enName ?? item.name);
+      return speak(itemPart(item), { ...options, recordingName: recName });
+    },
     [speak]
   );
 

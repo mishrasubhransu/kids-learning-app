@@ -66,23 +66,26 @@ export const useSpeech = () => {
     utterance.rate = options.rate ?? 0.9; // Slower for kids
     utterance.pitch = options.pitch ?? 1.1; // Cheerful pitch
     utterance.volume = options.volume ?? 1;
-    utterance.lang = options.lang ?? 'en-US';
+    const lang = options.lang ?? 'en-US';
+    utterance.lang = lang;
 
-    // Try to use the user-selected voice, or fall back to auto-select
+    // The user-selected voice only applies when it can actually speak the
+    // requested language (a stored English voice mangling Spanish is worse
+    // than the browser's default); otherwise auto-pick by language prefix,
+    // preferring on-device voices.
     const voices = window.speechSynthesis.getVoices();
     const storedURI = localStorage.getItem(VOICE_STORAGE_KEY);
+    const langPrefix = lang.slice(0, 2);
+    const stored = storedURI && voices.find((v) => v.voiceURI === storedURI);
 
-    if (storedURI) {
-      const preferred = voices.find((v) => v.voiceURI === storedURI);
-      if (preferred) {
-        utterance.voice = preferred;
-      }
+    if (stored && stored.lang.startsWith(langPrefix)) {
+      utterance.voice = stored;
     } else {
-      const englishVoice = voices.find(
-        (v) => v.lang.startsWith('en') && v.localService
-      );
-      if (englishVoice) {
-        utterance.voice = englishVoice;
+      const match =
+        voices.find((v) => v.lang.startsWith(langPrefix) && v.localService) ||
+        voices.find((v) => v.lang.startsWith(langPrefix));
+      if (match) {
+        utterance.voice = match;
       }
     }
 

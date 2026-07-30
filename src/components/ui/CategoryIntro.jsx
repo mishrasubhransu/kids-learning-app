@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSpeech from '../../hooks/useSpeech';
 import { pickIntro, stripAudioTags } from '../../data/intros';
+import { getActiveLocale, getTtsLang } from '../../lib/locale';
+import { getVoiceClipUrl } from '../../lib/voice';
 
 // Full-screen intro shown when a lesson opens: a collage of the lesson's own
 // assets while a pre-generated clip says the intro line ("Let's learn about
@@ -34,7 +36,12 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
     const timers = [];
     const after = (ms, fn) => timers.push(setTimeout(fn, ms));
     const lineEnded = () => after(500, finish);
-    const clip = new Audio(`/audio/intros/${categoryKey}/${line.index}.mp3`);
+    // English intro clips ship as static files; other locales keep theirs in
+    // the voice bucket (intros/<key>/<i>, cache-first) — the URL resolves
+    // async, so the clip starts silent-src and gets its source when known.
+    const locale = getActiveLocale();
+    const clip = new Audio();
+    let cancelled = false;
     // Clip missing (not generated yet) or blocked: same line via TTS. Both
     // the element's error event and a rejected play() can report the same
     // failure — speak only once.
@@ -43,14 +50,28 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
         return;
       }
       spokeFallback.current = true;
-      speak(stripAudioTags(line.text)).then(lineEnded);
+      speak(stripAudioTags(line.text), { lang: getTtsLang() }).then(lineEnded);
     };
     audioRef.current = clip;
     clip.onended = lineEnded;
     clip.onerror = speakFallback;
-    clip.play().catch(speakFallback);
+    if (locale === 'en') {
+      clip.src = `/audio/intros/${categoryKey}/${line.index}.mp3`;
+      clip.play().catch(speakFallback);
+    } else {
+      getVoiceClipUrl(`intros/${categoryKey}/${line.index}`).then((url) => {
+        if (cancelled) return;
+        if (!url) {
+          speakFallback();
+          return;
+        }
+        clip.src = url;
+        clip.play().catch(speakFallback);
+      });
+    }
     after(8000, finish); // whatever happens, never hold the lesson hostage
     return () => {
+      cancelled = true;
       timers.forEach(clearTimeout);
       clip.pause();
     };

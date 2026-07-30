@@ -13,6 +13,8 @@ import CategoryIntro from './ui/CategoryIntro';
 import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
 import { preloadVoiceClips } from '../lib/voice';
 import { itemQuizParts } from '../lib/voiceKeys';
+import { localizeItems } from '../lib/locale';
+import { useLocale } from '../context/LocaleContext';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
 import useSessionItems from '../hooks/useSessionItems';
@@ -48,6 +50,7 @@ phonicsFamilies.forEach((family) => {
 
 const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const { user } = useAuth();
+  const { locale, t } = useLocale();
   // Recorded clips only play for the admin account (regional pronunciation
   // varies), so don't warm the audio cache for anyone else
   const isAdmin = user?.email === ADMIN_EMAIL;
@@ -91,11 +94,12 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
 
   // Items may list several interchangeable photos (item.images, e.g. the
   // nature lesson); pick one at random per visit so repeat visits vary but
-  // the picture never swaps mid-session
+  // the picture never swaps mid-session. Localization adds slug/enName and
+  // swaps display names for the active language.
   const resolvedItems = useMemo(() => {
     const categoryItems = categoryData[category]?.items;
-    return categoryItems ? pickItemVariants(categoryItems) : null;
-  }, [category]);
+    return categoryItems ? localizeItems(pickItemVariants(categoryItems)) : null;
+  }, [category, locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Numbers honor the per-child counting range before any session capping
   const sizedItems = useMemo(() => {
@@ -164,11 +168,10 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Warm the voice-clip cache for everything this category can say (item
   // names + quiz sentences); keys without clips filter out for free
   useEffect(() => {
-    const categoryItems = categoryData[category]?.items;
-    if (categoryItems) {
-      preloadVoiceClips(categoryItems.flatMap((i) => itemQuizParts(i.name)));
+    if (resolvedItems) {
+      preloadVoiceClips(resolvedItems.flatMap((i) => itemQuizParts(i)));
     }
-  }, [category]);
+  }, [resolvedItems]);
 
   // Warm the audio cache when a category with parent recordings opens, so
   // playback never waits on the network mid-session
@@ -177,6 +180,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     const recordingCategory = recordingCategoryFor(category);
     const categoryItems = categoryData[category]?.items;
     if (!recordingCategory || !categoryItems) return;
+    // Recordings are keyed by the raw English name (see useVoice.speakItem)
     syncRecordings().then(() =>
       preloadRecordings(recordingCategory, categoryItems.map((i) => i.name))
     );
@@ -188,14 +192,18 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
       <div className="h-full bg-gradient-to-br from-indigo-100 via-purple-50 to-pink-100 flex flex-col items-center justify-center gap-6 p-4">
         <div className="text-6xl" aria-hidden="true">🤔</div>
         <h1 className="text-2xl md:text-3xl font-bold text-gray-700 text-center">
-          Hmm, we can't find that lesson
+          {t('lesson.notFound')}
         </h1>
         <HomeButton to={backTo} />
       </div>
     );
   }
 
-  const { title, objectIcons: icons } = data;
+  const { objectIcons: icons } = data;
+  // 'concepts-animals' → 'cat.concepts.animals'; keys the string table
+  // doesn't know (phonics families — English-only) keep their data title
+  const titleKey = `cat.${category.replace('-', '.')}`;
+  const title = t(titleKey) === titleKey ? data.title : t(titleKey);
 
   return (
     <div className="h-full relative">
@@ -253,7 +261,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
                 }`}
               >
                 <BookOpen size={16} />
-                Scroll
+                {t('mode.scroll')}
               </button>
               <button
                 onClick={() => selectMode('tile')}
@@ -276,7 +284,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
                     d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
                   />
                 </svg>
-                Tiles
+                {t('mode.tiles')}
               </button>
               {(category === 'alphabets' || category === 'numbers') && (
                 <button
@@ -288,7 +296,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
                   }`}
                 >
                   <Pencil size={16} />
-                  Trace
+                  {t('mode.trace')}
                 </button>
               )}
               <button
@@ -300,7 +308,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
                 }`}
               >
                 <Gamepad2 size={16} />
-                Test
+                {t('mode.test')}
               </button>
             </div>
 

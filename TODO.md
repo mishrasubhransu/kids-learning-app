@@ -27,3 +27,14 @@ Use the established image pipeline (Gemini per billing constraint, genlab.record
 
 ## 5. [x] Recap sticker (end-of-session payoff)
 When a quiz/category session finishes, show a recap moment — reuse the `CategoryIntro.jsx` collage/circle-reveal machinery in reverse (collage of what the child just saw) — and award a sticker that persists per child (sticker shelf, toddler-appropriate progress).
+
+## 6. [ ] Multi-language: Spanish, then Mandarin Chinese
+Per-child `language` setting (Parent Zone → Personalization, via `useChildSetting`; siblings can differ). English stays on the shipped ElevenLabs clips; new locales use **Gemini TTS, voice Autonoe** (`gemini-2.5-flash-preview-tts`, Laura-style prompt, inline [gasps] tags work; ~$1/language, PCM→ffmpeg→mp3, needs retry + text-hash resume like the EL script).
+Build order — each step shippable, locale stays dark until clips are complete:
+- [x] Locale plumbing: `language` setting + LocaleContext/`t()` + Parent Zone picker (only lists complete locales; incomplete ones show as "(beta)" in dev builds)
+- [x] Slug/name split: rotation (`lessonShown-*`/`testShown-*`) and analytics key on English-derived slugs/enName; voice-part builders take localized items; recordings stay keyed by raw English names (images keep English filenames — assets are language-neutral)
+- [x] `src/locales/es/` pack: items (~430 incl. articles/say-forms), UI strings, voice-part sentence templates, intros, praise/encouragement, scene questions — AI-first, **pending native review** (regional picks flagged in `src/locales/es/items.js` header: fish/jacket/ladybug/peas/speaker/tope/café)
+- [x] Per-locale lesson availability in the registry: es hides phonics (incl. letter-sounds); zh will also hide alphabets + typing
+- [ ] Generate `es/` clips: script READY + smoke-tested (`node --import ./scripts/register-jsx.mjs scripts/generate-voice-clips-gemini.mjs --locale es` — 1,844 clips, ~35k chars ≈ $1; resume-safe). Run after native review, then flip `complete: true` in `src/locales/index.js` to ship. Then repeat pack+generation for zh.
+- [ ] Per-locale praise templates in `api/generate-name-audio.js` (stamp `locale` in the praise manifest — client already ignores wrong-language manifests and falls back to stock clips)
+Full context & open decisions: session memory `toddlearn-i18n-plan`.
