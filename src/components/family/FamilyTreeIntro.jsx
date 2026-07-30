@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useCallback } from 'react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { fixedLinePart } from '../../data/voiceLines';
 import { relationByValue } from '../../data/relations';
 import { familyPhotoUrl } from '../../lib/familyPhotos';
 
@@ -30,7 +31,7 @@ const TreeNode = ({ photoUrl, emoji, name, highlight = false }) => (
 );
 
 const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const doneRef = useRef(false);
 
   const finish = useCallback(() => {
@@ -67,7 +68,7 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      if (!doneRef.current) speak('This is my family!');
+      if (!doneRef.current) speak(fixedLinePart('this-is-my-family'));
     }, 300);
     return () => clearTimeout(timer);
   }, [speak]);

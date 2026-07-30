@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { thatWasPart, oppositeOfPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
@@ -73,7 +74,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   // Completion payoff is the recap sticker moment; its spoken line replaces
   // the old "Great job! You found N opposites!" callout.
   const [showRecap, setShowRecap] = useState(false);
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const advanceTimerRef = useRef(null);
@@ -111,7 +112,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   }, [rounds, currentIdx]);
 
   const askRound = useCallback((round) => {
-    if (round && !locked()) speak(`What is the opposite of ${round.promptWord}?`);
+    if (round && !locked()) speak(oppositeOfPart(round.promptWord));
   }, [speak, locked]);
 
   const handleStart = () => {
@@ -178,9 +179,11 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
         item: current.answerWord,
         meta: { correct: false, picked: word, difficulty },
       });
+      // Name what they picked, then re-ask — built from the two per-word
+      // clip groups instead of a clip per (picked, prompt) pairing
       withLock(() =>
         playEncouragement().then(() =>
-          speak(`${word} is not the opposite of ${current.promptWord}. Try again!`)
+          speak([thatWasPart(word), oppositeOfPart(current.promptWord)])
         )
       ).then(() => {
         // Reset only after the spoken correction ends, so the moment taps

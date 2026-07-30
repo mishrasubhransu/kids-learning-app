@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
 import useChildSetting from '../../hooks/useChildSetting';
 import { appendSticker, pickSticker, pickRecapLine } from '../../lib/stickers';
+import { fixedLinePart } from '../../data/voiceLines';
 import { track } from '../../lib/analytics';
 
 // End-of-session payoff, the lesson intro in reverse: where CategoryIntro's
@@ -68,7 +69,7 @@ const renderTile = (tile) => {
 };
 
 const SessionRecap = ({ category, mode, tiles, onDone }) => {
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const [stickersRaw, setStickersRaw] = useChildSetting('stickers', null);
   const reduceMotion = useMemo(
     () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
@@ -76,7 +77,7 @@ const SessionRecap = ({ category, mode, tiles, onDone }) => {
   );
   const [revealed, setRevealed] = useState(reduceMotion);
   const [sticker] = useState(pickSticker);
-  const [line] = useState(pickRecapLine);
+  const [line] = useState(() => fixedLinePart(pickRecapLine()));
   const awardedRef = useRef(false);
   const doneRef = useRef(false);
 
@@ -143,7 +144,7 @@ const SessionRecap = ({ category, mode, tiles, onDone }) => {
     <button
       type="button"
       onClick={finish}
-      aria-label={`${line} Tap to continue`}
+      aria-label={`${line.text} Tap to continue`}
       className="fixed inset-0 z-50 w-full h-full bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 flex flex-col items-center justify-center gap-5 md:gap-8 p-6 overflow-hidden cursor-pointer"
       style={{
         clipPath: revealed ? 'circle(75% at 50% 50%)' : 'circle(0% at 50% 50%)',

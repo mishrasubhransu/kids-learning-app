@@ -11,6 +11,8 @@ import DifficultySelector from './ui/DifficultySelector';
 import GameInterstitial from './ui/GameInterstitial';
 import CategoryIntro from './ui/CategoryIntro';
 import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
+import { preloadVoiceClips } from '../lib/voice';
+import { itemQuizParts } from '../lib/voiceKeys';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
 import useSessionItems from '../hooks/useSessionItems';
@@ -158,6 +160,15 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     const t = setTimeout(() => setIntroState('done'), 750);
     return () => clearTimeout(t);
   }, [introState]);
+
+  // Warm the voice-clip cache for everything this category can say (item
+  // names + quiz sentences); keys without clips filter out for free
+  useEffect(() => {
+    const categoryItems = categoryData[category]?.items;
+    if (categoryItems) {
+      preloadVoiceClips(categoryItems.flatMap((i) => itemQuizParts(i.name)));
+    }
+  }, [category]);
 
   // Warm the audio cache when a category with parent recordings opens, so
   // playback never waits on the network mid-session

@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { itemPart } from '../../lib/voiceKeys';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import ItemMedia from '../ui/ItemMedia';
@@ -40,7 +41,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   }, [displayItems]);
   const [step, setStep] = useState(0);
   const [isCoolingDown, setIsCoolingDown] = useState(false);
-  const { speak } = useSpeech();
+  const { speak } = useVoice();
   const prevStepRef = useRef(null);
   const isCoolingDownRef = useRef(false);
   const cooldownTimerRef = useRef(null);
@@ -57,7 +58,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   useEffect(() => {
     if (holdIntro) return;
     if (prevStepRef.current !== step) {
-      speak(displayItems[Math.floor(step / 2)].pair[step % 2]);
+      speak(itemPart(displayItems[Math.floor(step / 2)].pair[step % 2]));
       prevStepRef.current = step;
     }
   }, [step, displayItems, speak, holdIntro]);
@@ -103,7 +104,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const handleCardTap = (tappedSide) => {
     const tappedStep = pairIndex * 2 + tappedSide;
     if (tappedStep === step) {
-      speak(activeWord); // same card: just say it again
+      speak(itemPart(activeWord)); // same card: just say it again
     } else {
       setStep(tappedStep);
     }
@@ -120,7 +121,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
         goPrev();
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        speak(activeWord);
+        speak(itemPart(activeWord));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -179,7 +180,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
       {/* Repeat word */}
       <div className="absolute top-4 right-4">
         <button
-          onClick={() => speak(activeWord)}
+          onClick={() => speak(itemPart(activeWord))}
           className="p-3 rounded-full bg-white/70 text-gray-600 hover:bg-white transition-colors shadow"
           aria-label={`Say ${activeWord} again`}
         >

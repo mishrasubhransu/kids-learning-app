@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import useRecordedAudio from '../../hooks/useRecordedAudio';
+import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
 import ItemMedia from '../ui/ItemMedia';
 
 const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
   const [activeId, setActiveId] = useState(null);
-  // Recorded parent voice for 2-letter syllables, browser TTS everywhere else
-  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
+  // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
+  // browser TTS as the last resort
+  const { speakItem } = useVoice(recordingCategoryFor(category));
 
   const handleClick = (item) => {
     setActiveId(item.id);

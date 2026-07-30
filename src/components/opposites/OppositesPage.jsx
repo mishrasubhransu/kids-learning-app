@@ -8,6 +8,8 @@ import SceneQuiz from './SceneQuiz';
 import DifficultySelector from '../ui/DifficultySelector';
 import CategoryIntro from '../ui/CategoryIntro';
 import opposites, { wordImages } from '../../data/opposites';
+import { preloadVoiceClips } from '../../lib/voice';
+import { itemPart, thatWasPart, oppositeOfPart, scenePart } from '../../lib/voiceKeys';
 import shuffle from '../../utils/shuffle';
 import useChildSetting from '../../hooks/useChildSetting';
 import useSessionItems from '../../hooks/useSessionItems';
@@ -67,6 +69,16 @@ const OppositesPage = ({ backTo = '/home' }) => {
     setScreenContext({ category: 'opposites', mode });
     return () => setScreenContext({ mode: null });
   }, [mode]);
+
+  // Warm the voice-clip cache for everything opposites can say
+  useEffect(() => {
+    preloadVoiceClips(
+      opposites.flatMap((pair) => [
+        ...pair.pair.flatMap((w) => [itemPart(w), thatWasPart(w), oppositeOfPart(w)]),
+        ...pair.tests.map((t) => scenePart(t.question)),
+      ])
+    );
+  }, []);
 
   return (
     <div className="h-full relative">

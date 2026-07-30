@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
-import useRecordedAudio from '../../hooks/useRecordedAudio';
+import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
 import preloadImages from '../../utils/preloadImages';
 import ItemMedia from '../ui/ItemMedia';
@@ -36,8 +36,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   // Word-first reveal: phonics words with images show the word alone until
   // the right arrow reveals the picture, so sound maps to the word first.
   const [revealed, setRevealed] = useState(false);
-  // Recorded parent voice for 2-letter syllables, browser TTS everywhere else
-  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
+  // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
+  // browser TTS as the last resort (2-letter syllables stay TTS by design)
+  const { speakItem } = useVoice(recordingCategoryFor(category));
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
   const isCoolingDownRef = useRef(false);
@@ -104,7 +105,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     let fallbackTimer;
     let cancelled = false;
 
-    const handle = speakItem(currentItem.name);
+    const ended = speakItem(currentItem.name);
     if (category === 'alphabets') {
       setBgColor((c) => nextBgColor(bgColors, c));
     }
@@ -126,11 +127,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       advanceTimer = setTimeout(advance, 1500);
     };
 
-    if (handle.kind === 'audio') {
-      handle.audio.addEventListener('ended', onSpeechEnd);
-    } else if (handle.ended) {
-      handle.ended.then(onSpeechEnd);
-    }
+    ended.then(onSpeechEnd);
 
     // Fallback in case the ended/onend event doesn't fire
     fallbackTimer = setTimeout(advance, 5000);

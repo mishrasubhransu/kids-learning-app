@@ -3,6 +3,7 @@
 // 'stickers' — JSON-stringified like the rotation sets in useSessionItems,
 // so the useChildSetting localStorage mirror keeps working pre-profile.
 // Entries are compact: { e: emoji, c: category, d: 'YYYY-MM-DD' }.
+import { RECAP_LINE_SLUGS } from '../data/voiceLines';
 
 export const STICKER_POOL = [
   '⭐', '🌟', '🏅', '🌈', '🦄', '🧸', '🎈', '🍭',
@@ -31,19 +32,15 @@ export const appendSticker = (raw, sticker) =>
 // Spoken over the recap collage — TTS only (no pre-generated clips), same
 // as the rest of the in-game speech. Never the same line twice in a row,
 // matching pickIntro's rule.
-const RECAP_LINES = [
-  'Wow! Look at everything you learned! You earned a sticker!',
-  'Great job! Here is a shiny new sticker for you!',
-  'Hooray, you did it! A new sticker for your shelf!',
-];
-
 let lastLine = -1;
 
+// Returns a lines/ slug (see data/voiceLines.js) — the recap speaks its
+// pre-generated clip via fixedLinePart(slug).
 export const pickRecapLine = () => {
-  let index = Math.floor(Math.random() * RECAP_LINES.length);
+  let index = Math.floor(Math.random() * RECAP_LINE_SLUGS.length);
   if (index === lastLine) {
-    index = (index + 1) % RECAP_LINES.length;
+    index = (index + 1) % RECAP_LINE_SLUGS.length;
   }
   lastLine = index;
-  return RECAP_LINES[index];
+  return RECAP_LINE_SLUGS[index];
 };

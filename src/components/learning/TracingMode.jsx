@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Eraser } from 'lucide-react';
-import useRecordedAudio from '../../hooks/useRecordedAudio';
+import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
@@ -22,7 +22,7 @@ const TracingMode = ({ items, category }) => {
   const lastPos = useRef(null);
   // Parent-recorded voice when a recording exists, browser TTS otherwise —
   // same speech path as the sibling lesson modes (ScrollView etc.)
-  const { speakItem } = useRecordedAudio(recordingCategoryFor(category));
+  const { speakItem } = useVoice(recordingCategoryFor(category));
   const { playPositive } = useAudioFeedback();
   const hasChecked = useRef(false);
 

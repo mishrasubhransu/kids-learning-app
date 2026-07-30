@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { scenePart, thatWasPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
 import preloadImages from '../../utils/preloadImages';
@@ -18,7 +19,7 @@ const SceneQuiz = ({ items, difficulty }) => {
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const autoAdvanceTimerRef = useRef(null);
@@ -77,7 +78,7 @@ const SceneQuiz = ({ items, difficulty }) => {
   }, [questions, currentIdx]);
 
   const askQuestion = useCallback(() => {
-    if (current && !locked()) speak(current.question);
+    if (current && !locked()) speak(scenePart(current.question));
   }, [current, speak, locked]);
 
   const handleStart = () => {
@@ -94,7 +95,7 @@ const SceneQuiz = ({ items, difficulty }) => {
     setSelectedAnswer(null);
     setIsCorrect(null);
     setTimeout(() => {
-      if (q[0]) speak(q[0].question);
+      if (q[0]) speak(scenePart(q[0].question));
     }, 400);
   };
 
@@ -111,7 +112,7 @@ const SceneQuiz = ({ items, difficulty }) => {
     setSelectedAnswer(null);
     setIsCorrect(null);
     setTimeout(() => {
-      if (questions[nextIdx]) speak(questions[nextIdx].question);
+      if (questions[nextIdx]) speak(scenePart(questions[nextIdx].question));
     }, 400);
   }, [currentIdx, questions, speak]);
 
@@ -150,7 +151,7 @@ const SceneQuiz = ({ items, difficulty }) => {
       // Name what they picked but don't reveal the answer — the dashed
       // hint plus immediate retry lets them find it themselves.
       withLock(() =>
-        playEncouragement().then(() => speak(`That was ${word}.`))
+        playEncouragement().then(() => speak(thatWasPart(word)))
       ).then(() => {
         // Reset only after the spoken correction ends, so the moment taps
         // work again is also the moment the board looks ready for a retry.

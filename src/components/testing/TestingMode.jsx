@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { whichOnePart, thatWasPart, tryToFindPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
@@ -21,7 +22,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [correctCount, setCorrectCount] = useState(0);
   const [testComplete, setTestComplete] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const autoAdvanceTimerRef = useRef(null);
@@ -89,7 +90,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Speak question for a specific answer (used after generating new question)
   const askQuestionFor = useCallback((answer) => {
     if (answer) {
-      speak(`Which one is ${answer.name}?`);
+      speak(whichOnePart(answer.name));
     }
   }, [speak]);
 
@@ -118,7 +119,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   // Speak the question - uses current correctAnswer state
   const askQuestion = useCallback(() => {
     if (correctAnswer && !locked()) {
-      speak(`Which one is ${correctAnswer.name}?`);
+      speak(whichOnePart(correctAnswer.name));
     }
   }, [correctAnswer, speak, locked]);
 
@@ -210,7 +211,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
           meta: { correct: false, picked: item.name, difficulty },
         });
         await playEncouragement();
-        await speak(`That was ${item.name}. Try to find ${correctAnswer.name}.`);
+        await speak([thatWasPart(item.name), tryToFindPart(correctAnswer.name)]);
       }
     }).then(() => {
       if (isRight) {

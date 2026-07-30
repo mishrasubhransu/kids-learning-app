@@ -8,7 +8,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "voice:generate": "node --import ./scripts/register-jsx.mjs scripts/generate-voice-clips.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.100.0",

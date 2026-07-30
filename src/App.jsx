@@ -2,6 +2,7 @@ import { useEffect, lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
 import { ADMIN_EMAIL, syncRecordings } from './lib/recordings';
+import { pruneVoiceCache } from './lib/voice';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
@@ -49,6 +50,11 @@ const App = () => {
   useEffect(() => {
     if (user) syncRecordings();
   }, [user]);
+
+  // Drop voice-clip cache entries orphaned by a regenerated manifest
+  useEffect(() => {
+    pruneVoiceCache();
+  }, []);
 
   return (
     <>

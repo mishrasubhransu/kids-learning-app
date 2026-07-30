@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Music, Gamepad2, Play } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
 import SessionRecap from './ui/SessionRecap';
-import useSpeech from '../hooks/useSpeech';
+import useVoice from '../hooks/useVoice';
+import { itemPart, thatWasPart, tryToFindPart, typeLetterPart } from '../lib/voiceKeys';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 import useAudioLock from '../hooks/useAudioLock';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
@@ -62,7 +63,7 @@ const TypingMode = () => {
   const [currentLetter, setCurrentLetter] = useState(null);
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [mode, setMode] = useState('read'); // 'read' | 'music' | 'test'
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const audioCtxRef = useRef(null);
@@ -118,7 +119,7 @@ const TypingMode = () => {
     }
     setTestTarget(target);
     setTestResult(null);
-    setTimeout(() => speak(`Type the letter ${target}`), 300);
+    setTimeout(() => speak(typeLetterPart(target)), 300);
     return target;
   }, [speak]);
 
@@ -197,7 +198,7 @@ const TypingMode = () => {
         setBgColor('#e74c3c');
         clearTimeout(testResultTimerRef.current);
         withLock(() =>
-          playEncouragement().then(() => speak(`That was ${char}, try to find ${testTarget}.`))
+          playEncouragement().then(() => speak([thatWasPart(char), tryToFindPart(testTarget)]))
         ).then(() => {
           // Reset only after the spoken correction ends, so the moment keys
           // work again is also the moment the screen looks ready for a retry.
@@ -219,7 +220,7 @@ const TypingMode = () => {
       const freq = melodyMap[char] || notes.C4;
       playTone(freq);
     } else {
-      speak(char);
+      speak(itemPart(char));
     }
   }, [mode, testTarget, testResult, testCorrectCount, testIndex, testOrder, testComplete, testSeenLetters, speak, cancel, locked, withLock, playTone, playPositive, playEncouragement, generateTestTarget]);
 

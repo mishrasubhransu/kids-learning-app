@@ -1,17 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { Gamepad2, BookOpen } from 'lucide-react';
-import useSpeech from '../../hooks/useSpeech';
+import useVoice from '../../hooks/useVoice';
+import { fixedLinePart } from '../../data/voiceLines';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 // Shown when Scroll-mode autoplay finishes, instead of dropping the child
 // straight into the quiz. Right arrow (the "go" key everywhere else in the
 // app) accepts, so a toddler mashing forward still reaches the game.
 const GameInterstitial = ({ onPlay, onKeepLearning }) => {
-  const { speak, cancel } = useSpeech();
+  const { speak, cancel } = useVoice();
   const playButtonRef = useRef(null);
 
   useEffect(() => {
-    speak('Great job! Ready to play a game?');
+    speak(fixedLinePart('game-interstitial'));
     playButtonRef.current?.focus();
     return cancel;
   }, [speak, cancel]);
