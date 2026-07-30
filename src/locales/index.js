@@ -7,7 +7,7 @@ import es from './es';
 // English has no pack — src/data is the English text (see lib/locale.js).
 export const LOCALES = {
   en: { label: 'English', ttsLang: 'en-US', complete: true },
-  es: { label: 'Español', ttsLang: 'es-US', complete: false, pack: es },
+  es: { label: 'Español', ttsLang: 'es-US', complete: true, pack: es },
 };
 
 export const availableLocales = (includeIncomplete = false) =>

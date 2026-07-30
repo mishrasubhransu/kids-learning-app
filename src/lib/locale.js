@@ -53,6 +53,7 @@ export const localizeItem = (item) => {
     say: entry.say,
     ref: entry.ref,
     bare: entry.bare,
+    plural: entry.plural,
   };
 };
 

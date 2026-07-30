@@ -41,6 +41,8 @@ const subjectFor = (input) => {
     say,
     ref: item.ref ?? say,
     bare: item.bare ?? item.ref ?? say,
+    // grammatical number for languages whose templates conjugate on it
+    plural: Boolean(item.plural),
   };
 };
 

@@ -10,8 +10,10 @@ const contract = (s) => s.replace(/\bde el\b/g, 'del');
 
 export default {
   item: (s) => `¡${cap(s.say)}!`,
-  whichOne: (s) => `¿Cuál es ${s.ref}?`,
-  thatWas: (s) => `Eso era ${s.ref}.`,
+  // Plural items conjugate: "¿Cuáles son las uvas?", "Eso eran las uvas."
+  // ("eso" + plural verb is standard Spanish — eso son cosas)
+  whichOne: (s) => (s.plural ? `¿Cuáles son ${s.ref}?` : `¿Cuál es ${s.ref}?`),
+  thatWas: (s) => (s.plural ? `Eso eran ${s.ref}.` : `Eso era ${s.ref}.`),
   tryToFind: (s) => `¡Busca ${s.ref}!`,
   typeLetter: (s) => `¡Escribe la letra ${s.say}!`,
   oppositeOf: (s) => contract(`¿Cuál es lo contrario de ${s.bare}?`),

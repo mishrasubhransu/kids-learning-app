@@ -119,8 +119,12 @@ const GENERATION_TEXT_OVERRIDES = {
     'quiz/that-was/quiet': 'That was [whispers] Quiet.',
   },
   es: {
-    // Bare "¡Cu!" trips Gemini's safety filter (PROHIBITED_CONTENT — "cu"
-    // is profane in Portuguese); the full-sentence forms pass fine
+    // Words that trip Gemini's safety filter (PROHIBITED_CONTENT) when
+    // spoken bare or with too little context; extra words get them through.
+    // "cu" is profane in Portuguese, "pelando"/"labios" read as innuendo.
     'items/q': '¡La letra cu!',
+    'items/lips': '¡Los labios!',
+    'items/peeling': '¡Pelando la fruta!',
+    'quiz/try-to-find/peeling': '¡Busca al que está pelando la fruta!',
   },
 };
