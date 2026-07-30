@@ -107,17 +107,24 @@ const ttsGemini = async (apiKey, locale, text) => {
       },
     },
   };
-  // Preview models throw transient errors — a few retries, not a loop that
-  // could outlive the serverless timeout
+  // Preview models throw transient errors (HTTP and plain network) — a few
+  // retries, not a loop that could outlive the serverless timeout
   for (let attempt = 0; ; attempt++) {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-      {
-        method: 'POST',
-        headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      }
-    );
+    let res;
+    try {
+      res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+        {
+          method: 'POST',
+          headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        }
+      );
+    } catch (err) {
+      if (attempt >= 2) throw new Error(`Gemini network: ${err.message}`);
+      await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+      continue;
+    }
     if (res.ok) {
       const data = await res.json();
       const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);

@@ -99,20 +99,28 @@ export function buildCatalog(locale = 'en') {
     );
   }
 
-  const overrides = locale === 'en' ? GENERATION_TEXT_OVERRIDES : {};
+  const overrides = GENERATION_TEXT_OVERRIDES[locale] || {};
   return [...parts.entries()].map(([key, text]) => ({
     key,
     text: overrides[key] || text,
   }));
 }
 
-// Delivery-only rewrites for generation: eleven_v3 audio tags shape how a
-// clip is performed. These NEVER reach the runtime — the app's TTS fallback
-// keeps the clean voiceKeys text, so a missing clip is still read sanely.
-// Changing an override changes the text hash, so the next generate run
-// picks it up without --force. English/ElevenLabs only.
+// Delivery-only rewrites for generation, per locale: audio tags shape how a
+// clip is performed, and some texts need rewording to pass the provider at
+// all. These NEVER reach the runtime — the app's TTS fallback keeps the
+// clean voiceKeys text, so a missing clip is still read sanely. Changing an
+// override changes the text hash, so the next generate run picks it up
+// without --force.
 const GENERATION_TEXT_OVERRIDES = {
-  // "Quiet" should sound like the thing it names — a half whisper
-  'items/quiet': '[whispers] Quiet!',
-  'quiz/that-was/quiet': 'That was [whispers] Quiet.',
+  en: {
+    // "Quiet" should sound like the thing it names — a half whisper
+    'items/quiet': '[whispers] Quiet!',
+    'quiz/that-was/quiet': 'That was [whispers] Quiet.',
+  },
+  es: {
+    // Bare "¡Cu!" trips Gemini's safety filter (PROHIBITED_CONTENT — "cu"
+    // is profane in Portuguese); the full-sentence forms pass fine
+    'items/q': '¡La letra cu!',
+  },
 };

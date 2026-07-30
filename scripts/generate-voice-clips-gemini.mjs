@@ -107,13 +107,21 @@ async function generateClip(text, { locale, voice, model, apiKey }) {
     },
   };
 
-  // Preview models 429/500/503 routinely — back off and retry
+  // Preview models 429/500/503 routinely, and long runs hit plain network
+  // hiccups ("fetch failed") — both back off and retry
   for (let attempt = 0; ; attempt++) {
-    const res = await fetch(`${BASE_URL}/models/${model}:generateContent`, {
-      method: 'POST',
-      headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
-    });
+    let res;
+    try {
+      res = await fetch(`${BASE_URL}/models/${model}:generateContent`, {
+        method: 'POST',
+        headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+    } catch (err) {
+      if (attempt >= 5) throw new Error(`network: ${err.message}`);
+      await sleep(3000 * (attempt + 1));
+      continue;
+    }
     if (res.ok) {
       const data = await res.json();
       const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
