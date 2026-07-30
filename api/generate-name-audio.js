@@ -29,16 +29,36 @@ const BUCKET = 'name-audio';
 const VOICE_ID = 'FGY2WhTYpPnrIDTdsKH5'; // Laura — matches public/audio praise clips
 const MODEL_ID = 'eleven_v3';
 
-// Hand-written so the name sits naturally; audio tags + per-tier speeds
-// mirror scripts/generate-audio.mjs (v3 stability 0.0 = Creative).
-const PRAISE_TIERS = [
-  { speed: 1.0, texts: ['Good job, {name}!', 'Well done, {name}!'] },
-  { speed: 1.05, texts: ['Ooh, great work, {name}!', 'Awesome, {name}, way to go!'] },
-  { speed: 1.1, texts: ['[laughs] Wow, amazing, {name}!', '[gasps] Look at you go, {name}!'] },
-  { speed: 1.1, texts: ["[gasps] {name}, you're a genius!", '{name}, you are a superstar! [laughs]'] },
-];
+// Non-English children get the same Gemini voice as the rest of their app
+// audio (scripts/generate-voice-clips-gemini.mjs) — a praise clip in the
+// English voice mid-Spanish-game would be jarring. Family members stay on
+// ElevenLabs: they're shared across siblings, so they have no per-child
+// locale to follow.
+const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
+const GEMINI_VOICE = 'Autonoe';
+const GEMINI_STYLE = {
+  es: 'Di esto como una maestra de preescolar joven, alegre y muy entusiasta hablando con un niño pequeño, en español latinoamericano neutro, con calidez y brillo:',
+};
 
-const tts = async (apiKey, text, voiceSettings) => {
+// Hand-written so the name sits naturally; audio tags + per-tier speeds
+// mirror scripts/generate-audio.mjs (v3 stability 0.0 = Creative). Gemini
+// has no speed knob — the style prompt carries the energy instead.
+const PRAISE_TIERS_BY_LOCALE = {
+  en: [
+    { speed: 1.0, texts: ['Good job, {name}!', 'Well done, {name}!'] },
+    { speed: 1.05, texts: ['Ooh, great work, {name}!', 'Awesome, {name}, way to go!'] },
+    { speed: 1.1, texts: ['[laughs] Wow, amazing, {name}!', '[gasps] Look at you go, {name}!'] },
+    { speed: 1.1, texts: ["[gasps] {name}, you're a genius!", '{name}, you are a superstar! [laughs]'] },
+  ],
+  es: [
+    { speed: 1.0, texts: ['¡Muy bien, {name}!', '¡Bien hecho, {name}!'] },
+    { speed: 1.05, texts: ['¡Uy, qué buen trabajo, {name}!', '¡Genial, {name}, así se hace!'] },
+    { speed: 1.1, texts: ['[laughs] ¡Guau, increíble, {name}!', '[gasps] ¡Mírate, {name}, qué bien vas!'] },
+    { speed: 1.1, texts: ['[gasps] ¡{name}, eres un genio!', '¡{name}, eres una superestrella! [laughs]'] },
+  ],
+};
+
+const ttsEleven = async (apiKey, text, voiceSettings) => {
   const res = await fetch(
     `https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`,
     {
@@ -55,6 +75,67 @@ const tts = async (apiKey, text, voiceSettings) => {
     throw new Error(`ElevenLabs ${res.status}: ${await res.text()}`);
   }
   return Buffer.from(await res.arrayBuffer());
+};
+
+// Gemini TTS returns raw PCM and serverless has no ffmpeg — a 44-byte WAV
+// header makes it browser-playable as-is (16-bit mono).
+const pcmToWav = (pcm, rate) => {
+  const header = Buffer.alloc(44);
+  header.write('RIFF', 0);
+  header.writeUInt32LE(36 + pcm.length, 4);
+  header.write('WAVE', 8);
+  header.write('fmt ', 12);
+  header.writeUInt32LE(16, 16);
+  header.writeUInt16LE(1, 20); // PCM
+  header.writeUInt16LE(1, 22); // mono
+  header.writeUInt32LE(rate, 24);
+  header.writeUInt32LE(rate * 2, 28);
+  header.writeUInt16LE(2, 32);
+  header.writeUInt16LE(16, 34);
+  header.write('data', 36);
+  header.writeUInt32LE(pcm.length, 40);
+  return Buffer.concat([header, pcm]);
+};
+
+const ttsGemini = async (apiKey, locale, text) => {
+  const body = {
+    contents: [{ parts: [{ text: `${GEMINI_STYLE[locale]}\n\n${text}` }] }],
+    generationConfig: {
+      responseModalities: ['AUDIO'],
+      speechConfig: {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE } },
+      },
+    },
+  };
+  // Preview models throw transient errors — a few retries, not a loop that
+  // could outlive the serverless timeout
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      {
+        method: 'POST',
+        headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      }
+    );
+    if (res.ok) {
+      const data = await res.json();
+      const part = data.candidates?.[0]?.content?.parts?.find((p) => p.inlineData);
+      if (part) {
+        const rate = Number(
+          /rate=(\d+)/.exec(part.inlineData.mimeType || '')?.[1] || 24000
+        );
+        return pcmToWav(Buffer.from(part.inlineData.data, 'base64'), rate);
+      }
+      if (attempt >= 2) throw new Error('Gemini: no audio in response');
+    } else {
+      const errText = await res.text();
+      if (![429, 500, 503].includes(res.status) || attempt >= 2) {
+        throw new Error(`Gemini ${res.status}: ${errText.slice(0, 200)}`);
+      }
+    }
+    await new Promise((r) => setTimeout(r, 1500 * (attempt + 1)));
+  }
 };
 
 const upload = async (admin, path, body, contentType) => {
@@ -198,7 +279,7 @@ export default async function handler(req, res) {
       if (!memberName) {
         return res.status(400).json({ error: 'Member has no name' });
       }
-      const audio = await tts(ELEVENLABS_API_KEY, memberName, {
+      const audio = await ttsEleven(ELEVENLABS_API_KEY, memberName, {
         stability: 0.5,
         similarity_boost: 0.8,
         style: 0.3,
@@ -221,7 +302,7 @@ export default async function handler(req, res) {
 
     const { data: child } = await admin
       .from('child_profiles')
-      .select('id, user_id, name, name_audio_path')
+      .select('id, user_id, name, name_audio_path, settings')
       .eq('id', childId)
       .maybeSingle();
     if (!child || child.user_id !== userData.user.id) {
@@ -229,6 +310,31 @@ export default async function handler(req, res) {
     }
 
     const childPrefix = `${child.user_id}/${child.id}`;
+
+    // The child's clips follow their app language; unknown locales fall
+    // back to English rather than failing the whole request.
+    const locale = PRAISE_TIERS_BY_LOCALE[child.settings?.language]
+      ? child.settings.language
+      : 'en';
+    const geminiKey = process.env.GEMINI_API_KEY;
+    if (locale !== 'en' && !geminiKey) {
+      return res
+        .status(500)
+        .json({ error: `GEMINI_API_KEY missing — needed for ${locale} voice` });
+    }
+    // en keeps mp3 via ElevenLabs; other locales get WAV via Gemini
+    const ext = locale === 'en' ? 'mp3' : 'wav';
+    const contentType = locale === 'en' ? 'audio/mpeg' : 'audio/wav';
+    const speakName = (text) =>
+      locale === 'en'
+        ? ttsEleven(ELEVENLABS_API_KEY, text, {
+            stability: 0.5,
+            similarity_boost: 0.8,
+            style: 0.3,
+            speed: 1.0,
+            use_speaker_boost: true,
+          })
+        : ttsGemini(geminiKey, locale, text);
 
     if (action === 'delete') {
       const files = await listFilesDeep(admin, childPrefix);
@@ -259,62 +365,54 @@ export default async function handler(req, res) {
       // Neutral read of just the name — fast confirmation for the parent,
       // deliberately NOT a praise clip. NB: previous_text/next_text are
       // rejected by eleven_v3 (400 unsupported_model).
-      const audio = await tts(ELEVENLABS_API_KEY, name, {
-        stability: 0.5,
-        similarity_boost: 0.8,
-        style: 0.3,
-        speed: 1.0,
-        use_speaker_boost: true,
-      });
+      const audio = await speakName(name);
       // Timestamped folder = every regeneration is a new URL (cache busting)
       const ts = `${Date.now()}`;
-      const path = `${childPrefix}/${ts}/name.mp3`;
-      await upload(admin, path, audio, 'audio/mpeg');
+      const path = `${childPrefix}/${ts}/name.${ext}`;
+      await upload(admin, path, audio, contentType);
       await setPath(path);
       await cleanupOldVersions(admin, childPrefix, ts);
       return res.status(200).json({ path });
     }
 
     // action === 'praise' — reuse the folder the name action just made so
-    // name.mp3 and the praise clips version together; if the profile is
-    // still on the legacy loose-mp3 format (self-heal without a preceding
-    // name action), start a fresh folder and regenerate the name clip too.
+    // the name clip and the praise clips version together; if the profile
+    // is still on the legacy loose-mp3 format (self-heal without a
+    // preceding name action), start a fresh folder and regenerate the name
+    // clip too.
     let ts = child.name_audio_path?.match(
-      new RegExp(`^${childPrefix}/(\\d+)/name\\.mp3$`)
+      new RegExp(`^${childPrefix}/(\\d+)/name\\.${ext}$`)
     )?.[1];
     if (!ts) {
       ts = `${Date.now()}`;
-      const audio = await tts(ELEVENLABS_API_KEY, name, {
-        stability: 0.5,
-        similarity_boost: 0.8,
-        style: 0.3,
-        speed: 1.0,
-        use_speaker_boost: true,
-      });
-      await upload(admin, `${childPrefix}/${ts}/name.mp3`, audio, 'audio/mpeg');
+      const audio = await speakName(name);
+      await upload(admin, `${childPrefix}/${ts}/name.${ext}`, audio, contentType);
     }
     const folder = `${childPrefix}/${ts}`;
 
-    // Free tier allows 2 concurrent requests — generate tier by tier
-    // (each tier is exactly a batch of 2).
-    const manifest = { name, tiers: {} };
-    for (let tier = 0; tier < PRAISE_TIERS.length; tier++) {
-      const { speed, texts } = PRAISE_TIERS[tier];
-      const files = texts.map((_, i) => `praise-${tier}-${i}.mp3`);
+    // Both providers cap concurrency around 2 — generate tier by tier
+    // (each tier is exactly a batch of 2). `locale` and `neutral` let the
+    // client skip wrong-language praise and find the neutral clip without
+    // assuming its extension.
+    const manifest = { name, locale, neutral: `name.${ext}`, tiers: {} };
+    const praiseTiers = PRAISE_TIERS_BY_LOCALE[locale];
+    for (let tier = 0; tier < praiseTiers.length; tier++) {
+      const { speed, texts } = praiseTiers[tier];
+      const files = texts.map((_, i) => `praise-${tier}-${i}.${ext}`);
       await Promise.all(
         texts.map(async (template, i) => {
-          const audio = await tts(
-            ELEVENLABS_API_KEY,
-            template.replace('{name}', name),
-            {
-              stability: 0.0,
-              similarity_boost: 0.8,
-              style: 1.0,
-              speed,
-              use_speaker_boost: true,
-            }
-          );
-          await upload(admin, `${folder}/${files[i]}`, audio, 'audio/mpeg');
+          const text = template.replace('{name}', name);
+          const audio =
+            locale === 'en'
+              ? await ttsEleven(ELEVENLABS_API_KEY, text, {
+                  stability: 0.0,
+                  similarity_boost: 0.8,
+                  style: 1.0,
+                  speed,
+                  use_speaker_boost: true,
+                })
+              : await ttsGemini(geminiKey, locale, text);
+          await upload(admin, `${folder}/${files[i]}`, audio, contentType);
         })
       );
       manifest.tiers[tier] = files;

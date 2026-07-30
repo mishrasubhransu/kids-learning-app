@@ -85,8 +85,13 @@ export const loadPraiseClips = (path) => {
       });
       pruneStaleEntries(path);
       // locale was stamped from the child's language at generation time;
-      // manifests older than the field are English
-      return { name: manifest.name, locale: manifest.locale ?? 'en', tiers };
+      // manifests older than the field are English with an mp3 neutral clip
+      return {
+        name: manifest.name,
+        locale: manifest.locale ?? 'en',
+        neutralUrl: nameAudioUrl(folder + (manifest.neutral || 'name.mp3')),
+        tiers,
+      };
     };
     manifests.set(
       path,

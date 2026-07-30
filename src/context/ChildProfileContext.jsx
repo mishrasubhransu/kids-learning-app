@@ -374,10 +374,12 @@ export const ChildProfileProvider = ({ children }) => {
 
   // Merge-patch of settings keys, optimistic locally, per-key merge on the
   // server (patch_child_settings RPC) so concurrent sessions editing
-  // different toggles don't clobber each other.
+  // different toggles don't clobber each other. Returns the server write's
+  // promise for the rare caller that must sequence behind it (the language
+  // switch regenerates name audio, which the API derives from the DB row).
   const patchChildSettings = useCallback(
     (childId, patch) => {
-      if (!user || !childId) return;
+      if (!user || !childId) return Promise.resolve();
       setProfiles((prev) => {
         const next = (prev || []).map((p) =>
           p.id === childId ? { ...p, settings: { ...p.settings, ...patch } } : p
@@ -385,7 +387,7 @@ export const ChildProfileProvider = ({ children }) => {
         writeCache(user.id, next);
         return next;
       });
-      supabase
+      return supabase
         .rpc('patch_child_settings', { p_child_id: childId, p_patch: patch })
         .then(({ error }) => {
           if (error) console.warn('Child settings sync failed:', error.message);

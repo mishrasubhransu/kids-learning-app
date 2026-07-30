@@ -81,7 +81,7 @@ const NameAudioStatus = ({ child, status, onGenerate }) => {
         const tier0 = clips?.tiers?.[0];
         const url = tier0?.length
           ? tier0[Math.floor(Math.random() * tier0.length)]
-          : neutralNameUrl(child.name_audio_path);
+          : (clips?.neutralUrl ?? neutralNameUrl(child.name_audio_path));
         await playClipUrl(url);
       } finally {
         setPlaying(false);
@@ -366,7 +366,17 @@ const ParentZone = () => {
                   hint="Lessons, questions and praise in this language"
                   options={languageOptions}
                   value={language}
-                  onChange={(v) => patch({ language: v })}
+                  onChange={async (v) => {
+                    if (v === language) return;
+                    // Name + praise clips follow the language — regenerate
+                    // in the new voice AFTER the setting lands in the DB
+                    // (the API reads language from the profile row). Stock
+                    // praise fills in while the old manifest is ignored.
+                    await patch({ language: v });
+                    if (selected && selected.name !== DEFAULT_CHILD_NAME) {
+                      requestNameAudio(selected.id);
+                    }
+                  }}
                 />
               )}
               <OptionRow
