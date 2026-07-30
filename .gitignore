@@ -30,3 +30,4 @@ supabase/.temp/
 
 __pycache__/
 .env*
+.voice-batch-*.json
