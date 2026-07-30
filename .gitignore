@@ -31,3 +31,6 @@ supabase/.temp/
 __pycache__/
 .env*
 .voice-batch-*.json
+odia-voice-comparison/
+es-style-audition/
+.claude/settings.local.json

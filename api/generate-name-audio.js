@@ -37,7 +37,7 @@ const MODEL_ID = 'eleven_v3';
 const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
 const GEMINI_VOICE = 'Autonoe';
 const GEMINI_STYLE = {
-  es: 'Di esto como una maestra de preescolar joven, alegre y muy entusiasta hablando con un niño pequeño, en español latinoamericano neutro, con calidez y brillo:',
+  es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
 };
 
 // Hand-written so the name sits naturally; audio tags + per-tier speeds

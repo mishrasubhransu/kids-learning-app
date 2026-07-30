@@ -46,7 +46,7 @@ const DEFAULT_MODEL = 'gemini-2.5-flash-preview-tts';
 // same performer across languages. Inline [gasps]-style tags in the catalog
 // text shape individual lines.
 const STYLE_PROMPT = {
-  es: 'Di esto como una maestra de preescolar joven, alegre y muy entusiasta hablando con un niño pequeño, en español latinoamericano neutro, con calidez y brillo:',
+  es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
   zh: 'Say this as a sunny, very enthusiastic young nursery teacher talking to a toddler, in standard Mandarin Chinese, warm and bright:',
 };
 
