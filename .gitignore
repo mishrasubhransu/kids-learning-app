@@ -34,3 +34,4 @@ __pycache__/
 odia-voice-comparison/
 es-style-audition/
 .claude/settings.local.json
+zh-voice-audition/

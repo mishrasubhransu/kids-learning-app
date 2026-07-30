@@ -35,9 +35,11 @@ const MODEL_ID = 'eleven_v3';
 // ElevenLabs: they're shared across siblings, so they have no per-child
 // locale to follow.
 const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
-const GEMINI_VOICE = 'Autonoe';
+// User-auditioned voice per locale (bake-off winners)
+const GEMINI_VOICE = { es: 'Autonoe', zh: 'Kore' };
 const GEMINI_STYLE = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
+  zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
 };
 
 // Hand-written so the name sits naturally; audio tags + per-tier speeds
@@ -55,6 +57,12 @@ const PRAISE_TIERS_BY_LOCALE = {
     { speed: 1.05, texts: ['¡Uy, qué buen trabajo, {name}!', '¡Genial, {name}, así se hace!'] },
     { speed: 1.1, texts: ['[laughs] ¡Guau, increíble, {name}!', '[gasps] ¡Mírate, {name}, qué bien vas!'] },
     { speed: 1.1, texts: ['[gasps] ¡{name}, eres un genio!', '¡{name}, eres una superestrella! [laughs]'] },
+  ],
+  zh: [
+    { speed: 1.0, texts: ['真棒，{name}！', '做得好，{name}！'] },
+    { speed: 1.05, texts: ['哇，{name}，做得真好！', '太棒了，{name}！'] },
+    { speed: 1.1, texts: ['[laughs] 哇，{name}，太厉害了！', '[gasps] 看看你，{name}，真能干！'] },
+    { speed: 1.1, texts: ['[gasps] {name}，你是小天才！', '{name}，你是超级明星！[laughs]'] },
   ],
 };
 
@@ -103,7 +111,7 @@ const ttsGemini = async (apiKey, locale, text) => {
     generationConfig: {
       responseModalities: ['AUDIO'],
       speechConfig: {
-        voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE } },
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: GEMINI_VOICE[locale] || 'Autonoe' } },
       },
     },
   };

@@ -47,8 +47,11 @@ const DEFAULT_MODEL = 'gemini-2.5-flash-preview-tts';
 
 const STYLE_PROMPT = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
-  zh: 'Say this as a sunny, very enthusiastic young nursery teacher talking to a toddler, in standard Mandarin Chinese, warm and bright:',
+  zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
 };
+
+// User-auditioned voice per locale (bake-off winners); --voice overrides.
+const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore' };
 
 async function loadEnv() {
   try {
@@ -303,7 +306,7 @@ async function main() {
     apiKey,
     locale,
     model: getArg('model', DEFAULT_MODEL),
-    voice: getArg('voice', DEFAULT_VOICE),
+    voice: getArg('voice', VOICE_BY_LOCALE[locale] || DEFAULT_VOICE),
     limit: Number(getArg('limit', Infinity)),
     force: process.argv.includes('--force'),
   };

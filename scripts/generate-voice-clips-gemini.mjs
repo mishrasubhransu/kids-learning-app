@@ -47,8 +47,11 @@ const DEFAULT_MODEL = 'gemini-2.5-flash-preview-tts';
 // text shape individual lines.
 const STYLE_PROMPT = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
-  zh: 'Say this as a sunny, very enthusiastic young nursery teacher talking to a toddler, in standard Mandarin Chinese, warm and bright:',
+  zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
 };
+
+// User-auditioned voice per locale (bake-off winners); --voice overrides.
+const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore' };
 
 // .env loader — same as the ElevenLabs script: the project .env OVERRIDES
 // inherited env (the shell profile exports SUPABASE keys for other projects).
@@ -157,7 +160,7 @@ async function main() {
   const only = getArg('only', null);
   const limit = Number(getArg('limit', Infinity));
   const concurrency = Number(getArg('concurrency', 2));
-  const voice = getArg('voice', DEFAULT_VOICE);
+  const voice = getArg('voice', VOICE_BY_LOCALE[locale] || DEFAULT_VOICE);
   const model = getArg('model', DEFAULT_MODEL);
 
   if (!locale || locale === 'en') {

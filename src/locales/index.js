@@ -1,4 +1,5 @@
 import es from './es';
+import zh from './zh';
 
 // Every language the app knows about. `complete` means the locale's voice
 // clips are generated and it may be offered to parents; incomplete locales
@@ -8,6 +9,7 @@ import es from './es';
 export const LOCALES = {
   en: { label: 'English', ttsLang: 'en-US', complete: true },
   es: { label: 'Español', ttsLang: 'es-US', complete: true, pack: es },
+  zh: { label: '中文', ttsLang: 'zh-CN', complete: false, pack: zh },
 };
 
 export const availableLocales = (includeIncomplete = false) =>

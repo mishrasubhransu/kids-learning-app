@@ -127,4 +127,9 @@ const GENERATION_TEXT_OVERRIDES = {
     'items/peeling': '¡Pelando la fruta!',
     'quiz/try-to-find/peeling': '¡Busca al que está pelando la fruta!',
   },
+  zh: {
+    // "Quiet" should sound like the thing it names — a half whisper
+    'items/quiet': '[whispers] 安静！',
+    'quiz/that-was/quiet': '那是 [whispers] 安静。',
+  },
 };
