@@ -132,4 +132,9 @@ const GENERATION_TEXT_OVERRIDES = {
     'items/quiet': '[whispers] 安静！',
     'quiz/that-was/quiet': '那是 [whispers] 安静。',
   },
+  or: {
+    // "Quiet" should sound like the thing it names — a half whisper
+    'items/quiet': '[whispers] ଶାନ୍ତ!',
+    'quiz/that-was/quiet': 'ସେଇଟା [whispers] ଶାନ୍ତ।',
+  },
 };

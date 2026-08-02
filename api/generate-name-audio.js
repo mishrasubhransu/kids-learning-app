@@ -35,11 +35,14 @@ const MODEL_ID = 'eleven_v3';
 // ElevenLabs: they're shared across siblings, so they have no per-child
 // locale to follow.
 const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
+// Odia only renders on the 3.1 generation (2.5-flash/pro return no audio)
+const GEMINI_MODEL_BY_LOCALE = { or: 'gemini-3.1-flash-tts-preview' };
 // User-auditioned voice per locale (bake-off winners)
-const GEMINI_VOICE = { es: 'Autonoe', zh: 'Kore' };
+const GEMINI_VOICE = { es: 'Autonoe', zh: 'Kore', or: 'Autonoe' };
 const GEMINI_STYLE = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
+  or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
 
 // Hand-written so the name sits naturally; audio tags + per-tier speeds
@@ -63,6 +66,12 @@ const PRAISE_TIERS_BY_LOCALE = {
     { speed: 1.05, texts: ['哇，{name}，做得真好！', '太棒了，{name}！'] },
     { speed: 1.1, texts: ['[laughs] 哇，{name}，太厉害了！', '[gasps] 看看你，{name}，真能干！'] },
     { speed: 1.1, texts: ['[gasps] {name}，你是小天才！', '{name}，你是超级明星！[laughs]'] },
+  ],
+  or: [
+    { speed: 1.0, texts: ['ସାବାସ୍, {name}!', 'ଭଲ କଲ, {name}!'] },
+    { speed: 1.05, texts: ['ବାଃ, {name}, କେତେ ଭଲ କଲ!', 'ବହୁତ ବଢ଼ିଆ, {name}!'] },
+    { speed: 1.1, texts: ['[laughs] ବାଃ, {name}, କି କମାଲ!', '[gasps] ଦେଖ ତ {name}, କେତେ ପାରୁଛ!'] },
+    { speed: 1.1, texts: ['[gasps] {name}, ତୁମେ ତ ଛୋଟ ପଣ୍ଡିତ!', '{name}, ତୁମେ ସୁପରଷ୍ଟାର! [laughs]'] },
   ],
 };
 
@@ -121,7 +130,7 @@ const ttsGemini = async (apiKey, locale, text) => {
     let res;
     try {
       res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL_BY_LOCALE[locale] || GEMINI_MODEL}:generateContent`,
         {
           method: 'POST',
           headers: { 'x-goog-api-key': apiKey, 'Content-Type': 'application/json' },

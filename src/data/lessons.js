@@ -48,6 +48,7 @@ export const allLessonKeys = lessonTree.flatMap((l) => [
 const LOCALE_HIDDEN_LESSONS = {
   es: ['phonics'],
   zh: ['alphabets', 'phonics', 'typing'],
+  or: ['alphabets', 'phonics', 'typing'],
 };
 
 export const isLessonAvailable = (locale, key) => {

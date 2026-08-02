@@ -48,10 +48,13 @@ const DEFAULT_MODEL = 'gemini-2.5-flash-preview-tts';
 const STYLE_PROMPT = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
+  or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
 
 // User-auditioned voice per locale (bake-off winners); --voice overrides.
-const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore' };
+// NB: or MUST run on gemini-3.1-flash-tts-preview — no other Gemini TTS
+// renders Odia (2.5-pro returns empty audio, 2.5-flash can't batch).
+const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore', or: 'Autonoe' };
 
 async function loadEnv() {
   try {
