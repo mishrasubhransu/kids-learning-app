@@ -57,6 +57,8 @@ const STYLE_PROMPT = {
 // Sentences, intros and praise keep STYLE_PROMPT. Locales absent here use
 // STYLE_PROMPT for everything.
 const WORD_STYLE_PROMPT = {
+  es: 'Di esto en español latinoamericano neutro como una demostración de pronunciación clara y precisa — neutra y articulada, cada sílaba nítida y completamente enunciada, a un ritmo constante y uniforme, sin carga emocional:',
+  zh: 'Say this in standard Mandarin Chinese as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
   or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
 };
 
