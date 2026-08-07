@@ -113,10 +113,14 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // across visits. Lesson modes (scroll/tile/trace) share one pool so the
   // visit is coherent; the test rotates on its own track and only counts
   // as "shown" once test mode is actually opened.
+  // Numbers skip the caps entirely: rotation's seen/unseen top-up breaks the
+  // counting sequence (1, 2, 3, 4, 13…), and numberMax is already their
+  // dedicated size control.
   const [lessonCap] = useChildSetting('lessonItemCap', 'all');
   const [testCap] = useChildSetting('testItemCap', 'all');
-  const lessonPool = useSessionItems(category, 'lesson', sizedItems, lessonCap, mode !== 'test');
-  const testPool = useSessionItems(category, 'test', sizedItems, testCap, mode === 'test');
+  const capExempt = category === 'numbers';
+  const lessonPool = useSessionItems(category, 'lesson', sizedItems, capExempt ? 'all' : lessonCap, mode !== 'test');
+  const testPool = useSessionItems(category, 'test', sizedItems, capExempt ? 'all' : testCap, mode === 'test');
 
   // Memoized so re-renders (e.g. the rotation persist updating the profile
   // context) don't hand the views a fresh array identity — TestingMode
