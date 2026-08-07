@@ -16,6 +16,7 @@
  *   --locale <loc>     REQUIRED, e.g. es (en stays on the ElevenLabs script)
  *   --dry              List counts/chars only, no API calls
  *   --only <prefix>    Restrict to keys starting with prefix (e.g. intros/)
+ *   --match <regex>    Restrict to keys matching a regex (e.g. '^items/(\d|1\d|20)$')
  *   --limit <n>        Stop after n generated clips
  *   --force            Regenerate even when the text hash matches
  *   --prune            Delete bucket+manifest clips no longer in the catalog
@@ -50,6 +51,19 @@ const STYLE_PROMPT = {
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
   or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
+
+// Bare word clips (items/*) need precise pronunciation, not warmth — the
+// soft mother tone blurs single words (user call 2026-08-07, or first).
+// Sentences, intros and praise keep STYLE_PROMPT. Locales absent here use
+// STYLE_PROMPT for everything.
+const WORD_STYLE_PROMPT = {
+  or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
+};
+
+const styleFor = (locale, key) =>
+  (key?.startsWith('items/') && WORD_STYLE_PROMPT[locale]) ||
+  STYLE_PROMPT[locale] ||
+  STYLE_PROMPT.es;
 
 // User-auditioned voice per locale (bake-off winners); --voice overrides.
 // NB: or MUST run on gemini-3.1-flash-tts-preview — no other Gemini TTS
@@ -101,8 +115,8 @@ function pcmToMp3(pcm, sampleRate) {
   });
 }
 
-async function generateClip(text, { locale, voice, model, apiKey }) {
-  const style = STYLE_PROMPT[locale] || STYLE_PROMPT.es;
+async function generateClip(text, { locale, voice, model, apiKey, key }) {
+  const style = styleFor(locale, key);
   const body = {
     contents: [{ parts: [{ text: `${style}\n\n${text}` }] }],
     generationConfig: {
@@ -161,6 +175,8 @@ async function main() {
   const force = process.argv.includes('--force');
   const prune = process.argv.includes('--prune');
   const only = getArg('only', null);
+  const match = getArg('match', null);
+  const matchRe = match ? new RegExp(match) : null;
   const limit = Number(getArg('limit', Infinity));
   const concurrency = Number(getArg('concurrency', 2));
   const voice = getArg('voice', VOICE_BY_LOCALE[locale] || DEFAULT_VOICE);
@@ -171,7 +187,9 @@ async function main() {
     process.exit(1);
   }
 
-  const catalog = buildCatalog(locale).filter((c) => !only || c.key.startsWith(only));
+  const catalog = buildCatalog(locale).filter(
+    (c) => (!only || c.key.startsWith(only)) && (!matchRe || matchRe.test(c.key))
+  );
   const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf8'));
   manifest.clips = manifest.clips || {};
 
@@ -215,7 +233,7 @@ async function main() {
   const runOne = async (clip) => {
     const fullKey = `${locale}/${clip.key}`;
     try {
-      const bytes = await generateClip(clip.text, { locale, voice, model, apiKey });
+      const bytes = await generateClip(clip.text, { locale, voice, model, apiKey, key: clip.key });
       const { error } = await supabase.storage
         .from(BUCKET)
         .upload(`${fullKey}.mp3`, bytes, {

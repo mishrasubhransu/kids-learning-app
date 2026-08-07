@@ -20,7 +20,11 @@
  *
  * Options: --locale <loc> (required), --model, --voice, --limit <n>,
  *          --force (submit ALL catalog keys, not just hash-stale ones — use
- *          when switching models so every clip comes from one voice/model)
+ *          when switching models so every clip comes from one voice/model),
+ *          --match <regex> (restrict to matching keys),
+ *          --before <epoch> (with --force: only clips whose manifest stamp
+ *          predates <epoch> — resume a style/voice change without redoing
+ *          clips already regenerated)
  * Env: GEMINI_API_KEY, SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY (.env
  * overrides inherited env, same as the sibling scripts).
  *
@@ -50,6 +54,19 @@ const STYLE_PROMPT = {
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
   or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
+
+// Bare word clips (items/*) need precise pronunciation, not warmth — the
+// soft mother tone blurs single words (user call 2026-08-07, or first).
+// Sentences, intros and praise keep STYLE_PROMPT. Keep in sync with
+// generate-voice-clips-gemini.mjs.
+const WORD_STYLE_PROMPT = {
+  or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
+};
+
+const styleFor = (locale, key) =>
+  (key?.startsWith('items/') && WORD_STYLE_PROMPT[locale]) ||
+  STYLE_PROMPT[locale] ||
+  STYLE_PROMPT.es;
 
 // User-auditioned voice per locale (bake-off winners); --voice overrides.
 // NB: or MUST run on gemini-3.1-flash-tts-preview — no other Gemini TTS
@@ -109,15 +126,18 @@ function pcmToMp3(pcm, sampleRate) {
   });
 }
 
-async function submit({ apiKey, locale, model, voice, limit, force }) {
+async function submit({ apiKey, locale, model, voice, limit, force, match, before }) {
+  const matchRe = match ? new RegExp(match) : null;
   const catalog = buildCatalog(locale);
   const manifest = JSON.parse(await readFile(MANIFEST_PATH, 'utf8'));
   manifest.clips = manifest.clips || {};
   const pending = catalog
+    .filter((c) => !matchRe || matchRe.test(c.key))
     .filter((c) => {
-      if (force) return true;
       const entry = manifest.clips[`${locale}/${c.key}`];
-      return !entry || entry.h !== hashText(c.text);
+      if (!entry || entry.h !== hashText(c.text)) return true;
+      if (force) return before ? entry.v < before : true;
+      return false;
     })
     .slice(0, limit);
   if (!pending.length) {
@@ -126,12 +146,11 @@ async function submit({ apiKey, locale, model, voice, limit, force }) {
   }
   console.log(`[${locale}] Submitting ${pending.length} clips as one batch job (${model})…`);
 
-  const style = STYLE_PROMPT[locale] || STYLE_PROMPT.es;
   const lines = pending.map((c) =>
     JSON.stringify({
       key: c.key,
       request: {
-        contents: [{ parts: [{ text: `${style}\n\n${c.text}` }] }],
+        contents: [{ parts: [{ text: `${styleFor(locale, c.key)}\n\n${c.text}` }] }],
         generationConfig: {
           responseModalities: ['AUDIO'],
           speechConfig: {
@@ -312,6 +331,8 @@ async function main() {
     voice: getArg('voice', VOICE_BY_LOCALE[locale] || DEFAULT_VOICE),
     limit: Number(getArg('limit', Infinity)),
     force: process.argv.includes('--force'),
+    match: getArg('match', null),
+    before: Number(getArg('before', 0)),
   };
   if (cmd === 'submit') return submit(opts);
   if (cmd === 'status') return status(opts);
