@@ -14,12 +14,25 @@ export const familyPhotoUrl = (path) =>
 // PhotoCropper, which exports an exact square JPEG (default 900×900) —
 // re-encoding here would only lose quality.
 export const uploadFamilyPhoto = async (userId, memberId, blob) => {
-  const path = `${userId}/${memberId}/${Date.now()}.jpg`;
+  // Random suffix: members can have several photos now, and two uploads in
+  // the same millisecond must not overwrite each other
+  const path = `${userId}/${memberId}/${Date.now()}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}.jpg`;
   const { error } = await supabase.storage
     .from(BUCKET)
     .upload(path, blob, { contentType: 'image/jpeg', upsert: true });
   if (error) throw new Error(`Photo upload failed: ${error.message}`);
   return path;
+};
+
+// Best-effort single-photo delete (parent removed one of several photos)
+export const removeFamilyPhoto = async (path) => {
+  try {
+    await supabase.storage.from(BUCKET).remove([path]);
+  } catch {
+    /* orphaned files are harmless */
+  }
 };
 
 // Best-effort: a leftover file is invisible (nothing references it) and

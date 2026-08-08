@@ -5,7 +5,7 @@ import HomeButton from '../ui/HomeButton';
 import TestingMode from '../testing/TestingMode';
 import FamilyTreeIntro from './FamilyTreeIntro';
 import FamilyLearnView from './FamilyLearnView';
-import useFamilyMembers from '../../hooks/useFamilyMembers';
+import useFamilyMembers, { memberPhotoPaths } from '../../hooks/useFamilyMembers';
 import useChildSetting from '../../hooks/useChildSetting';
 import useSessionItems from '../../hooks/useSessionItems';
 import { useChildProfile } from '../../context/ChildProfileContext';
@@ -16,21 +16,40 @@ import { setScreenContext } from '../../lib/analytics';
 // collage intro) that circle-reveals into Learn/Test on the child's own
 // people. Members come from the account-wide list the parent manages in
 // the Parent Zone.
+
+// Salted at module load (NOT during render — render must stay pure), so a
+// multi-photo member leads with a different photo on each app visit while
+// every render of one visit agrees on the pick.
+const VISIT_SALT = Math.floor(Math.random() * 0xffffffff);
+const visitPhotoIndex = (memberId, count) => {
+  let h = VISIT_SALT;
+  for (const ch of String(memberId)) h = (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0;
+  return h % count;
+};
 const FamilyPage = ({ backTo = '/home' }) => {
   const { members, loading } = useFamilyMembers();
   const { activeChild } = useChildProfile();
   const [mode, setMode] = useState('learn'); // 'learn' | 'test'
   const [introState, setIntroState] = useState('intro'); // 'intro' | 'revealing' | 'done'
 
+  // `image` is a fresh pick from the member's photos each app visit — the
+  // child should recognise the person, not one particular picture. Learn
+  // mode re-shuffles per interaction via `images`; the test inherits the
+  // per-visit pick.
   const items = useMemo(
     () =>
-      members.map((m) => ({
-        id: m.id,
-        name: m.name,
-        relation: m.relation,
-        image: familyPhotoUrl(m.photo_path),
-        audioPath: m.name_audio_path,
-      })),
+      members.map((m) => {
+        const images = memberPhotoPaths(m).map(familyPhotoUrl);
+        return {
+          id: m.id,
+          name: m.name,
+          relation: m.relation,
+          relationDetail: m.relation_detail,
+          images,
+          image: images.length ? images[visitPhotoIndex(m.id, images.length)] : null,
+          audioPath: m.name_audio_path,
+        };
+      }),
     [members]
   );
 

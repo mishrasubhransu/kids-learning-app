@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { Plus, Pencil, Trash2, Camera, Loader2 } from 'lucide-react';
-import useFamilyMembers from '../../hooks/useFamilyMembers';
+import { Plus, Pencil, Trash2, Camera, Loader2, X, Delete } from 'lucide-react';
+import useFamilyMembers, { memberPhotoPaths } from '../../hooks/useFamilyMembers';
 import { familyPhotoUrl } from '../../lib/familyPhotos';
-import { RELATIONS, relationByValue, relationLabel } from '../../data/relations';
+import { relationByValue, relationLabel } from '../../data/relations';
+import {
+  KINSHIP_STEPS,
+  seniorityApplies,
+  kinshipLabel,
+  kinshipEmoji,
+  legacyRelationValue,
+  pathEmoji,
+} from '../../data/kinship';
+import { useLocale } from '../../context/LocaleContext';
 import PhotoCropper from './PhotoCropper';
 
 // iPhone photos are HEIC, which non-Safari browsers can't decode — convert
@@ -19,9 +28,50 @@ const toDecodableBlob = async (file) => {
   return Array.isArray(out) ? out[0] : out;
 };
 
-// Round photo (or relation emoji stand-in) used in both the list and editor
+// Enough photos for the lesson to shuffle, few enough to stay manageable
+const MAX_PHOTOS = 6;
+
+// One-tap presets that pre-fill the path builder (plus the non-kinship
+// legacy values, which have no path)
+const QUICK_PICKS = [
+  { steps: ['mother'], label: 'Mummy' },
+  { steps: ['father'], label: 'Daddy' },
+  { steps: ['brother'], label: 'Brother' },
+  { steps: ['sister'], label: 'Sister' },
+  { steps: ['father', 'father'], label: "Grandpa (Dad's side)" },
+  { steps: ['father', 'mother'], label: "Grandma (Dad's side)" },
+  { steps: ['mother', 'father'], label: "Grandpa (Mum's side)" },
+  { steps: ['mother', 'mother'], label: "Grandma (Mum's side)" },
+  { legacy: 'baby', label: 'Baby' },
+  { legacy: 'friend', label: 'Friend' },
+  { legacy: 'pet', label: 'Pet' },
+];
+
+const samePath = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+// Old members carry only the flat enum; the unambiguous values open the
+// editor as their equivalent path, the side-of-family-unknown ones (grandma,
+// uncle…) stay legacy until the parent rebuilds them.
+const LEGACY_TO_PATH = {
+  mummy: ['mother'],
+  daddy: ['father'],
+  brother: ['brother'],
+  sister: ['sister'],
+};
+
+const initialRelState = (initial) => {
+  if (!initial) return { kind: 'path', steps: ['mother'], seniority: null };
+  const detail = initial.relation_detail;
+  if (detail?.steps?.length)
+    return { kind: 'path', steps: detail.steps, seniority: detail.seniority || null };
+  if (LEGACY_TO_PATH[initial.relation])
+    return { kind: 'path', steps: LEGACY_TO_PATH[initial.relation], seniority: null };
+  return { kind: 'legacy', value: initial.relation || 'friend' };
+};
+
+// Round photo (or kinship emoji stand-in) used in the member list
 const MemberFace = ({ member, size = 'w-12 h-12', textSize = 'text-2xl' }) => {
-  const url = familyPhotoUrl(member.photo_path);
+  const url = familyPhotoUrl(memberPhotoPaths(member)[0]);
   return url ? (
     <img
       src={url}
@@ -33,30 +83,43 @@ const MemberFace = ({ member, size = 'w-12 h-12', textSize = 'text-2xl' }) => {
       className={`${size} ${textSize} rounded-full bg-gray-100 flex items-center justify-center shrink-0`}
       aria-hidden="true"
     >
-      {relationByValue(member.relation)?.emoji || '🙂'}
+      {kinshipEmoji(member) || relationByValue(member.relation)?.emoji || '🙂'}
     </span>
   );
 };
 
+const chipClass = (selected) =>
+  `px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
+    selected
+      ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-400'
+      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+  }`;
+
 // Add/edit form for one family member. The name is what the child actually
 // SAYS ("Nana", "Papa") — it drives the lesson audio; the relation places
-// the member in the family tree.
+// the member in the family tree and labels them in the child's language.
 const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
+  const { locale } = useLocale();
   const [name, setName] = useState(initial?.name || '');
-  const [relation, setRelation] = useState(initial?.relation || 'mummy');
-  const [photoFile, setPhotoFile] = useState(null);
+  const [rel, setRel] = useState(() => initialRelState(initial));
+  const [customLabel, setCustomLabel] = useState(
+    initial?.relation_detail?.label || ''
+  );
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
 
-  // Picked photos go through the crop frame first (converting HEIC → JPEG
-  // when needed), so photoFile is always an exactly-sized square JPEG. The
-  // preview object URL is made when the crop lands (not in an effect) and
-  // revoked on replace/unmount via the ref.
+  // Photos are staged until Save: existing entries keep their storage path,
+  // new picks go through the crop frame (converting HEIC → JPEG when
+  // needed) and hold a blob + preview object URL, revoked via the ref.
+  const [photos, setPhotos] = useState(() =>
+    memberPhotoPaths(initial).map((path, i) => ({ key: `existing-${i}`, path }))
+  );
   const [cropSource, setCropSource] = useState(null); // Blob awaiting crop
   const [converting, setConverting] = useState(false);
-  const [previewUrl, setPreviewUrl] = useState(null);
-  const previewUrlRef = useRef(null);
+  const previewUrlsRef = useRef([]);
+  const nextKeyRef = useRef(0);
+
   const pickPhoto = async (file) => {
     setError(null);
     setConverting(true);
@@ -70,27 +133,77 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
   };
   const applyCropped = (blob) => {
     setCropSource(null);
-    if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
-    previewUrlRef.current = URL.createObjectURL(blob);
-    setPhotoFile(blob);
-    setPreviewUrl(previewUrlRef.current);
+    const previewUrl = URL.createObjectURL(blob);
+    previewUrlsRef.current.push(previewUrl);
+    setPhotos((prev) => [
+      ...prev,
+      { key: `new-${nextKeyRef.current++}`, blob, previewUrl },
+    ]);
   };
+  const removePhoto = (key) =>
+    setPhotos((prev) => prev.filter((p) => p.key !== key));
   useEffect(
     () => () => {
-      if (previewUrlRef.current) URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlsRef.current.forEach((url) => URL.revokeObjectURL(url));
     },
     []
   );
-  const photoSrc = previewUrl || familyPhotoUrl(initial?.photo_path);
 
-  const canSave = name.trim().length > 0 && name.trim().length <= 30 && !saving;
+  const steps = rel.kind === 'path' ? rel.steps : [];
+  const setSteps = (nextSteps) =>
+    setRel({
+      kind: 'path',
+      steps: nextSteps,
+      seniority: seniorityApplies(nextSteps)
+        ? (rel.kind === 'path' && rel.seniority) || null
+        : null,
+    });
+
+  // What the child will see under the photo, in their language
+  const previewDetail = {
+    relationDetail: {
+      steps,
+      seniority: rel.kind === 'path' ? rel.seniority : null,
+      label: customLabel.trim() || null,
+    },
+    relation: rel.kind === 'legacy' ? rel.value : undefined,
+  };
+  const previewEn = kinshipLabel(previewDetail, 'en');
+  const previewLocalized = locale !== 'en' ? kinshipLabel(previewDetail, locale) : null;
+
+  const canSave =
+    name.trim().length > 0 &&
+    name.trim().length <= 30 &&
+    (rel.kind === 'legacy' || steps.length > 0) &&
+    !saving;
 
   const handleSave = async () => {
     if (!canSave) return;
     setSaving(true);
     setError(null);
+    const relationFields =
+      rel.kind === 'path'
+        ? {
+            relation: legacyRelationValue(steps),
+            relationDetail: {
+              steps,
+              seniority: seniorityApplies(steps) ? rel.seniority : null,
+              label: customLabel.trim() || null,
+            },
+          }
+        : {
+            relation: rel.value,
+            relationDetail: customLabel.trim()
+              ? { steps: null, seniority: null, label: customLabel.trim() }
+              : null,
+          };
     try {
-      await onSave({ name: name.trim(), relation, photoFile });
+      await onSave({
+        name: name.trim(),
+        ...relationFields,
+        photoFiles: photos.filter((p) => p.blob).map((p) => p.blob),
+        keptPhotoPaths: photos.filter((p) => p.path).map((p) => p.path),
+      });
     } catch (e) {
       setError(e.message || 'Could not save');
       setSaving(false);
@@ -101,24 +214,49 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
 
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4 flex flex-col gap-4">
-      <div className="flex items-center gap-4">
-        <button
-          onClick={() => fileInputRef.current?.click()}
-          disabled={converting}
-          aria-label={photoSrc ? 'Change photo' : 'Add photo'}
-          className="relative w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden ring-2 ring-gray-200 hover:ring-indigo-400 transition-shadow shrink-0"
-        >
-          {converting ? (
-            <Loader2 size={28} className="text-gray-400 animate-spin" />
-          ) : photoSrc ? (
-            <img src={photoSrc} alt="" className="w-full h-full object-cover" />
-          ) : (
-            <Camera size={28} className="text-gray-400" />
-          )}
-          <span className="absolute bottom-0 inset-x-0 bg-black/40 text-white text-[10px] font-semibold py-0.5">
-            {converting ? 'Reading…' : photoSrc ? 'Change' : 'Photo'}
+      <div className="flex flex-col gap-1">
+        <span className="text-sm font-semibold text-gray-600">
+          Photos{' '}
+          <span className="font-normal text-gray-400">
+            — a few different ones help your child recognise the person, not
+            the picture
           </span>
-        </button>
+        </span>
+        <div className="flex flex-wrap gap-2">
+          {photos.map((p) => (
+            <span
+              key={p.key}
+              className="relative w-20 h-20 rounded-2xl overflow-hidden ring-2 ring-gray-200"
+            >
+              <img
+                src={p.previewUrl || familyPhotoUrl(p.path)}
+                alt=""
+                className="w-full h-full object-cover"
+              />
+              <button
+                onClick={() => removePhoto(p.key)}
+                aria-label="Remove photo"
+                className="absolute top-1 right-1 bg-black/50 hover:bg-black/70 text-white rounded-full p-0.5"
+              >
+                <X size={12} />
+              </button>
+            </span>
+          ))}
+          {photos.length < MAX_PHOTOS && (
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              disabled={converting}
+              aria-label="Add photo"
+              className="w-20 h-20 rounded-2xl bg-gray-100 flex items-center justify-center ring-2 ring-gray-200 hover:ring-indigo-400 text-gray-400 transition-shadow"
+            >
+              {converting ? (
+                <Loader2 size={24} className="animate-spin" />
+              ) : (
+                <Camera size={24} />
+              )}
+            </button>
+          )}
+        </div>
         <input
           ref={fileInputRef}
           type="file"
@@ -136,36 +274,154 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
             onCancel={() => setCropSource(null)}
           />
         )}
-        <label className="flex flex-col gap-1 flex-1 min-w-0">
-          <span className="text-sm font-semibold text-gray-600">Name</span>
-          <input
-            type="text"
-            value={name}
-            maxLength={30}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="What your child calls them — Nana, Papa…"
-            className="border border-gray-200 rounded-xl px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
-          />
-        </label>
       </div>
 
-      <div className="flex flex-col gap-1">
+      <label className="flex flex-col gap-1">
+        <span className="text-sm font-semibold text-gray-600">Name</span>
+        <input
+          type="text"
+          value={name}
+          maxLength={30}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="What your child calls them — Nana, Papa…"
+          className="border border-gray-200 rounded-xl px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        />
+      </label>
+
+      <div className="flex flex-col gap-1.5">
         <span className="text-sm font-semibold text-gray-600">Who are they?</span>
         <div className="flex flex-wrap gap-1.5">
-          {RELATIONS.map((r) => (
-            <button
-              key={r.value}
-              onClick={() => setRelation(r.value)}
-              aria-pressed={relation === r.value}
-              className={`px-3 py-1.5 rounded-full text-sm font-semibold transition-colors ${
-                relation === r.value
-                  ? 'bg-indigo-100 text-indigo-700 ring-2 ring-indigo-400'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
+          {QUICK_PICKS.map((pick) => {
+            const selected = pick.legacy
+              ? rel.kind === 'legacy' && rel.value === pick.legacy
+              : rel.kind === 'path' && samePath(steps, pick.steps);
+            return (
+              <button
+                key={pick.label}
+                onClick={() =>
+                  pick.legacy
+                    ? setRel({ kind: 'legacy', value: pick.legacy })
+                    : setSteps(pick.steps)
+                }
+                aria-pressed={selected}
+                className={chipClass(selected)}
+              >
+                {pick.legacy
+                  ? relationByValue(pick.legacy)?.emoji
+                  : pathEmoji(pick.steps)}{' '}
+                {pick.label}
+              </button>
+            );
+          })}
+          {/* An old member whose flat relation has no quick pick (grandma,
+              uncle…) keeps its selection visible until the parent rebuilds it */}
+          {rel.kind === 'legacy' &&
+            !QUICK_PICKS.some((p) => p.legacy === rel.value) && (
+              <button aria-pressed className={chipClass(true)}>
+                {relationByValue(rel.value)?.emoji} {relationLabel(rel.value)}
+              </button>
+            )}
+        </div>
+
+        {/* Path builder: any relation, one step at a time from the child —
+            Father's → Father's → Brother */}
+        <div className="mt-1 bg-gray-50 rounded-xl p-3 flex flex-col gap-2">
+          <span className="text-xs font-semibold text-gray-500">
+            Or build the exact relation, step by step from your child:
+          </span>
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="px-2.5 py-1 rounded-lg bg-white border border-gray-200 text-sm font-semibold text-gray-500">
+              Child&apos;s
+            </span>
+            {steps.map((s, i) => (
+              <span
+                key={`${s}-${i}`}
+                className="px-2.5 py-1 rounded-lg bg-indigo-50 border border-indigo-200 text-sm font-semibold text-indigo-700"
+              >
+                {KINSHIP_STEPS.find((k) => k.value === s)?.label}
+                {i < steps.length - 1 ? "'s" : ''}
+              </span>
+            ))}
+            <select
+              value=""
+              aria-label="Add a step"
+              onChange={(e) => {
+                if (e.target.value) setSteps([...steps, e.target.value]);
+              }}
+              className="px-2 py-1 rounded-lg border border-dashed border-gray-300 text-sm font-semibold text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
             >
-              {r.emoji} {r.label}
-            </button>
-          ))}
+              <option value="">{steps.length ? "+ 's …" : '+ add…'}</option>
+              {KINSHIP_STEPS.map((k) => (
+                <option key={k.value} value={k.value}>
+                  {k.label}
+                </option>
+              ))}
+            </select>
+            {steps.length > 0 && (
+              <button
+                onClick={() => setSteps(steps.slice(0, -1))}
+                aria-label="Remove last step"
+                className="p-1.5 text-gray-400 hover:text-gray-600"
+              >
+                <Delete size={16} />
+              </button>
+            )}
+          </div>
+
+          {rel.kind === 'path' && seniorityApplies(steps) && (
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-semibold text-gray-500">
+                Elder or younger?
+              </span>
+              {[
+                { value: 'elder', label: 'Elder' },
+                { value: null, label: 'Either' },
+                { value: 'younger', label: 'Younger' },
+              ].map((opt) => (
+                <button
+                  key={opt.label}
+                  onClick={() => setRel({ ...rel, seniority: opt.value })}
+                  aria-pressed={rel.seniority === opt.value}
+                  className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-colors ${
+                    rel.seniority === opt.value
+                      ? 'bg-amber-100 text-amber-700 ring-2 ring-amber-400'
+                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <label className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-gray-500">
+              Your own word for them (optional — shown instead of ours)
+            </span>
+            <input
+              type="text"
+              value={customLabel}
+              maxLength={30}
+              onChange={(e) => setCustomLabel(e.target.value)}
+              placeholder="e.g., Bada Bapa"
+              className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            />
+          </label>
+
+          {(previewEn || previewLocalized) && (
+            <span className="text-sm text-gray-500">
+              Shown as:{' '}
+              <span className="font-bold text-amber-600">{previewEn}</span>
+              {previewLocalized && previewLocalized !== previewEn && (
+                <>
+                  {' · '}
+                  <span className="font-bold text-amber-600">
+                    {previewLocalized}
+                  </span>
+                </>
+              )}
+            </span>
+          )}
         </div>
       </div>
 
@@ -220,8 +476,8 @@ const FamilyManager = () => {
                 {member.name}
               </span>
               <span className="text-xs text-gray-400 font-medium">
-                {relationLabel(member.relation)}
-                {!member.photo_path && ' · no photo yet'}
+                {kinshipLabel(member, 'en')}
+                {memberPhotoPaths(member).length === 0 && ' · no photo yet'}
               </span>
             </span>
             <button

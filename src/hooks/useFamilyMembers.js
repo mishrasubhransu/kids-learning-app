@@ -1,7 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
-import { uploadFamilyPhoto, removeFamilyPhotos } from '../lib/familyPhotos';
+import {
+  uploadFamilyPhoto,
+  removeFamilyPhoto,
+  removeFamilyPhotos,
+} from '../lib/familyPhotos';
 
 // Family members for the signed-in account (shared by every child profile —
 // the same grandma belongs to all siblings). Same caching philosophy as
@@ -12,7 +16,16 @@ import { uploadFamilyPhoto, removeFamilyPhotos } from '../lib/familyPhotos';
 // clip via the name-audio API; until (or unless) it lands, the lesson just
 // speaks the name with TTS.
 
-const LS_CACHE = 'familyMembers-v1'; // { userId, members }
+const LS_CACHE = 'familyMembers-v2'; // { userId, members } — v2: photo_paths + relation_detail
+
+// photo_paths is canonical; rows from before the multi-photo migration may
+// only have the single photo_path
+export const memberPhotoPaths = (member) =>
+  member?.photo_paths?.length
+    ? member.photo_paths
+    : member?.photo_path
+      ? [member.photo_path]
+      : [];
 
 const readCache = (userId) => {
   try {
@@ -109,25 +122,37 @@ const useFamilyMembers = () => {
     [session, apply]
   );
 
+  // relationDetail is the kinship path ({ steps, seniority, label }) or null
+  // for the flat legacy values (friend, pet…); the legacy `relation` column
+  // is always written too so stale clients keep rendering something sane.
+  // photoFiles is an array — photo_paths is canonical, photo_path mirrors
+  // its first entry for back-compat.
   const addMember = useCallback(
-    async ({ name, relation, photoFile }) => {
+    async ({ name, relation, relationDetail = null, photoFiles = [] }) => {
       if (!user) return null;
       const { data, error } = await supabase
         .from('family_members')
-        .insert({ user_id: user.id, name, relation })
+        .insert({ user_id: user.id, name, relation, relation_detail: relationDetail })
         .select()
         .single();
       if (error || !data) throw new Error(error?.message || 'Could not save');
       let member = data;
-      if (photoFile) {
-        const photo_path = await uploadFamilyPhoto(user.id, member.id, photoFile);
+      if (photoFiles.length) {
+        const photo_paths = [];
+        for (const blob of photoFiles) {
+          photo_paths.push(await uploadFamilyPhoto(user.id, member.id, blob));
+        }
         const { data: updated } = await supabase
           .from('family_members')
-          .update({ photo_path, updated_at: new Date().toISOString() })
+          .update({
+            photo_paths,
+            photo_path: photo_paths[0],
+            updated_at: new Date().toISOString(),
+          })
           .eq('id', member.id)
           .select()
           .single();
-        member = updated || { ...member, photo_path };
+        member = updated || { ...member, photo_paths, photo_path: photo_paths[0] };
       }
       apply((prev) => [...(prev || []), member]);
       requestMemberAudio(member.id);
@@ -136,13 +161,31 @@ const useFamilyMembers = () => {
     [user, apply, requestMemberAudio]
   );
 
+  // keptPhotoPaths: existing paths the parent did NOT remove (undefined =
+  // keep all). Dropped files leave storage only after the row stops
+  // referencing them, so a failed update never orphans the row's photos.
   const updateMember = useCallback(
-    async (memberId, { name, relation, photoFile }) => {
+    async (
+      memberId,
+      { name, relation, relationDetail = null, keptPhotoPaths, photoFiles = [] }
+    ) => {
       if (!user) return;
       const before = members?.find((m) => m.id === memberId);
-      const fields = { name, relation, updated_at: new Date().toISOString() };
-      if (photoFile) {
-        fields.photo_path = await uploadFamilyPhoto(user.id, memberId, photoFile);
+      const prevPaths = memberPhotoPaths(before);
+      const kept = keptPhotoPaths ?? prevPaths;
+      const fields = {
+        name,
+        relation,
+        relation_detail: relationDetail,
+        updated_at: new Date().toISOString(),
+      };
+      if (photoFiles.length || keptPhotoPaths) {
+        const added = [];
+        for (const blob of photoFiles) {
+          added.push(await uploadFamilyPhoto(user.id, memberId, blob));
+        }
+        fields.photo_paths = [...kept, ...added];
+        fields.photo_path = fields.photo_paths[0] ?? null;
       }
       const { data, error } = await supabase
         .from('family_members')
@@ -151,6 +194,7 @@ const useFamilyMembers = () => {
         .select()
         .single();
       if (error) throw new Error(error.message);
+      prevPaths.filter((p) => !kept.includes(p)).forEach(removeFamilyPhoto);
       apply((prev) => (prev || []).map((m) => (m.id === memberId ? data : m)));
       if (name && name !== before?.name) requestMemberAudio(memberId);
     },

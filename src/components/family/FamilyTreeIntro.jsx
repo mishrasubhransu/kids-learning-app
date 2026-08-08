@@ -2,7 +2,9 @@ import { useEffect, useMemo, useRef, useCallback } from 'react';
 import useVoice from '../../hooks/useVoice';
 import { fixedLinePart } from '../../data/voiceLines';
 import { relationByValue } from '../../data/relations';
+import { kinshipGeneration, kinshipEmoji } from '../../data/kinship';
 import { familyPhotoUrl } from '../../lib/familyPhotos';
+import { memberPhotoPaths } from '../../hooks/useFamilyMembers';
 
 // Family-tree entry page — the My Family take on CategoryIntro: instead of
 // a scattered collage, members stand in generation rows (grandparents,
@@ -46,12 +48,15 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
   const rows = useMemo(() => {
     const byGeneration = [[], [], []];
     members.forEach((m) => {
-      const gen = relationByValue(m.relation)?.generation ?? 2;
+      // Kinship paths know their own row (a grand-uncle joins the
+      // grandparents); flat legacy relations keep their enum row
+      const gen =
+        kinshipGeneration(m) ?? relationByValue(m.relation)?.generation ?? 2;
       byGeneration[gen].push({
         key: m.id,
         name: m.name,
-        photoUrl: familyPhotoUrl(m.photo_path),
-        emoji: relationByValue(m.relation)?.emoji || '🙂',
+        photoUrl: familyPhotoUrl(memberPhotoPaths(m)[0]),
+        emoji: kinshipEmoji(m) || relationByValue(m.relation)?.emoji || '🙂',
       });
     });
     if (activeChild) {
