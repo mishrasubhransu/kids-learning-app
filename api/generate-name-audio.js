@@ -1,6 +1,7 @@
 /* global process, Buffer */
 import { createHash } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
+import { alertTelegram } from './_lib/telegram-alert.js';
 
 // Per-child voice clips (same ElevenLabs voice as the prerecorded praise
 // clips), stored in the name-audio bucket. Three actions, all keyed by a
@@ -305,6 +306,7 @@ export default async function handler(req, res) {
           const { error } = await admin.storage.from(BUCKET).remove(files);
           if (error) {
             console.error('name-audio member delete failed:', error.message);
+            await alertTelegram(error.message, 'name-audio member delete failed');
             return res.status(502).json({ error: 'Storage delete failed' });
           }
         }
@@ -403,6 +405,7 @@ export default async function handler(req, res) {
         const { error } = await admin.storage.from(BUCKET).remove(files);
         if (error) {
           console.error('name-audio delete failed:', error.message);
+          await alertTelegram(error.message, 'name-audio delete failed');
           return res.status(502).json({ error: 'Storage delete failed' });
         }
       }
@@ -491,6 +494,11 @@ export default async function handler(req, res) {
     return res.status(200).json({ path: manifestPath });
   } catch (error) {
     console.error(`generate-name-audio ${action} error:`, error);
+    // One budget per issue type (fingerprinted in telegram-alert.js), so a
+    // quota storm collapses to 4 messages a day even across actions.
+    // Awaited: Vercel may freeze the instance right after the response
+    // goes out, killing a fire-and-forget send.
+    await alertTelegram(error.message, `generate-name-audio ${action} error`);
     return res.status(502).json({ error: 'Voice generation failed' });
   }
 }
