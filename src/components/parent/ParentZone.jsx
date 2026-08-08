@@ -441,7 +441,7 @@ const ParentZone = () => {
               />
               <OptionRow
                 label="Lesson size"
-                hint="Pictures per lesson visit — the rest rotate in next time. Numbers always count the full range"
+                hint="Pictures per lesson visit — the rest rotate in next time. Alphabets, numbers and phonics always show the full set"
                 options={[
                   { value: '5', label: '5' },
                   { value: '8', label: '8' },
@@ -453,7 +453,7 @@ const ParentZone = () => {
               />
               <OptionRow
                 label="Test length"
-                hint="Questions per test — unseen ones come first next visit. Numbers always test the full range"
+                hint="Questions per test — unseen ones come first next visit. Alphabets, numbers and phonics always test the full set"
                 options={[
                   { value: '3', label: '3' },
                   { value: '5', label: '5' },

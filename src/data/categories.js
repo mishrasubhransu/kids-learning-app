@@ -14,6 +14,22 @@ export const homeCategories = [
     textColor: 'text-white',
     preview: 'ABC',
   },
+  // Promoted out of the Phonics page (2026-08-07): its own card next to
+  // Alphabets. lessonKey/path alias the original nested lesson — the
+  // registry key must stay 'phonics.letters' or existing profiles' settings
+  // for it would read as disabled (absent key = off).
+  {
+    id: 'letter-sounds',
+    lessonKey: 'phonics.letters',
+    path: '/phonics/letters',
+    name: 'Letter Sounds',
+    description: 'A is for Apple',
+    icon: Volume2,
+    color: 'bg-rose-500',
+    hoverColor: 'group-hover:bg-rose-600',
+    textColor: 'text-white',
+    preview: '🍎',
+  },
   {
     id: 'numbers',
     name: 'Numbers',

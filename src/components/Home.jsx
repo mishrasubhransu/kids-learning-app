@@ -28,10 +28,20 @@ const Home = () => {
     setNumberMax(numberMax === '10' ? '20' : '10');
   };
 
-  const visibleCategories = homeCategories.filter(
-    (cat) =>
-      isLessonAvailable(locale, cat.id) && isLessonVisible(enabledLessons, cat.id)
-  );
+  // ABC/Aa on the Letter Sounds card — the same setting the lesson reads
+  const [letterCase, setLetterCase] = useChildSetting('letterCase', 'capital', {
+    legacyKey: 'setting-letterCase',
+  });
+  const toggleLetterCase = () => {
+    setLetterCase(letterCase === 'capital' ? 'small' : 'capital');
+  };
+
+  // Cards that alias a nested lesson (Letter Sounds → phonics.letters) are
+  // checked under their registry key, not their card id
+  const visibleCategories = homeCategories.filter((cat) => {
+    const key = cat.lessonKey ?? cat.id;
+    return isLessonAvailable(locale, key) && isLessonVisible(enabledLessons, key);
+  });
 
   const greetName =
     activeChild && activeChild.name !== DEFAULT_CHILD_NAME ? activeChild.name : null;
@@ -57,7 +67,9 @@ const Home = () => {
           const IconComponent = category.icon;
           const darkText = category.textColor === 'text-gray-900';
           const hasPill =
-            category.id === 'numbers' || Boolean(stylesForCategory(category.id));
+            category.id === 'numbers' ||
+            category.id === 'letter-sounds' ||
+            Boolean(stylesForCategory(category.id));
           // Pills are siblings positioned over the card, not children of the
           // Link — nested interactive elements are invalid HTML and a tap
           // aimed at the card could silently flip a setting.
@@ -75,7 +87,7 @@ const Home = () => {
               className="group relative transform transition-transform duration-200 motion-safe:hover:scale-105"
             >
               <Link
-                to={`/${category.id}`}
+                to={category.path ?? `/${category.id}`}
                 className={`${category.color} ${category.hoverColor} ${category.textColor} h-full rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-200 group-hover:shadow-xl flex flex-col items-center justify-center gap-3`}
               >
                 <IconComponent size={48} className="md:w-16 md:h-16" />
@@ -109,6 +121,14 @@ const Home = () => {
                     {objectIcons[objectType]}
                   </button>
                 </div>
+              ) : category.id === 'letter-sounds' ? (
+                <button
+                  onClick={toggleLetterCase}
+                  aria-pressed={letterCase === 'small'}
+                  className={`${pillBase} ${pillPos}`}
+                >
+                  {letterCase === 'capital' ? 'ABC' : 'Aa'}
+                </button>
               ) : stylesForCategory(category.id) ? (
                 <StyleToggle
                   category={category.id}

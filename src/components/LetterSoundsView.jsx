@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import HomeButton from './ui/HomeButton';
 import useChildSetting from '../hooks/useChildSetting';
 import {
@@ -41,6 +41,7 @@ const LetterSoundsView = () => {
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   // Mirrors isAudioPlayingRef so the Next arrow can show the locked state
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isAutoplay, setIsAutoplay] = useState(false);
   // 'capital' shows only uppercase everywhere; 'small' adds lowercase
   const [letterCase] = useChildSetting('letterCase', 'capital', {
     legacyKey: 'setting-letterCase',
@@ -51,6 +52,8 @@ const LetterSoundsView = () => {
   // Forward navigation waits for the clip to finish, however long it is
   const isAudioPlayingRef = useRef(false);
   const unlockTimerRef = useRef(null);
+  // Autoplay's hook into "the current clip finished" (set while autoplaying)
+  const onClipEndRef = useRef(null);
 
   const { letter, words } = letterSounds[current.index];
   const word = words[current.wordIdx];
@@ -64,13 +67,16 @@ const LetterSoundsView = () => {
     const audio = new Audio(letterAudioSrc(letter, word.slug));
     audioRef.current = audio;
     isAudioPlayingRef.current = true;
+    let done = false;
     const clear = () => {
       // A superseded clip's late ended/error/abort must not unlock the
-      // clip that replaced it (StrictMode remount, rapid navigation)
-      if (audioRef.current === audio) {
-        isAudioPlayingRef.current = false;
-        setIsAudioPlaying(false);
-      }
+      // clip that replaced it (StrictMode remount, rapid navigation); the
+      // done guard keeps the 5s stall fallback from re-firing autoplay
+      if (done || audioRef.current !== audio) return;
+      done = true;
+      isAudioPlayingRef.current = false;
+      setIsAudioPlaying(false);
+      onClipEndRef.current?.();
     };
     audio.addEventListener('ended', clear);
     audio.addEventListener('error', clear);
@@ -127,14 +133,41 @@ const LetterSoundsView = () => {
 
   const goNext = useCallback(() => {
     if (isCoolingDownRef.current || isAudioPlayingRef.current) return;
+    setIsAutoplay(false);
     goTo((i) => (i < letterSounds.length - 1 ? i + 1 : 0));
     startCooldown();
   }, [goTo, startCooldown]);
 
   // Back skips the cooldown — it only exists to stop forward mashing
   const goPrev = useCallback(() => {
+    setIsAutoplay(false);
     goTo((i) => (i > 0 ? i - 1 : letterSounds.length - 1));
   }, [goTo]);
+
+  // Autoplay (same ▶ as the other lessons): advance a beat after each clip
+  // ends, stop after Z. Arrows and dots stop it; a picture tap just replays.
+  useEffect(() => {
+    if (!isAutoplay) return;
+    let advanceTimer;
+    onClipEndRef.current = () => {
+      advanceTimer = setTimeout(() => {
+        if (current.index >= letterSounds.length - 1) setIsAutoplay(false);
+        else goTo((i) => i + 1);
+      }, 1200);
+    };
+    return () => {
+      clearTimeout(advanceTimer);
+      onClipEndRef.current = null;
+    };
+  }, [isAutoplay, current.index, goTo]);
+
+  const startAutoplay = useCallback(() => {
+    setIsAutoplay(true);
+    // Restart from A: the letter-change effect plays the clip; when already
+    // on A nothing changes, so kick the first clip off by hand
+    if (current.index === 0) playCurrent();
+    else goTo(() => 0);
+  }, [current.index, playCurrent, goTo]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -160,21 +193,34 @@ const LetterSoundsView = () => {
     >
       {/* Home button */}
       <div className="absolute top-4 left-4 z-10">
-        <HomeButton to="/phonics" />
+        <HomeButton />
       </div>
 
-      {/* Replay button */}
-      <button
-        onClick={playCurrent}
-        className={`absolute top-4 right-4 z-10 p-3 rounded-full text-white transition-colors focus-visible:outline-white/70 ${
-          isAudioPlaying
-            ? 'bg-white/30 motion-safe:animate-pulse'
-            : 'bg-white/20 hover:bg-white/30'
-        }`}
-        aria-label="Say it again"
-      >
-        <Volume2 size={28} />
-      </button>
+      {/* Autoplay + replay buttons */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        <button
+          onClick={() => (isAutoplay ? setIsAutoplay(false) : startAutoplay())}
+          className={`p-3 rounded-full transition-colors focus-visible:outline-white/70 ${
+            isAutoplay
+              ? 'bg-red-100 text-red-600 hover:bg-red-200'
+              : 'bg-white/20 text-white hover:bg-white/30'
+          }`}
+          aria-label={isAutoplay ? 'Stop autoplay' : 'Start autoplay'}
+        >
+          {isAutoplay ? <Square size={28} /> : <Play size={28} />}
+        </button>
+        <button
+          onClick={playCurrent}
+          className={`p-3 rounded-full text-white transition-colors focus-visible:outline-white/70 ${
+            isAudioPlaying
+              ? 'bg-white/30 motion-safe:animate-pulse'
+              : 'bg-white/20 hover:bg-white/30'
+          }`}
+          aria-label="Say it again"
+        >
+          <Volume2 size={28} />
+        </button>
+      </div>
 
       {/* Main display - clickable to replay */}
       <button
@@ -250,6 +296,7 @@ const LetterSoundsView = () => {
           <button
             key={entry.letter}
             onClick={() => {
+              setIsAutoplay(false);
               setCurrent({ index: idx, wordIdx: randomWordIdx(idx) });
               setBgColor((c) => nextBgColor(bgColors, c));
             }}

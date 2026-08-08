@@ -12,8 +12,10 @@ import { phonicsFamilies } from './phonics';
 // (they show a "New" badge in the Parent Zone). No map at all (profile not
 // loaded yet, or something went wrong) fails open: everything shows.
 
+// The Letter Sounds card aliases the nested 'phonics.letters' key
+// (cat.lessonKey) so profiles from before its promotion keep their setting.
 export const lessonTree = homeCategories.map((cat) => ({
-  key: cat.id,
+  key: cat.lessonKey ?? cat.id,
   name: cat.name,
   emoji: cat.preview,
   children:
@@ -24,14 +26,11 @@ export const lessonTree = homeCategories.map((cat) => ({
           emoji: c.emoji,
         }))
       : cat.id === 'phonics'
-        ? [
-            { key: 'phonics.letters', name: 'Letter Sounds', emoji: '🍎' },
-            ...phonicsFamilies.map((f) => ({
-              key: `phonics.${f.id}`,
-              name: f.name,
-              emoji: f.emoji || '🔤',
-            })),
-          ]
+        ? phonicsFamilies.map((f) => ({
+            key: `phonics.${f.id}`,
+            name: f.name,
+            emoji: f.emoji || '🔤',
+          }))
         : null,
 }));
 
@@ -63,10 +62,14 @@ export const defaultEnabledLessons = () =>
 
 // Sub-lessons need their parent on too, so unchecking a category hides the
 // whole subtree while the individual sub states survive for re-enabling.
+// Top-level-ness comes from the tree, not the dot: 'phonics.letters' is its
+// own card now, so turning Phonics off must not take it down too.
+const topLevelKeys = new Set(lessonTree.map((l) => l.key));
+
 export const isLessonEnabled = (enabled, key) => {
   if (!enabled) return true;
   const top = key.split('.')[0];
-  if (key !== top && !enabled[top]) return false;
+  if (!topLevelKeys.has(key) && !enabled[top]) return false;
   return Boolean(enabled[key]);
 };
 

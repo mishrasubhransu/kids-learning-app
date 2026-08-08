@@ -12,6 +12,8 @@ export default {
   // Lesson card names (Home + Concepts grid + page titles)
   'cat.alphabets': 'Alphabets',
   'cat.alphabets.desc': 'Learn A to Z',
+  'cat.letter-sounds': 'Letter Sounds',
+  'cat.letter-sounds.desc': 'A is for Apple',
   'cat.numbers': 'Numbers',
   'cat.colors': 'Colors',
   'cat.colors.desc': 'Learn colors',
