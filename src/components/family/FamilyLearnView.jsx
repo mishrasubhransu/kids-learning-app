@@ -4,6 +4,7 @@ import useSpeech from '../../hooks/useSpeech';
 import { neutralNameUrl } from '../../lib/nameAudio';
 import { relationByValue } from '../../data/relations';
 import { kinshipLabel, kinshipEmoji, selfLabel } from '../../data/kinship';
+import { LOCALES } from '../../locales';
 import { useLocale } from '../../context/LocaleContext';
 import { useChildProfile } from '../../context/ChildProfileContext';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
@@ -33,14 +34,20 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
     (item) => {
       audioRef.current?.pause();
       cancel();
+      // Browser-TTS fallback follows the member's own voice language, same
+      // as their generated clip
+      const sayFallback = () =>
+        speak(item.name, {
+          lang: LOCALES[item.nameLang]?.ttsLang || 'en-US',
+        });
       if (item.audioPath) {
         const audio = new Audio(neutralNameUrl(item.audioPath));
         audioRef.current = audio;
         // Clip missing or blocked: same name via TTS
-        audio.onerror = () => speak(item.name);
-        audio.play().catch(() => speak(item.name));
+        audio.onerror = sayFallback;
+        audio.play().catch(sayFallback);
       } else {
-        speak(item.name);
+        sayFallback();
       }
     },
     [cancel, speak]

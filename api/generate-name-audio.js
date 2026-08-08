@@ -31,9 +31,10 @@ const MODEL_ID = 'eleven_v3';
 
 // Non-English children get the same Gemini voice as the rest of their app
 // audio (scripts/generate-voice-clips-gemini.mjs) — a praise clip in the
-// English voice mid-Spanish-game would be jarring. Family members stay on
-// ElevenLabs: they're shared across siblings, so they have no per-child
-// locale to follow.
+// English voice mid-Spanish-game would be jarring. Family members carry
+// their own name_lang column instead (they're shared across siblings, so
+// there's no per-child locale to follow): "Jeje Bapa" reads badly in an
+// English voice, null means English.
 const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
 // Odia only renders on the 3.1 generation (2.5-flash/pro return no audio)
 const GEMINI_MODEL_BY_LOCALE = { or: 'gemini-3.1-flash-tts-preview' };
@@ -43,6 +44,15 @@ const GEMINI_STYLE = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
   or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
+};
+// Name reads use the neutral-precise demonstration style instead — the soft
+// mother tone blurs single words (user call 2026-08-07, or first). Praise
+// sentences keep GEMINI_STYLE. Same text as WORD_STYLE_PROMPT in
+// scripts/generate-voice-clips-gemini.mjs — keep in sync.
+const GEMINI_WORD_STYLE = {
+  es: 'Di esto en español latinoamericano neutro como una demostración de pronunciación clara y precisa — neutra y articulada, cada sílaba nítida y completamente enunciada, a un ritmo constante y uniforme, sin carga emocional:',
+  zh: 'Say this in standard Mandarin Chinese as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
+  or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
 };
 
 // Hand-written so the name sits naturally; audio tags + per-tier speeds
@@ -114,9 +124,11 @@ const pcmToWav = (pcm, rate) => {
   return Buffer.concat([header, pcm]);
 };
 
-const ttsGemini = async (apiKey, locale, text) => {
+const ttsGemini = async (apiKey, locale, text, style = null) => {
   const body = {
-    contents: [{ parts: [{ text: `${GEMINI_STYLE[locale]}\n\n${text}` }] }],
+    contents: [
+      { parts: [{ text: `${style || GEMINI_STYLE[locale]}\n\n${text}` }] },
+    ],
     generationConfig: {
       responseModalities: ['AUDIO'],
       speechConfig: {
@@ -279,7 +291,7 @@ export default async function handler(req, res) {
     if (memberId) {
       const { data: member } = await admin
         .from('family_members')
-        .select('id, user_id, name')
+        .select('id, user_id, name, name_lang')
         .eq('id', memberId)
         .maybeSingle();
       if (!member || member.user_id !== userData.user.id) {
@@ -303,16 +315,41 @@ export default async function handler(req, res) {
       if (!memberName) {
         return res.status(400).json({ error: 'Member has no name' });
       }
-      const audio = await ttsEleven(ELEVENLABS_API_KEY, memberName, {
-        stability: 0.5,
-        similarity_boost: 0.8,
-        style: 0.3,
-        speed: 1.0,
-        use_speaker_boost: true,
-      });
+      // Same en=ElevenLabs / non-en=Gemini split as the child branch below,
+      // but driven by the member's own name_lang
+      const memberLocale = PRAISE_TIERS_BY_LOCALE[member.name_lang]
+        ? member.name_lang
+        : 'en';
+      const memberGeminiKey = process.env.GEMINI_API_KEY;
+      if (memberLocale !== 'en' && !memberGeminiKey) {
+        return res.status(500).json({
+          error: `GEMINI_API_KEY missing — needed for ${memberLocale} voice`,
+        });
+      }
+      const memberExt = memberLocale === 'en' ? 'mp3' : 'wav';
+      const audio =
+        memberLocale === 'en'
+          ? await ttsEleven(ELEVENLABS_API_KEY, memberName, {
+              stability: 0.5,
+              similarity_boost: 0.8,
+              style: 0.3,
+              speed: 1.0,
+              use_speaker_boost: true,
+            })
+          : await ttsGemini(
+              memberGeminiKey,
+              memberLocale,
+              memberName,
+              GEMINI_WORD_STYLE[memberLocale]
+            );
       const ts = `${Date.now()}`;
-      const path = `${prefix}/${ts}/name.mp3`;
-      await upload(admin, path, audio, 'audio/mpeg');
+      const path = `${prefix}/${ts}/name.${memberExt}`;
+      await upload(
+        admin,
+        path,
+        audio,
+        memberLocale === 'en' ? 'audio/mpeg' : 'audio/wav'
+      );
       const { error: memberUpdateError } = await admin
         .from('family_members')
         .update({ name_audio_path: path, updated_at: new Date().toISOString() })
@@ -358,7 +395,7 @@ export default async function handler(req, res) {
             speed: 1.0,
             use_speaker_boost: true,
           })
-        : ttsGemini(geminiKey, locale, text);
+        : ttsGemini(geminiKey, locale, text, GEMINI_WORD_STYLE[locale]);
 
     if (action === 'delete') {
       const files = await listFilesDeep(admin, childPrefix);

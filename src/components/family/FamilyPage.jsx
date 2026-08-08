@@ -46,6 +46,7 @@ const FamilyPage = ({ backTo = '/home' }) => {
           relation: m.relation,
           relationDetail: m.relation_detail,
           childProfileId: m.child_profile_id,
+          nameLang: m.name_lang || 'en',
           images,
           image: images.length ? images[visitPhotoIndex(m.id, images.length)] : null,
           audioPath: m.name_audio_path,

@@ -133,6 +133,7 @@ const useFamilyMembers = () => {
       relation,
       relationDetail = null,
       childProfileId = null,
+      nameLang = 'en',
       photoFiles = [],
     }) => {
       if (!user) return null;
@@ -144,6 +145,7 @@ const useFamilyMembers = () => {
           relation,
           relation_detail: relationDetail,
           child_profile_id: childProfileId,
+          name_lang: nameLang,
         })
         .select()
         .single();
@@ -184,6 +186,7 @@ const useFamilyMembers = () => {
         relation,
         relationDetail = null,
         childProfileId = null,
+        nameLang = 'en',
         keptPhotoPaths,
         photoFiles = [],
       }
@@ -197,6 +200,7 @@ const useFamilyMembers = () => {
         relation,
         relation_detail: relationDetail,
         child_profile_id: childProfileId,
+        name_lang: nameLang,
         updated_at: new Date().toISOString(),
       };
       if (photoFiles.length || keptPhotoPaths) {
@@ -216,7 +220,11 @@ const useFamilyMembers = () => {
       if (error) throw new Error(error.message);
       prevPaths.filter((p) => !kept.includes(p)).forEach(removeFamilyPhoto);
       apply((prev) => (prev || []).map((m) => (m.id === memberId ? data : m)));
-      if (name && name !== before?.name) requestMemberAudio(memberId);
+      // A changed name OR voice language means the old clip is wrong
+      const langChanged = nameLang !== (before?.name_lang || 'en');
+      if ((name && name !== before?.name) || langChanged) {
+        requestMemberAudio(memberId);
+      }
     },
     [user, members, apply, requestMemberAudio]
   );

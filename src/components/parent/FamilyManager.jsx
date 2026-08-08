@@ -12,6 +12,7 @@ import {
   pathEmoji,
 } from '../../data/kinship';
 import { useLocale } from '../../context/LocaleContext';
+import { availableLocales } from '../../locales';
 import {
   useChildProfile,
   DEFAULT_CHILD_NAME,
@@ -114,6 +115,12 @@ const MemberEditor = ({
   const { locale } = useLocale();
   const isLinked = Boolean(linkChild || initial?.child_profile_id);
   const [name, setName] = useState(initial?.name || linkChild?.name || '');
+  // Which voice speaks the name — "Jeje Bapa" reads badly in English. New
+  // members default to the active child's language; old ones keep their
+  // English clip until changed.
+  const [nameLang, setNameLang] = useState(
+    initial ? initial.name_lang || 'en' : locale
+  );
   const [rel, setRel] = useState(() =>
     initial || !isLinked
       ? initialRelState(initial)
@@ -219,6 +226,7 @@ const MemberEditor = ({
         name: name.trim(),
         ...relationFields,
         childProfileId: linkChild?.id ?? initial?.child_profile_id ?? null,
+        nameLang,
         photoFiles: photos.filter((p) => p.blob).map((p) => p.blob),
         keptPhotoPaths: photos.filter((p) => p.path).map((p) => p.path),
       });
@@ -304,6 +312,23 @@ const MemberEditor = ({
           placeholder="What your child calls them — Nana, Papa…"
           className="border border-gray-200 rounded-xl px-3 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-indigo-400"
         />
+      </label>
+
+      <label className="flex items-center gap-2">
+        <span className="text-xs font-semibold text-gray-500">
+          Say the name in
+        </span>
+        <select
+          value={nameLang}
+          onChange={(e) => setNameLang(e.target.value)}
+          className="border border-gray-200 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+        >
+          {availableLocales().map((l) => (
+            <option key={l.id} value={l.id}>
+              {l.label}
+            </option>
+          ))}
+        </select>
       </label>
 
       <div className="flex flex-col gap-1.5">
