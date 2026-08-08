@@ -128,11 +128,23 @@ const useFamilyMembers = () => {
   // photoFiles is an array — photo_paths is canonical, photo_path mirrors
   // its first entry for back-compat.
   const addMember = useCallback(
-    async ({ name, relation, relationDetail = null, photoFiles = [] }) => {
+    async ({
+      name,
+      relation,
+      relationDetail = null,
+      childProfileId = null,
+      photoFiles = [],
+    }) => {
       if (!user) return null;
       const { data, error } = await supabase
         .from('family_members')
-        .insert({ user_id: user.id, name, relation, relation_detail: relationDetail })
+        .insert({
+          user_id: user.id,
+          name,
+          relation,
+          relation_detail: relationDetail,
+          child_profile_id: childProfileId,
+        })
         .select()
         .single();
       if (error || !data) throw new Error(error?.message || 'Could not save');
@@ -167,7 +179,14 @@ const useFamilyMembers = () => {
   const updateMember = useCallback(
     async (
       memberId,
-      { name, relation, relationDetail = null, keptPhotoPaths, photoFiles = [] }
+      {
+        name,
+        relation,
+        relationDetail = null,
+        childProfileId = null,
+        keptPhotoPaths,
+        photoFiles = [],
+      }
     ) => {
       if (!user) return;
       const before = members?.find((m) => m.id === memberId);
@@ -177,6 +196,7 @@ const useFamilyMembers = () => {
         name,
         relation,
         relation_detail: relationDetail,
+        child_profile_id: childProfileId,
         updated_at: new Date().toISOString(),
       };
       if (photoFiles.length || keptPhotoPaths) {

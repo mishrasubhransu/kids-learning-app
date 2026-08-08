@@ -3,8 +3,9 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import useSpeech from '../../hooks/useSpeech';
 import { neutralNameUrl } from '../../lib/nameAudio';
 import { relationByValue } from '../../data/relations';
-import { kinshipLabel, kinshipEmoji } from '../../data/kinship';
+import { kinshipLabel, kinshipEmoji, selfLabel } from '../../data/kinship';
 import { useLocale } from '../../context/LocaleContext';
+import { useChildProfile } from '../../context/ChildProfileContext';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 // One family member at a time: big photo, their name said out loud (the
@@ -19,6 +20,7 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const { speak, cancel } = useSpeech();
   const { locale } = useLocale();
+  const { activeChild } = useChildProfile();
   const audioRef = useRef(null);
   const current = items[currentIndex];
 
@@ -90,7 +92,10 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
         ? photoIdx % photoCount
         : 0;
   const photo = current.images?.[shownIdx] ?? current.image;
-  const pill = kinshipLabel(current, locale);
+  // A member linked to the viewing child's own profile is simply "Me!"
+  const isSelf =
+    current.childProfileId && current.childProfileId === activeChild?.id;
+  const pill = isSelf ? selfLabel(locale) : kinshipLabel(current, locale);
   // Repeat the name and, with several photos, hop to a different one —
   // same person, new picture
   const onCardTap = () => {

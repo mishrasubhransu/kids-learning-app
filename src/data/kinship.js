@@ -41,6 +41,20 @@ export const pathGeneration = (steps) => {
   return Math.max(0, Math.min(2, gen));
 };
 
+// Unclamped generations above the child (0 = the child's own line, 1 =
+// parents, 2 = grandparents, 3 = great-grandparents…) for layouts that give
+// every generation its own line.
+export const pathDepth = (steps) => {
+  let depth = 0;
+  for (const step of steps || []) depth -= stepByValue[step]?.move ?? 0;
+  return depth;
+};
+
+// A person's gender comes from the last step of their path (every step is
+// gendered): father.brother.wife → 'f'
+export const pathGender = (steps) =>
+  stepByValue[steps?.[steps.length - 1]]?.gender || null;
+
 // Emoji stand-in when there's no photo: gender from the last step, age from
 // the derived row.
 export const pathEmoji = (steps) => {
@@ -355,6 +369,13 @@ export const kinshipLabel = (member, locale = 'en') => {
   const alias = LEGACY_ALIASES[member.relation];
   return lookup(locale, alias || `legacy.${member.relation}`) ?? '';
 };
+
+// What a child sees on their OWN card when a family member is linked to
+// their profile (child_profile_id) — viewer-relative, so it lives outside
+// the path tables.
+const SELF_TERMS = { en: 'Me!', es: '¡Yo!', zh: '我', or: 'ମୁଁ' };
+
+export const selfLabel = (locale = 'en') => SELF_TERMS[locale] ?? SELF_TERMS.en;
 
 export const kinshipGeneration = (member) => {
   const detail = member.relation_detail ?? member.relationDetail;

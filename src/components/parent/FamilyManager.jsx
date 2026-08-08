@@ -12,6 +12,10 @@ import {
   pathEmoji,
 } from '../../data/kinship';
 import { useLocale } from '../../context/LocaleContext';
+import {
+  useChildProfile,
+  DEFAULT_CHILD_NAME,
+} from '../../context/ChildProfileContext';
 import PhotoCropper from './PhotoCropper';
 
 // iPhone photos are HEIC, which non-Safari browsers can't decode — convert
@@ -98,10 +102,23 @@ const chipClass = (selected) =>
 // Add/edit form for one family member. The name is what the child actually
 // SAYS ("Nana", "Papa") — it drives the lesson audio; the relation places
 // the member in the family tree and labels them in the child's language.
-const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
+// linkChild = one of the account's child profiles this member IS: their own
+// screen shows "Me!", so the only relation to pick is how siblings see them.
+const MemberEditor = ({
+  initial,
+  linkChild = null,
+  onSave,
+  onCancel,
+  saveLabel = 'Save',
+}) => {
   const { locale } = useLocale();
-  const [name, setName] = useState(initial?.name || '');
-  const [rel, setRel] = useState(() => initialRelState(initial));
+  const isLinked = Boolean(linkChild || initial?.child_profile_id);
+  const [name, setName] = useState(initial?.name || linkChild?.name || '');
+  const [rel, setRel] = useState(() =>
+    initial || !isLinked
+      ? initialRelState(initial)
+      : { kind: 'path', steps: [], seniority: null }
+  );
   const [customLabel, setCustomLabel] = useState(
     initial?.relation_detail?.label || ''
   );
@@ -201,6 +218,7 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
       await onSave({
         name: name.trim(),
         ...relationFields,
+        childProfileId: linkChild?.id ?? initial?.child_profile_id ?? null,
         photoFiles: photos.filter((p) => p.blob).map((p) => p.blob),
         keptPhotoPaths: photos.filter((p) => p.path).map((p) => p.path),
       });
@@ -290,6 +308,28 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
 
       <div className="flex flex-col gap-1.5">
         <span className="text-sm font-semibold text-gray-600">Who are they?</span>
+        {isLinked && (
+          <>
+            <span className="text-xs text-gray-400">
+              This is your child — their own screen will say &ldquo;Me!&rdquo;;
+              pick how brothers and sisters see them.
+            </span>
+            <div className="flex flex-wrap gap-1.5">
+              {['brother', 'sister'].map((sib) => (
+                <button
+                  key={sib}
+                  onClick={() => setSteps([sib])}
+                  aria-pressed={samePath(steps, [sib])}
+                  className={chipClass(samePath(steps, [sib]))}
+                >
+                  {pathEmoji([sib])} {sib === 'brother' ? 'Brother' : 'Sister'}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
+        {!isLinked && (
+          <>
         <div className="flex flex-wrap gap-1.5">
           {QUICK_PICKS.map((pick) => {
             const selected = pick.legacy
@@ -394,35 +434,38 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
             </div>
           )}
 
-          <label className="flex flex-col gap-1">
-            <span className="text-xs font-semibold text-gray-500">
-              Your own word for them (optional — shown instead of ours)
-            </span>
-            <input
-              type="text"
-              value={customLabel}
-              maxLength={30}
-              onChange={(e) => setCustomLabel(e.target.value)}
-              placeholder="e.g., Bada Bapa"
-              className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            />
-          </label>
-
-          {(previewEn || previewLocalized) && (
-            <span className="text-sm text-gray-500">
-              Shown as:{' '}
-              <span className="font-bold text-amber-600">{previewEn}</span>
-              {previewLocalized && previewLocalized !== previewEn && (
-                <>
-                  {' · '}
-                  <span className="font-bold text-amber-600">
-                    {previewLocalized}
-                  </span>
-                </>
-              )}
-            </span>
-          )}
         </div>
+          </>
+        )}
+
+        <label className="flex flex-col gap-1">
+          <span className="text-xs font-semibold text-gray-500">
+            Your own word for them (optional — shown instead of ours)
+          </span>
+          <input
+            type="text"
+            value={customLabel}
+            maxLength={30}
+            onChange={(e) => setCustomLabel(e.target.value)}
+            placeholder="e.g., Bada Bapa"
+            className="border border-gray-200 rounded-lg px-2.5 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          />
+        </label>
+
+        {(previewEn || previewLocalized) && (
+          <span className="text-sm text-gray-500">
+            Shown as:{' '}
+            <span className="font-bold text-amber-600">{previewEn}</span>
+            {previewLocalized && previewLocalized !== previewEn && (
+              <>
+                {' · '}
+                <span className="font-bold text-amber-600">
+                  {previewLocalized}
+                </span>
+              </>
+            )}
+          </span>
+        )}
       </div>
 
       {error && <div className="text-sm text-red-600">{error}</div>}
@@ -449,8 +492,23 @@ const MemberEditor = ({ initial, onSave, onCancel, saveLabel = 'Save' }) => {
 const FamilyManager = () => {
   const { members, loading, addMember, updateMember, removeMember } =
     useFamilyMembers();
+  const { childProfiles } = useChildProfile();
   const [editorMode, setEditorMode] = useState(null); // null | 'new' | memberId
+  // Child profile a NEW member is being linked to (via the suggestion chips)
+  const [linkChildId, setLinkChildId] = useState(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+
+  // Children not yet in the family list (skip the unnamed bootstrap profile)
+  const unlinkedChildren = (childProfiles || []).filter(
+    (p) =>
+      p.name !== DEFAULT_CHILD_NAME &&
+      !members.some((m) => m.child_profile_id === p.id)
+  );
+
+  const closeEditor = () => {
+    setEditorMode(null);
+    setLinkChildId(null);
+  };
 
   const handleDelete = (member) => {
     if (confirmDeleteId !== member.id) {
@@ -477,6 +535,7 @@ const FamilyManager = () => {
               </span>
               <span className="text-xs text-gray-400 font-medium">
                 {kinshipLabel(member, 'en')}
+                {member.child_profile_id && ' · your child'}
                 {memberPhotoPaths(member).length === 0 && ' · no photo yet'}
               </span>
             </span>
@@ -519,22 +578,51 @@ const FamilyManager = () => {
                 ? null
                 : members.find((m) => m.id === editorMode)
             }
+            linkChild={
+              (childProfiles || []).find((p) =>
+                editorMode === 'new'
+                  ? p.id === linkChildId
+                  : p.id ===
+                    members.find((m) => m.id === editorMode)?.child_profile_id
+              ) || null
+            }
             saveLabel={editorMode === 'new' ? 'Add member' : 'Save'}
             onSave={async (fields) => {
               if (editorMode === 'new') await addMember(fields);
               else await updateMember(editorMode, fields);
-              setEditorMode(null);
+              closeEditor();
             }}
-            onCancel={() => setEditorMode(null)}
+            onCancel={closeEditor}
           />
         </div>
       ) : (
-        <button
-          onClick={() => setEditorMode('new')}
-          className="mt-3 flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold"
-        >
-          <Plus size={18} /> Add a family member
-        </button>
+        <div className="mt-3 flex flex-col gap-2">
+          {unlinkedChildren.length > 0 && (
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-semibold text-gray-400">
+                Your children belong in the tree too:
+              </span>
+              {unlinkedChildren.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    setLinkChildId(p.id);
+                    setEditorMode('new');
+                  }}
+                  className="px-3 py-1.5 rounded-full text-sm font-semibold bg-amber-50 text-amber-700 ring-1 ring-amber-200 hover:bg-amber-100 transition-colors"
+                >
+                  {p.avatar} Add {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+          <button
+            onClick={() => setEditorMode('new')}
+            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-semibold"
+          >
+            <Plus size={18} /> Add a family member
+          </button>
+        </div>
       )}
     </>
   );
