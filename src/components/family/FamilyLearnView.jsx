@@ -11,7 +11,9 @@ import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 
 // One family member at a time: big photo, their name said out loud (the
 // ElevenLabs name clip when it exists, TTS otherwise), arrows to move on —
-// right arrow drives everything, tap the photo to hear the name again (and,
+// right arrow drives everything, but forward waits for the name to finish
+// plus a 1s cooldown (same anti-rush gate as the other lessons; back stays
+// free — it's a correction). Tap the photo to hear the name again (and,
 // when the member has several photos, see another one — same person, new
 // picture). The kinship pill under the name is in the child's language.
 // holdIntro keeps this view silent and deaf to keys while the family-tree
@@ -19,10 +21,22 @@ import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 // ScrollView/PairLearnView — the first name lands as the reveal opens.
 const FamilyLearnView = ({ items, holdIntro = false }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isCoolingDown, setIsCoolingDown] = useState(false);
+  // Mirrors isAudioPlayingRef so the Next arrow can show the locked state
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const { speak, cancel } = useSpeech();
   const { locale } = useLocale();
   const { activeChild } = useChildProfile();
   const audioRef = useRef(null);
+  const isCoolingDownRef = useRef(false);
+  const cooldownTimerRef = useRef(null);
+  // Forward navigation waits for the name to finish, however long it is —
+  // same rush-proofing as ScrollView/LetterSounds
+  const isAudioPlayingRef = useRef(false);
+  const unlockTimerRef = useRef(null);
+  // A superseded name's late ended/cancel must not unlock the name that
+  // replaced it (rapid taps, StrictMode remount)
+  const saySeqRef = useRef(0);
   const current = items[currentIndex];
 
   // Which of the current member's photos is up. null = the page-visit pick
@@ -34,15 +48,28 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
     (item) => {
       audioRef.current?.pause();
       cancel();
+      const seq = ++saySeqRef.current;
+      isAudioPlayingRef.current = true;
+      setIsAudioPlaying(true);
+      const clear = () => {
+        if (saySeqRef.current !== seq) return;
+        isAudioPlayingRef.current = false;
+        setIsAudioPlaying(false);
+      };
+      // If neither ended nor error ever fires (network stall), unlock
+      // anyway — forward navigation must not dead-lock for the session
+      clearTimeout(unlockTimerRef.current);
+      unlockTimerRef.current = setTimeout(clear, 5000);
       // Browser-TTS fallback follows the member's own voice language, same
       // as their generated clip
       const sayFallback = () =>
         speak(item.name, {
           lang: LOCALES[item.nameLang]?.ttsLang || 'en-US',
-        });
+        }).then(clear);
       if (item.audioPath) {
         const audio = new Audio(neutralNameUrl(item.audioPath));
         audioRef.current = audio;
+        audio.onended = clear;
         // Clip missing or blocked: same name via TTS
         audio.onerror = sayFallback;
         audio.play().catch(sayFallback);
@@ -56,6 +83,8 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
   useEffect(() => {
     return () => {
       audioRef.current?.pause();
+      clearTimeout(cooldownTimerRef.current);
+      clearTimeout(unlockTimerRef.current);
     };
   }, []);
 
@@ -76,18 +105,40 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
     [currentIndex, items]
   );
 
+  // The cooldown also covers the 250ms gap before the next name starts
+  // playing — without it a fast second press lands before the audio lock
+  const startCooldown = useCallback(() => {
+    isCoolingDownRef.current = true;
+    setIsCoolingDown(true);
+    clearTimeout(cooldownTimerRef.current);
+    cooldownTimerRef.current = setTimeout(() => {
+      isCoolingDownRef.current = false;
+      setIsCoolingDown(false);
+    }, 1000);
+  }, []);
+
+  const goNext = useCallback(() => {
+    if (isCoolingDownRef.current || isAudioPlayingRef.current) return;
+    goTo(1);
+    startCooldown();
+  }, [goTo, startCooldown]);
+
+  // Back is a correction, so it skips the gate that only exists to stop
+  // forward mashing
+  const goPrev = useCallback(() => goTo(-1), [goTo]);
+
   useEffect(() => {
     const onKey = (e) => {
       if (holdIntro || e.repeat || ownedByFocusedControl(e)) return;
-      if (e.key === 'ArrowRight') goTo(1);
-      else if (e.key === 'ArrowLeft') goTo(-1);
+      if (e.key === 'ArrowRight') goNext();
+      else if (e.key === 'ArrowLeft') goPrev();
       else if (e.key === 'r' || e.key === 'R') {
         if (current) sayName(current);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [goTo, sayName, current, holdIntro]);
+  }, [goNext, goPrev, sayName, current, holdIntro]);
 
   if (!current) return null;
 
@@ -117,7 +168,7 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
   return (
     <div className="flex-1 min-h-0 flex items-center justify-center gap-2 md:gap-6 p-4 relative">
       <button
-        onClick={() => goTo(-1)}
+        onClick={goPrev}
         aria-label="Previous"
         className="shrink-0 bg-white/80 hover:bg-white text-gray-500 hover:text-gray-700 rounded-full p-2.5 md:p-3.5 shadow-lg transition-colors"
       >
@@ -156,9 +207,14 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
       </button>
 
       <button
-        onClick={() => goTo(1)}
+        onClick={goNext}
+        disabled={isCoolingDown || isAudioPlaying}
         aria-label="Next"
-        className="shrink-0 bg-white/80 hover:bg-white text-gray-500 hover:text-gray-700 rounded-full p-2.5 md:p-3.5 shadow-lg transition-colors"
+        className={`shrink-0 rounded-full p-2.5 md:p-3.5 shadow-lg transition-all ${
+          isCoolingDown || isAudioPlaying
+            ? 'bg-white/40 text-gray-300 cursor-not-allowed'
+            : 'bg-white/80 hover:bg-white text-gray-500 hover:text-gray-700'
+        }`}
       >
         <ChevronRight size={30} />
       </button>
