@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
+import useWordCase from '../../hooks/useWordCase';
 import { thatWasPart, oppositeOfPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
@@ -78,6 +79,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   const [showRecap, setShowRecap] = useState(false);
   const { t } = useLocale();
   const { speak, cancel } = useVoice();
+  const caseClass = useWordCase();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const advanceTimerRef = useRef(null);
@@ -314,7 +316,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
             className="w-[var(--img-prompt)] h-[var(--img-prompt)] object-contain rounded-xl"
             draggable={false}
           />
-          <span className="text-2xl md:text-3xl font-black uppercase text-orange-500">
+          <span className={`text-2xl md:text-3xl font-black ${caseClass} text-orange-500`}>
             {localizedName(current.promptWord)}
           </span>
         </div>

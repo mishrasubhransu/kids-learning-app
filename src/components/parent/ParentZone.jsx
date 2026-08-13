@@ -420,11 +420,11 @@ const ParentZone = () => {
                 onChange={(v) => patch({ useNameInPraise: v })}
               />
               <OptionRow
-                label="Letter case"
-                hint="How letters appear in phonics"
+                label="Letters & words"
+                hint="Word and letter case across all lessons — family names always stay as you typed them"
                 options={[
-                  { value: 'capital', label: 'ABC' },
-                  { value: 'small', label: 'Aa' },
+                  { value: 'capital', label: 'LION' },
+                  { value: 'small', label: 'Lion' },
                 ]}
                 value={settings.letterCase || localStorage.getItem('setting-letterCase') || 'capital'}
                 onChange={(v) => patch({ letterCase: v })}

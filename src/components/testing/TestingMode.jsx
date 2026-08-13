@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
+import useWordCase from '../../hooks/useWordCase';
 import { whichOnePart, thatWasPart, tryToFindPart } from '../../lib/voiceKeys';
 import useAudioFeedback from '../../hooks/useAudioFeedback';
 import useAudioLock from '../../hooks/useAudioLock';
@@ -25,6 +26,10 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
   const [showRecap, setShowRecap] = useState(false);
   const { t } = useLocale();
   const { speak, cancel } = useVoice();
+  // Family names are identity, not vocabulary — they stay as the parent
+  // typed them regardless of the case setting
+  const wordCase = useWordCase();
+  const caseClass = category === 'family' ? '' : wordCase;
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const autoAdvanceTimerRef = useRef(null);
@@ -401,7 +406,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
               disabled={selectedAnswer !== null && isCorrect}
               className={`${baseClasses} p-6 md:p-8 flex items-center justify-center`}
             >
-              <span className="text-4xl md:text-6xl font-bold tracking-wide uppercase">
+              <span className={`text-4xl md:text-6xl font-bold tracking-wide ${caseClass}`}>
                 <span className="text-gray-700">{item.onset}</span>
                 <span className="text-orange-500">{item.rime}</span>
               </span>
@@ -423,7 +428,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
                 className="w-full aspect-square object-contain rounded-lg"
               />
               {showResult && (
-                <span className="text-base md:text-lg font-medium text-gray-600">
+                <span className={`text-base md:text-lg font-medium text-gray-600 ${caseClass}`}>
                   {item.name}
                 </span>
               )}
@@ -520,7 +525,7 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
               return (
                 <>
                   {before}
-                  <span className={`text-blue-600 ${category?.startsWith('phonics-') ? 'uppercase' : ''}`}>{correctAnswer?.name}</span>
+                  <span className={`text-blue-600 ${caseClass}`}>{correctAnswer?.name}</span>
                   {after}
                 </>
               );

@@ -3,6 +3,7 @@ import { phonicsFamilies, phonicsWords } from '../data/phonics';
 import HomeButton from './ui/HomeButton';
 import { isLessonEnabled } from '../data/lessons';
 import { useChildProfile } from '../context/ChildProfileContext';
+import useWordCase from '../hooks/useWordCase';
 
 // Letter Sounds ("A is for Apple") used to live here — it's a Home card now.
 
@@ -14,6 +15,7 @@ const groups = [
 const PhonicsHome = () => {
   const { activeChild } = useChildProfile();
   const enabledLessons = activeChild?.settings?.enabledLessons;
+  const caseClass = useWordCase();
 
   return (
     <div className="h-full bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex flex-col overflow-y-auto">
@@ -54,7 +56,7 @@ const PhonicsHome = () => {
                     {family.emoji && (
                       <span className="text-3xl md:text-4xl">{family.emoji}</span>
                     )}
-                    <span className="text-3xl md:text-5xl font-bold tracking-wide uppercase">
+                    <span className={`text-3xl md:text-5xl font-bold tracking-wide ${caseClass}`}>
                       <span className="opacity-70">_</span>
                       {family.id}
                     </span>

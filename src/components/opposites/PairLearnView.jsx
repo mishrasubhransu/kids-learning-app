@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
+import useWordCase from '../../hooks/useWordCase';
 import { itemPart } from '../../lib/voiceKeys';
 import { localizedName } from '../../lib/locale';
 import { useLocale } from '../../context/LocaleContext';
@@ -45,6 +46,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useVoice();
   const { t } = useLocale();
+  const caseClass = useWordCase();
   const prevStepRef = useRef(null);
   const isCoolingDownRef = useRef(false);
   const cooldownTimerRef = useRef(null);
@@ -160,7 +162,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
           className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
         />
         <span
-          className="text-3xl md:text-5xl font-black tracking-wide uppercase transition-colors duration-300"
+          className={`text-3xl md:text-5xl font-black tracking-wide ${caseClass} transition-colors duration-300`}
           style={{ color: isActive ? cardPole.accent : '#9CA3AF' }}
         >
           {localizedName(word)}

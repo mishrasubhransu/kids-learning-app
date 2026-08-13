@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, Play, Square } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
+import useWordCase from '../../hooks/useWordCase';
 import { recordingCategoryFor } from '../../lib/recordings';
 import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
@@ -41,6 +42,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   // browser TTS as the last resort (2-letter syllables stay TTS by design)
   const { speakItem } = useVoice(recordingCategoryFor(category));
   const { t } = useLocale();
+  const caseClass = useWordCase();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
   const isCoolingDownRef = useRef(false);
@@ -254,7 +256,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
                   : '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
               }}
             />
-            <span className="text-4xl md:text-6xl font-bold text-gray-600">
+            <span className={`text-4xl md:text-6xl font-bold text-gray-600 ${caseClass}`}>
               {currentItem.name}
             </span>
           </div>
@@ -266,7 +268,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
             <div className="w-[var(--img-hero)] h-[var(--img-hero)]">
               {currentItem.svg(shapeColor)}
             </div>
-            <span className="text-4xl md:text-6xl font-bold text-gray-600">
+            <span className={`text-4xl md:text-6xl font-bold text-gray-600 ${caseClass}`}>
               {currentItem.name}
             </span>
           </div>
@@ -278,7 +280,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
           return (
             <div className="flex flex-row items-center justify-center gap-6 md:gap-12">
               <span
-                className="font-bold leading-none select-none tracking-wide uppercase"
+                className={`font-bold leading-none select-none tracking-wide ${caseClass}`}
                 style={{
                   fontSize: hasImage ? 'min(16vw, 26vh)' : 'min(22vw, 32vh)',
                   fontFamily: 'Arial, sans-serif',
@@ -310,7 +312,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
                 alt={currentItem.name}
                 className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
               />
-              <span className="text-4xl md:text-6xl font-bold text-gray-600">
+              <span className={`text-4xl md:text-6xl font-bold text-gray-600 ${caseClass}`}>
                 {currentItem.name}
               </span>
             </div>

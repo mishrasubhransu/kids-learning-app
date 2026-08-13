@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import useVoice from '../../hooks/useVoice';
+import useWordCase from '../../hooks/useWordCase';
 import { recordingCategoryFor } from '../../lib/recordings';
 import { useLocale } from '../../context/LocaleContext';
 import ItemMedia from '../ui/ItemMedia';
@@ -10,6 +11,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
   // browser TTS as the last resort
   const { speakItem } = useVoice(recordingCategoryFor(category));
   const { t } = useLocale();
+  const caseClass = useWordCase();
 
   const handleClick = (item) => {
     setActiveId(item.id);
@@ -77,7 +79,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
             }}
           >
             <span
-              className={`text-lg md:text-xl font-semibold ${
+              className={`text-lg md:text-xl font-semibold ${caseClass} ${
                 ['White', 'Yellow'].includes(item.name)
                   ? 'text-gray-700'
                   : 'text-white'
@@ -101,7 +103,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
             className={`${baseClasses} bg-white p-4 md:p-6 flex flex-col items-center justify-center gap-2`}
           >
             <div className="w-[var(--img-tile)] h-[var(--img-tile)]">{item.svg(shapeColor)}</div>
-            <span className="text-sm md:text-base font-semibold text-gray-600">
+            <span className={`text-sm md:text-base font-semibold text-gray-600 ${caseClass}`}>
               {item.name}
             </span>
           </button>
@@ -115,7 +117,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
               onClick={() => handleClick(item)}
               className={`${baseClasses} bg-white p-6 md:p-8 flex items-center justify-center`}
             >
-              <span className="text-4xl md:text-6xl font-bold tracking-wide uppercase">
+              <span className={`text-4xl md:text-6xl font-bold tracking-wide ${caseClass}`}>
                 <span className="text-gray-700">{item.onset}</span>
                 <span className="text-orange-500">{item.rime}</span>
               </span>
@@ -134,7 +136,7 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
                 alt={item.name}
                 className="w-[var(--img-tile)] h-[var(--img-tile)] object-contain rounded-lg"
               />
-              <span className="text-sm md:text-base font-semibold text-gray-600">
+              <span className={`text-sm md:text-base font-semibold text-gray-600 ${caseClass}`}>
                 {item.name}
               </span>
             </button>

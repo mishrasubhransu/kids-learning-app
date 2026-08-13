@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import useVoice from '../../hooks/useVoice';
 import useChildSetting from '../../hooks/useChildSetting';
+import useWordCase from '../../hooks/useWordCase';
 import { appendSticker, pickSticker, pickRecapLine } from '../../lib/stickers';
 import { fixedLinePart } from '../../data/voiceLines';
 import { useLocale } from '../../context/LocaleContext';
@@ -17,7 +18,7 @@ const TILE_TILTS = [-6, 4, -3, 7, -8, 5, -4, 6];
 
 const tileBox = 'w-20 h-20 md:w-28 md:h-28';
 
-const renderTile = (tile) => {
+const renderTile = (tile, caseClass) => {
   if (tile.video) {
     return (
       <video
@@ -61,7 +62,7 @@ const renderTile = (tile) => {
   }
   return (
     <div className={`${tileBox} flex items-center justify-center`}>
-      <span className="text-4xl md:text-5xl font-bold text-gray-700 uppercase">
+      <span className={`text-4xl md:text-5xl font-bold text-gray-700 ${caseClass}`}>
         {tile.text}
         {tile.accent && <span className="text-orange-500">{tile.accent}</span>}
       </span>
@@ -72,6 +73,7 @@ const renderTile = (tile) => {
 const SessionRecap = ({ category, mode, tiles, onDone }) => {
   const { speak, cancel } = useVoice();
   const { t } = useLocale();
+  const caseClass = useWordCase();
   const [stickersRaw, setStickersRaw] = useChildSetting('stickers', null);
   const reduceMotion = useMemo(
     () => window.matchMedia?.('(prefers-reduced-motion: reduce)').matches,
@@ -161,7 +163,7 @@ const SessionRecap = ({ category, mode, tiles, onDone }) => {
             className="bg-white rounded-2xl shadow-lg p-1.5 md:p-2"
             style={{ transform: `rotate(${TILE_TILTS[i % TILE_TILTS.length]}deg)` }}
           >
-            {renderTile(tile)}
+            {renderTile(tile, caseClass)}
           </div>
         ))}
       </div>
