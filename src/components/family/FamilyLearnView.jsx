@@ -60,10 +60,10 @@ const FamilyLearnView = ({ items, holdIntro = false }) => {
       // anyway — forward navigation must not dead-lock for the session
       clearTimeout(unlockTimerRef.current);
       unlockTimerRef.current = setTimeout(clear, 5000);
-      // Browser-TTS fallback follows the member's own voice language, same
-      // as their generated clip
+      // Browser-TTS fallback follows the member's own voice language and
+      // pronunciation spelling, same as their generated clip
       const sayFallback = () =>
-        speak(item.name, {
+        speak(item.namePhonetic || item.name, {
           lang: LOCALES[item.nameLang]?.ttsLang || 'en-US',
         }).then(clear);
       if (item.audioPath) {

@@ -8,8 +8,8 @@
  * wrong-voice clip looks like.
  *
  * Mirrors the member branch of api/generate-name-audio.js: same voices,
- * same neutral-precise word style, same <uid>/family/<mid>/<ts>/name.<ext>
- * layout in the name-audio bucket, same old-version cleanup.
+ * same warm style, same <uid>/family/<mid>/<ts>/name.<ext> layout in the
+ * name-audio bucket, same old-version cleanup.
  *
  * Reads GEMINI_API_KEY, ELEVENLABS_API_KEY, SUPABASE_URL,
  * SUPABASE_SERVICE_ROLE_KEY. NB the login shell exports a STALE
@@ -19,8 +19,12 @@
  *     scripts/regenerate-family-name-audio.mjs
  *
  * Options:
- *   --dry    List who would be repaired, no API calls
- *   --force  Regenerate every member, not just missing/stale
+ *   --dry         List who would be repaired, no API calls
+ *   --force       Regenerate even when not missing/stale
+ *   --only <str>  Only members whose name contains <str> (case-insensitive);
+ *                 combine with --force to redo one healthy member's clip
+ *   --lang <loc>  Only members with that name_lang (e.g. or); with --force,
+ *                 redoes a whole locale after a style change
  */
 
 import { createClient } from '@supabase/supabase-js';
@@ -32,15 +36,21 @@ const GEMINI_MODEL = 'gemini-2.5-flash-preview-tts';
 // Odia only renders on the 3.1 generation (2.5-flash/pro return no audio)
 const GEMINI_MODEL_BY_LOCALE = { or: 'gemini-3.1-flash-tts-preview' };
 const GEMINI_VOICE = { es: 'Autonoe', zh: 'Kore', or: 'Autonoe' };
-// Keep in sync with GEMINI_WORD_STYLE in api/generate-name-audio.js
-const GEMINI_WORD_STYLE = {
-  es: 'Di esto en español latinoamericano neutro como una demostración de pronunciación clara y precisa — neutra y articulada, cada sílaba nítida y completamente enunciada, a un ritmo constante y uniforme, sin carga emocional:',
-  zh: 'Say this in standard Mandarin Chinese as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
-  or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
+// Keep in sync with GEMINI_STYLE in api/generate-name-audio.js (names use
+// the warm style — the crisp "demonstration" prompt sounded unnatural once
+// name_phonetic pinned the pronunciations; user call 2026-08-10)
+const GEMINI_STYLE = {
+  es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
+  zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
+  or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
 
 const DRY = process.argv.includes('--dry');
 const FORCE = process.argv.includes('--force');
+const onlyIdx = process.argv.indexOf('--only');
+const ONLY = onlyIdx !== -1 ? process.argv[onlyIdx + 1]?.toLowerCase() : null;
+const langIdx = process.argv.indexOf('--lang');
+const LANG = langIdx !== -1 ? process.argv[langIdx + 1] : null;
 
 const {
   GEMINI_API_KEY,
@@ -81,7 +91,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const ttsGemini = async (locale, text) => {
   const body = {
     contents: [
-      { parts: [{ text: `${GEMINI_WORD_STYLE[locale]}\n\n${text}` }] },
+      { parts: [{ text: `${GEMINI_STYLE[locale]}\n\n${text}` }] },
     ],
     generationConfig: {
       responseModalities: ['AUDIO'],
@@ -187,7 +197,7 @@ const cleanupOldVersions = async (prefix, keepTs) => {
 
 const { data: members, error } = await admin
   .from('family_members')
-  .select('id, user_id, name, name_lang, name_audio_path')
+  .select('id, user_id, name, name_lang, name_phonetic, name_audio_path')
   .order('created_at');
 if (error) {
   console.error('family_members query failed:', error.message);
@@ -195,6 +205,8 @@ if (error) {
 }
 
 const jobs = members.filter((m) => {
+  if (ONLY && !m.name.toLowerCase().includes(ONLY)) return false;
+  if (LANG && (m.name_lang || 'en') !== LANG) return false;
   const wantExt = (m.name_lang || 'en') === 'en' ? 'mp3' : 'wav';
   return (
     FORCE || !m.name_audio_path || !m.name_audio_path.endsWith(`.${wantExt}`)
@@ -205,9 +217,14 @@ console.log(`${members.length} members, ${jobs.length} to repair`);
 let failed = 0;
 for (const m of jobs) {
   const locale = m.name_lang || 'en';
-  const name = m.name.trim().slice(0, 30);
+  // Same rule as the API: the phonetic spelling, when set, is what the
+  // voice reads — display stays on `name`
+  const name = (m.name_phonetic || m.name).trim().slice(0, 30);
   const ext = locale === 'en' ? 'mp3' : 'wav';
-  console.log(`- ${name} (${locale} → .${ext})${DRY ? ' [dry]' : ''}`);
+  console.log(
+    `- ${m.name}${m.name_phonetic ? ` → read as ${m.name_phonetic}` : ''} ` +
+      `(${locale} → .${ext})${DRY ? ' [dry]' : ''}`
+  );
   if (DRY || !name) continue;
   try {
     if (locale !== 'en' && !GEMINI_API_KEY) throw new Error('GEMINI_API_KEY missing');

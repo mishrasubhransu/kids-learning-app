@@ -46,15 +46,13 @@ const GEMINI_STYLE = {
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
   or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
 };
-// Name reads use the neutral-precise demonstration style instead — the soft
-// mother tone blurs single words (user call 2026-08-07, or first). Praise
-// sentences keep GEMINI_STYLE. Same text as WORD_STYLE_PROMPT in
-// scripts/generate-voice-clips-gemini.mjs — keep in sync.
-const GEMINI_WORD_STYLE = {
-  es: 'Di esto en español latinoamericano neutro como una demostración de pronunciación clara y precisa — neutra y articulada, cada sílaba nítida y completamente enunciada, a un ritmo constante y uniforme, sin carga emocional:',
-  zh: 'Say this in standard Mandarin Chinese as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
-  or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
-};
+// Name reads use the same warm style as praise. They briefly used a
+// neutral-precise "demonstration" prompt (2026-08-07) because the warm tone
+// seemed to blur names — but the real blur was Latin-script transliteration
+// guessing, now pinned by name_phonetic, and the crisp read sounded
+// unnatural (user call 2026-08-10). Vocabulary clips
+// (scripts/generate-voice-clips-gemini.mjs WORD_STYLE_PROMPT) still use the
+// crisp style — that choice stands separately.
 
 // Hand-written so the name sits naturally; audio tags + per-tier speeds
 // mirror scripts/generate-audio.mjs (v3 stability 0.0 = Creative). Gemini
@@ -125,10 +123,10 @@ const pcmToWav = (pcm, rate) => {
   return Buffer.concat([header, pcm]);
 };
 
-const ttsGemini = async (apiKey, locale, text, style = null) => {
+const ttsGemini = async (apiKey, locale, text) => {
   const body = {
     contents: [
-      { parts: [{ text: `${style || GEMINI_STYLE[locale]}\n\n${text}` }] },
+      { parts: [{ text: `${GEMINI_STYLE[locale]}\n\n${text}` }] },
     ],
     generationConfig: {
       responseModalities: ['AUDIO'],
@@ -292,7 +290,7 @@ export default async function handler(req, res) {
     if (memberId) {
       const { data: member } = await admin
         .from('family_members')
-        .select('id, user_id, name, name_lang')
+        .select('id, user_id, name, name_lang, name_phonetic')
         .eq('id', memberId)
         .maybeSingle();
       if (!member || member.user_id !== userData.user.id) {
@@ -313,7 +311,12 @@ export default async function handler(req, res) {
         return res.status(200).json({ deleted: files.length });
       }
 
-      const memberName = member.name.trim().slice(0, 30);
+      // The phonetic spelling (when set) is what the voice READS — display
+      // stays on `name`. Native-script spellings pin pronunciations that
+      // Latin transliteration re-rolls on every generation (ନାନା vs Naana).
+      const memberName = (member.name_phonetic || member.name)
+        .trim()
+        .slice(0, 30);
       if (!memberName) {
         return res.status(400).json({ error: 'Member has no name' });
       }
@@ -338,12 +341,7 @@ export default async function handler(req, res) {
               speed: 1.0,
               use_speaker_boost: true,
             })
-          : await ttsGemini(
-              memberGeminiKey,
-              memberLocale,
-              memberName,
-              GEMINI_WORD_STYLE[memberLocale]
-            );
+          : await ttsGemini(memberGeminiKey, memberLocale, memberName);
       const ts = `${Date.now()}`;
       const path = `${prefix}/${ts}/name.${memberExt}`;
       await upload(
@@ -397,7 +395,7 @@ export default async function handler(req, res) {
             speed: 1.0,
             use_speaker_boost: true,
           })
-        : ttsGemini(geminiKey, locale, text, GEMINI_WORD_STYLE[locale]);
+        : ttsGemini(geminiKey, locale, text);
 
     if (action === 'delete') {
       const files = await listFilesDeep(admin, childPrefix);
