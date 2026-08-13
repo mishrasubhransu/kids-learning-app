@@ -27,6 +27,16 @@ export const memberPhotoPaths = (member) =>
       ? [member.photo_path]
       : [];
 
+// A member has their voice when the stored clip matches name_lang: en
+// speaks mp3 (ElevenLabs), every other locale wav (Gemini) — so a missing
+// path or a mismatched extension is a clip the API failed to (re)generate,
+// e.g. a TTS quota outage killing a language-change wave. Same heuristic
+// as scripts/regenerate-family-name-audio.mjs.
+export const memberAudioStale = (member) => {
+  const ext = (member?.name_lang || 'en') === 'en' ? 'mp3' : 'wav';
+  return !member?.name_audio_path?.endsWith(`.${ext}`);
+};
+
 const readCache = (userId) => {
   try {
     const cached = JSON.parse(localStorage.getItem(LS_CACHE));
@@ -92,12 +102,20 @@ const useFamilyMembers = () => {
     };
   }, [user]);
 
-  // Ask the serverless function for the member's name clip. Fire-and-forget:
-  // a dev server without the API runtime (or any failure) just means TTS.
+  // Member ids with a clip generation in flight — in-flight isn't stranded,
+  // so the Fix-audio warning ignores these (no banner flash on every add,
+  // no double-generation from a mid-flight Fix click).
+  const [pendingAudio, setPendingAudio] = useState(() => new Set());
+
+  // Ask the serverless function for the member's name clip. Fire-and-forget
+  // for add/update callers (a dev server without the API runtime, or any
+  // failure, just means TTS); returns whether a fresh clip landed so the
+  // Fix-audio flow can count what's still stale.
   const requestMemberAudio = useCallback(
     async (memberId) => {
       const token = session?.access_token;
-      if (!token) return;
+      if (!token) return false;
+      setPendingAudio((prev) => new Set(prev).add(memberId));
       try {
         const res = await fetch('/api/generate-name-audio', {
           method: 'POST',
@@ -114,9 +132,18 @@ const useFamilyMembers = () => {
               m.id === memberId ? { ...m, name_audio_path: data.path } : m
             )
           );
+          return true;
         }
+        return false;
       } catch {
         /* TTS fallback covers it */
+        return false;
+      } finally {
+        setPendingAudio((prev) => {
+          const next = new Set(prev);
+          next.delete(memberId);
+          return next;
+        });
       }
     },
     [session, apply]
@@ -134,6 +161,7 @@ const useFamilyMembers = () => {
       relationDetail = null,
       childProfileId = null,
       nameLang = 'en',
+      namePhonetic = null,
       photoFiles = [],
     }) => {
       if (!user) return null;
@@ -146,6 +174,7 @@ const useFamilyMembers = () => {
           relation_detail: relationDetail,
           child_profile_id: childProfileId,
           name_lang: nameLang,
+          name_phonetic: namePhonetic?.trim() || null,
         })
         .select()
         .single();
@@ -187,6 +216,7 @@ const useFamilyMembers = () => {
         relationDetail = null,
         childProfileId = null,
         nameLang = 'en',
+        namePhonetic = null,
         keptPhotoPaths,
         photoFiles = [],
       }
@@ -201,6 +231,7 @@ const useFamilyMembers = () => {
         relation_detail: relationDetail,
         child_profile_id: childProfileId,
         name_lang: nameLang,
+        name_phonetic: namePhonetic?.trim() || null,
         updated_at: new Date().toISOString(),
       };
       if (photoFiles.length || keptPhotoPaths) {
@@ -220,9 +251,12 @@ const useFamilyMembers = () => {
       if (error) throw new Error(error.message);
       prevPaths.filter((p) => !kept.includes(p)).forEach(removeFamilyPhoto);
       apply((prev) => (prev || []).map((m) => (m.id === memberId ? data : m)));
-      // A changed name OR voice language means the old clip is wrong
+      // A changed name, voice language OR pronunciation spelling means the
+      // old clip is wrong
       const langChanged = nameLang !== (before?.name_lang || 'en');
-      if ((name && name !== before?.name) || langChanged) {
+      const phoneticChanged =
+        (namePhonetic?.trim() || null) !== (before?.name_phonetic || null);
+      if ((name && name !== before?.name) || langChanged || phoneticChanged) {
         requestMemberAudio(memberId);
       }
     },
@@ -256,7 +290,15 @@ const useFamilyMembers = () => {
     [user, session, apply]
   );
 
-  return { members: members || [], loading, addMember, updateMember, removeMember };
+  return {
+    members: members || [],
+    loading,
+    addMember,
+    updateMember,
+    removeMember,
+    requestMemberAudio,
+    pendingAudio,
+  };
 };
 
 export default useFamilyMembers;
