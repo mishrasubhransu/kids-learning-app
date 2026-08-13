@@ -89,6 +89,7 @@ VERBS = {
     "reading": "a parent and a young child sitting together on a cozy sofa reading a big colorful picture book, the parent turning a page while the child points at the pictures",
     "hiding": "a young child running to a long window curtain and hiding behind it, the curtain swaying with small feet peeking out underneath",
     "walking": "a happy young child walking calmly along a sunny park path toward the camera, taking steady unhurried steps",
+    "sharing": "two happy toddlers sitting side by side on a picnic blanket, one child warmly handing a cookie from their small plate to the other child, who takes it and smiles",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")

@@ -44,6 +44,7 @@ export default {
   'cat.concepts.construction': 'Vehículos de construcción',
   'cat.concepts.gadgets': 'Aparatos',
   'cat.concepts.outside': 'Afuera',
+  'cat.concepts.prepositions': 'Posiciones',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

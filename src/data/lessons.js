@@ -119,6 +119,7 @@ export const starterLessonsForAge = (ageYears) => {
     'concepts.nature',
     'concepts.sea-creatures',
     'concepts.actions',
+    'concepts.prepositions',
   ];
 
   const starters = ageYears < 2 ? under2 : ageYears < 3 ? under3 : allLessonKeys;

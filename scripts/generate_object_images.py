@@ -256,6 +256,18 @@ STYLE_PROMPTS = {
         "Sharp focus on the subject, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    # Every prepositions image reuses the SAME kitten + cardboard box pair so
+    # only the position changes between pictures (same-subject contrast).
+    "prepositions": (
+        "A delightful 3D-rendered cartoon illustration of {subject}. "
+        "The kitten is always the same character: a chubby fluffy ginger kitten "
+        "with big friendly eyes; the box is always the same plain brown cardboard box. "
+        "Rounded, chunky, toy-like shapes with bright saturated colors and soft cheerful lighting, "
+        "like a still from a modern animated children's film. "
+        "The spatial position must be instantly obvious at a single glance to a two-year-old. "
+        "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
+        "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
+    ),
 }
 
 # Subject descriptions for each item — detailed enough for good image generation
@@ -323,6 +335,7 @@ ITEMS = {
         "train": "a modern passenger train at a station platform, side view",
         "aeroplane": "a commercial passenger airplane in flight against a blue sky",
         "rocket": "a space rocket on a launch pad ready for takeoff",
+        "van": "a typical white Mercedes Sprinter panel van parked on a quiet street, side view, tall boxy body and sliding side door clearly visible",
     },
     "profession": {
         "doctor": "a doctor in a white coat examining a patient with a stethoscope in a bright medical office",
@@ -481,6 +494,7 @@ ITEMS = {
         "shoe-stand": "a wooden shoe rack with several pairs of shoes neatly arranged on its shelves, three-quarter view",
         "umbrella": "an open colorful umbrella with a curved handle, three-quarter view",
         "clock": "a round analog wall clock with large clear numbers and easy-to-see hands, hanging on a plain wall, front view",
+        "peel": "an empty yellow banana peel lying open on a clean surface, the fruit already eaten, clearly just the peel",
     },
     "weather": {
         "sunny": "a real photograph of bright sunny weather over a green meadow, the real sun blazing in a clear blue sky with natural glare and lens flare, everything bathed in golden sunlight — strictly photographic, absolutely no cartoon or illustrated elements",
@@ -528,6 +542,7 @@ ITEMS = {
         "slide": "a colorful children's slide in a sunny playground",
         "park-bench": "a classic wooden park bench on a path under a leafy tree",
         "mailbox": "a cheerful red curbside mailbox on a wooden post with its little flag up",
+        "bell": "a large bronze church-style bell with a rope, hanging in a small open bell tower against a blue sky",
     },
     "sea-creatures": {
         "fish": "a colorful tropical clownfish with bright orange and white stripes, swimming gracefully, full body visible",
@@ -581,6 +596,12 @@ ITEMS = {
         # on people or creatures — see the note in src/data/opposites.js
         "beautiful": "a beautiful blooming flower garden bursting with tidy colorful flowers, roses and tulips in neat beds, butterflies and gentle sparkles in the air",
         "ugly": "a neglected scraggly garden patch choked with tangled grey-brown weeds, drooping thorny brambles and patchy dry dirt, unkempt and gloomy but not scary, no flowers anywhere, not a single bloom or bright color",
+        "inside": "a fluffy white puppy sitting snugly INSIDE a red doghouse, its happy face peeking out of the round doorway",
+        "outside": "the same fluffy white puppy standing on the grass OUTSIDE beside the same red doghouse, fully visible next to it",
+        "here": "a smiling little girl in a pink shirt and blue overalls standing in a wide green park, pointing straight down at a red ball sitting right at her feet, very close in the foreground",
+        "there": "the same little girl pointing far away across a wide green park at the same red ball sitting tiny in the distance",
+        "near": "a colorful striped hot air balloon floating very close and huge, filling most of the frame above a green meadow",
+        "far": "the same colorful striped hot air balloon tiny and far away in a big open sky above the same green meadow",
     },
     "opposites-scenes": {
         "big-small-scene": "a great big dog and a tiny kitten sitting side by side on the same rug, the size difference dramatic and clear",
@@ -600,6 +621,9 @@ ITEMS = {
         "running-walking-scene": "two children side by side on a park path: one running fast with motion lines and flying hair, the other strolling slowly and calmly",
         "fast-slow-scene": "a red race car zooming past with big speed lines on one side while a smiling snail slides slowly along on the other side",
         "beautiful-ugly-scene": "a garden split down the middle: one half bursting with tidy colorful blooming flowers and butterflies, the other half a scraggly patch of tangled thorny grey-brown weeds",
+        "inside-outside-scene": "two identical red doghouses side by side: a white puppy sitting inside one with its face in the doorway, and another white puppy standing on the grass outside the other",
+        "here-there-scene": "a child in a park with one red ball sitting right at the child's feet in the near foreground, and an identical red ball sitting tiny far away in the distance on the same lawn",
+        "near-far-scene": "two identical striped hot air balloons in one sky: one very close and huge on one side, the other tiny and far away near the horizon on the other side",
     },
     # Nature concepts support several photo variants per item; filenames are
     # suffixed -1, -2, … and listed in src/data/concepts.js `images` arrays.
@@ -646,6 +670,17 @@ ITEMS = {
         "snow-2": "snowflakes falling gently over a white winter meadow, snow-covered pine branches in the foreground",
         "lightning-2": "multiple branching lightning bolts lighting up a dark purple night sky over the sea",
         "glacier-2": "a vast glacier like a frozen river of ice winding between dark mountain ridges, seen from above, deep blue crevasses visible",
+        # States-of-water trio + stone/pebbles (added Aug 2026)
+        "ice-1": "clear sparkling ice cubes in a small glass bowl, frosty and glistening, close up",
+        "ice-2": "long clear icicles hanging from a snowy branch, sparkling in winter sunlight",
+        "water-1": "crystal-clear water being poured into a drinking glass, splashing and sparkling, close up",
+        "water-2": "clear blue water with gentle ripples and sunlight sparkles, seen up close",
+        "steam-1": "thick white steam rising from a kettle spout, the curling steam clearly visible against a plain background",
+        "steam-2": "white steam rising gently from a natural hot spring pool among rocks in the morning light",
+        "stone-1": "one large smooth grey stone resting on green grass, close up",
+        "stone-2": "a big round river stone sitting on sand beside a stream, warm sunlight",
+        "pebbles-1": "a pile of small smooth colorful pebbles in greys, whites and browns, close up",
+        "pebbles-2": "small round pebbles covering a river bank at the edge of clear shallow water, close up",
     },
     "bugs": {
         "butterfly": "a colorful monarch butterfly with wings spread open, resting on a flower",
@@ -775,6 +810,22 @@ ITEMS = {
         "zebra": "a cute baby zebra with black and white stripes standing",
         "zoo": "a cheerful zoo entrance gate with a giraffe and elephant peeking over the fence",
         "zipper": "a big colorful zipper half-open on a bright blue jacket",
+    },
+    # Spatial words (src/data/concepts.js prepositions) — one recurring
+    # kitten + cardboard-box pair, only the position changes per picture.
+    # The style prompt pins the characters; each subject states the position.
+    "prepositions": {
+        "inside": "the ginger kitten sitting INSIDE the open cardboard box, its head and paws peeking over the rim",
+        "outside": "the ginger kitten sitting on the floor OUTSIDE the closed cardboard box, clearly beside and separate from it",
+        "on": "the ginger kitten sitting proudly ON TOP of the closed cardboard box",
+        "under": "the ginger kitten curled up UNDER a sturdy wooden table, the cardboard box sitting on top of the table",
+        "over": "the ginger kitten leaping in mid-air OVER the closed cardboard box, a soft dotted arc showing its jump path",
+        "behind": "the ginger kitten peeking out from BEHIND the cardboard box, only its head and one paw visible past the box edge",
+        "in-front": "the ginger kitten sitting IN FRONT of the cardboard box, fully visible with the box clearly behind it",
+        "between": "the ginger kitten sitting snugly BETWEEN two identical cardboard boxes, one on each side",
+        "next-to": "the ginger kitten sitting close beside the cardboard box, side by side and almost touching, NEXT TO it",
+        "around": "exactly ONE single ginger kitten running AROUND the cardboard box, mid-run at one point of a soft dotted circle path that loops all the way around the box — only one kitten in the whole picture",
+        "through": "the ginger kitten walking THROUGH a cardboard box tunnel open at both ends, its head emerging from one end and tail still inside",
     },
     # 3-letter word-family words (src/data/phonics.js)
     "phonics-words": {

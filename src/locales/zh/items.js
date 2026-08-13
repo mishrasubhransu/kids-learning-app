@@ -91,6 +91,11 @@ export default {
   snow: { name: '雪' },
   lightning: { name: '闪电' },
   glacier: { name: '冰川' },
+  ice: { name: '冰' },
+  water: { name: '水' },
+  steam: { name: '蒸汽' },
+  stone: { name: '石头' },
+  pebbles: { name: '鹅卵石' },
 
   // Actions (video verbs — refs quiz naturally: "正在跑步的")
   running: { name: '跑步', ref: '正在跑步的', bare: '跑步' },
@@ -131,6 +136,7 @@ export default {
   reading: { name: '看书', ref: '正在看书的' },
   hiding: { name: '躲猫猫', ref: '正在躲猫猫的' },
   walking: { name: '走路', ref: '正在走路的', bare: '走路' },
+  sharing: { name: '分享', ref: '正在分享的' },
 
   // Bugs & insects
   butterfly: { name: '蝴蝶' },
@@ -220,6 +226,7 @@ export default {
   train: { name: '火车' },
   aeroplane: { name: '飞机' },
   rocket: { name: '火箭' },
+  van: { name: '面包车' },
 
   // Professions
   doctor: { name: '医生' },
@@ -259,6 +266,7 @@ export default {
   blueberry: { name: '蓝莓' },
   lemon: { name: '柠檬' },
   coconut: { name: '椰子' },
+  peel: { name: '果皮' },
 
   // Vegetables
   carrot: { name: '胡萝卜' },
@@ -428,6 +436,7 @@ export default {
   slide: { name: '滑梯' },
   'park-bench': { name: '长椅' },
   mailbox: { name: '信箱' },
+  bell: { name: '大钟' },
 
   // Opposites pair words (happy/sad/running/walking shared above)
   big: { name: '大', ref: '大的', bare: '大' },
@@ -460,4 +469,22 @@ export default {
   slow: { name: '慢', ref: '慢的', bare: '慢' },
   beautiful: { name: '漂亮', ref: '漂亮的', bare: '漂亮' },
   ugly: { name: '丑', ref: '丑的', bare: '丑' },
+  inside: { name: '里面', ref: '在里面的', bare: '里面' },
+  outside: { name: '外面', ref: '在外面的', bare: '外面' },
+  here: { name: '这里', ref: '在这里的', bare: '这里' },
+  there: { name: '那里', ref: '在那里的', bare: '那里' },
+  near: { name: '近', ref: '近的', bare: '近' },
+  far: { name: '远', ref: '远的', bare: '远' },
+
+  // Prepositions (inside/outside shared with opposites above; 'on' reads
+  // the same as 'up' in Chinese — both 上面 — which is simply correct)
+  on: { name: '上面', ref: '在上面的' },
+  under: { name: '下面', ref: '在下面的' },
+  over: { name: '越过', ref: '正在越过的' },
+  behind: { name: '后面', ref: '在后面的' },
+  'in-front': { name: '前面', ref: '在前面的' },
+  between: { name: '中间', ref: '在中间的' },
+  'next-to': { name: '旁边', ref: '在旁边的' },
+  around: { name: '绕圈', ref: '正在绕圈的' },
+  through: { name: '穿过', ref: '正在穿过的' },
 };

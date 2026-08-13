@@ -35,3 +35,6 @@ odia-voice-comparison/
 es-style-audition/
 .claude/settings.local.json
 zh-voice-audition/
+
+# Voice audition assets (bakeoff grids, session-local)
+family-name-script-audition/

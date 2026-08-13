@@ -40,6 +40,7 @@ export default {
   'cat.concepts.construction': 'ନିର୍ମାଣ ଗାଡ଼ି',
   'cat.concepts.gadgets': 'ଗ୍ୟାଜେଟ୍',
   'cat.concepts.outside': 'ବାହାରେ',
+  'cat.concepts.prepositions': 'କେଉଁଠି ଅଛି',
 
   // Category page chrome
   'mode.scroll': 'ଗୋଟି ଗୋଟି',

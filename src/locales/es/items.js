@@ -106,6 +106,11 @@ export default {
   snow: { name: 'Nieve', ref: 'la nieve' },
   lightning: { name: 'Relámpago', ref: 'el relámpago' },
   glacier: { name: 'Glaciar', ref: 'el glaciar' },
+  ice: { name: 'Hielo', ref: 'el hielo' },
+  water: { name: 'Agua', ref: 'el agua' },
+  steam: { name: 'Vapor', ref: 'el vapor' },
+  stone: { name: 'Piedra', ref: 'la piedra' },
+  pebbles: { name: 'Piedritas', ref: 'las piedritas', plural: true },
 
   // Actions (video verbs — refs quiz naturally: "el que está corriendo")
   running: { name: 'Corriendo', ref: 'el que está corriendo', bare: 'correr' },
@@ -146,6 +151,7 @@ export default {
   reading: { name: 'Leyendo', ref: 'el que está leyendo' },
   hiding: { name: 'Escondiéndose', ref: 'el que está escondiéndose' },
   walking: { name: 'Caminando', ref: 'el que está caminando', bare: 'caminar' },
+  sharing: { name: 'Compartiendo', ref: 'el que está compartiendo' },
 
   // Bugs & insects
   butterfly: { name: 'Mariposa', ref: 'la mariposa' },
@@ -235,6 +241,7 @@ export default {
   train: { name: 'Tren', ref: 'el tren' },
   aeroplane: { name: 'Avión', ref: 'el avión' },
   rocket: { name: 'Cohete', ref: 'el cohete' },
+  van: { name: 'Camioneta', ref: 'la camioneta' },
 
   // Professions
   doctor: { name: 'Doctor', ref: 'el doctor' },
@@ -274,6 +281,7 @@ export default {
   blueberry: { name: 'Arándano', ref: 'el arándano' },
   lemon: { name: 'Limón', ref: 'el limón' },
   coconut: { name: 'Coco', ref: 'el coco' },
+  peel: { name: 'Cáscara', ref: 'la cáscara' },
 
   // Vegetables
   carrot: { name: 'Zanahoria', ref: 'la zanahoria' },
@@ -443,6 +451,7 @@ export default {
   slide: { name: 'Tobogán', ref: 'el tobogán' },
   'park-bench': { name: 'Banca del parque', ref: 'la banca del parque' },
   mailbox: { name: 'Buzón', ref: 'el buzón' },
+  bell: { name: 'Campana', ref: 'la campana' },
 
   // Opposites pair words (happy/sad/running/walking shared above)
   big: { name: 'Grande', ref: 'el grande', bare: 'grande' },
@@ -475,4 +484,21 @@ export default {
   slow: { name: 'Lento', ref: 'el lento', bare: 'lento' },
   beautiful: { name: 'Bonito', ref: 'el bonito', bare: 'bonito' },
   ugly: { name: 'Feo', ref: 'el feo', bare: 'feo' },
+  inside: { name: 'Adentro', ref: 'el de adentro', bare: 'adentro' },
+  outside: { name: 'Afuera', ref: 'el de afuera', bare: 'afuera' },
+  here: { name: 'Aquí', ref: 'el de aquí', bare: 'aquí' },
+  there: { name: 'Allá', ref: 'el de allá', bare: 'allá' },
+  near: { name: 'Cerca', ref: 'el que está cerca', bare: 'cerca' },
+  far: { name: 'Lejos', ref: 'el que está lejos', bare: 'lejos' },
+
+  // Prepositions (inside/outside shared with opposites above)
+  on: { name: 'Encima', ref: 'el de encima' },
+  under: { name: 'Debajo', ref: 'el de debajo' },
+  over: { name: 'Por encima', ref: 'el que pasa por encima' },
+  behind: { name: 'Detrás', ref: 'el de atrás' },
+  'in-front': { name: 'Delante', ref: 'el de delante' },
+  between: { name: 'En medio', ref: 'el de en medio' },
+  'next-to': { name: 'Al lado', ref: 'el de al lado' },
+  around: { name: 'Alrededor', ref: 'el que da vueltas alrededor' },
+  through: { name: 'A través', ref: 'el que pasa a través' },
 };

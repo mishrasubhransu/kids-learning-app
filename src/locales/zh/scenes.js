@@ -19,4 +19,7 @@ export default {
   'which-one-is-running': '谁在跑步？',
   'which-one-is-fast': '哪个是快的？',
   'which-one-is-beautiful': '哪个是漂亮的？',
+  'which-one-is-inside': '哪个在里面？',
+  'which-one-is-here': '哪个在这里？',
+  'which-one-is-near': '哪个离得近？',
 };

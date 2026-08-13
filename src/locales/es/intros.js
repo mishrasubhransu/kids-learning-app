@@ -109,6 +109,11 @@ export default {
     '¡Cuántas cosas hay en nuestra calle!',
     '[gasps] ¡Mira alrededor! ¿Qué vemos afuera?',
   ],
+  'concepts-prepositions': [
+    '¡Vamos a aprender dónde están las cosas!',
+    '¡Adentro, afuera, encima, debajo! ¡A jugar!',
+    '[gasps] ¿Dónde se esconde el gatito? ¡Vamos a ver!',
+  ],
   opposites: [
     '¡Vamos a aprender los opuestos!',
     '¡Grande y pequeño, arriba y abajo! ¡Juguemos con los opuestos!',

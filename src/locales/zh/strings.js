@@ -40,6 +40,7 @@ export default {
   'cat.concepts.construction': '工程车',
   'cat.concepts.gadgets': '电子产品',
   'cat.concepts.outside': '户外',
+  'cat.concepts.prepositions': '方位',
 
   // Category page chrome
   'mode.scroll': '滑动',

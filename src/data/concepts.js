@@ -31,6 +31,7 @@ export const conceptCategories = [
   { id: 'construction', name: 'Construction Vehicles', emoji: '🏗️', color: 'bg-yellow-600', hoverColor: 'hover:bg-yellow-700' },
   { id: 'gadgets', name: 'Gadgets', emoji: '📱', color: 'bg-slate-500', hoverColor: 'hover:bg-slate-600' },
   { id: 'outside', name: 'Outside', emoji: '🛝', color: 'bg-green-600', hoverColor: 'hover:bg-green-700' },
+  { id: 'prepositions', name: 'Prepositions', emoji: '📦', color: 'bg-cyan-600', hoverColor: 'hover:bg-cyan-700' },
 ];
 
 export const conceptItems = {
@@ -59,6 +60,11 @@ export const conceptItems = {
     { id: 17, name: 'Snow', images: ['/concepts/nature/snow-1.webp', '/concepts/nature/snow-2.webp'] },
     { id: 18, name: 'Lightning', images: ['/concepts/nature/lightning-1.webp', '/concepts/nature/lightning-2.webp'] },
     { id: 19, name: 'Glacier', images: ['/concepts/nature/glacier-1.webp', '/concepts/nature/glacier-2.webp'] },
+    { id: 20, name: 'Ice', images: ['/concepts/nature/ice-1.webp', '/concepts/nature/ice-2.webp'] },
+    { id: 21, name: 'Water', images: ['/concepts/nature/water-1.webp', '/concepts/nature/water-2.webp'] },
+    { id: 22, name: 'Steam', images: ['/concepts/nature/steam-1.webp', '/concepts/nature/steam-2.webp'] },
+    { id: 23, name: 'Stone', images: ['/concepts/nature/stone-1.webp', '/concepts/nature/stone-2.webp'] },
+    { id: 24, name: 'Pebbles', images: ['/concepts/nature/pebbles-1.webp', '/concepts/nature/pebbles-2.webp'] },
   ],
   // Verbs are shown as short silent looping video clips (Veo-generated);
   // ItemMedia renders `video` items where the other lessons show `image`.
@@ -101,6 +107,7 @@ export const conceptItems = {
     { id: 35, name: 'Reading', video: '/concepts/actions/reading.mp4' },
     { id: 36, name: 'Hiding', video: '/concepts/actions/hiding.mp4' },
     { id: 37, name: 'Walking', video: '/concepts/actions/walking.mp4' },
+    { id: 38, name: 'Sharing', video: '/concepts/actions/sharing.mp4' },
   ],
   bugs: [
     { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },
@@ -195,6 +202,7 @@ export const conceptItems = {
     { id: 7, name: 'Train', image: '/concepts/transportation/train.webp' },
     { id: 8, name: 'Aeroplane', image: '/concepts/transportation/aeroplane.webp' },
     { id: 9, name: 'Rocket', image: '/concepts/transportation/rocket.webp' },
+    { id: 10, name: 'Van', image: '/concepts/transportation/van.webp' },
   ],
   profession: [
     { id: 0, name: 'Doctor', image: '/concepts/profession/doctor.webp' },
@@ -325,6 +333,8 @@ export const conceptItems = {
     { id: 29, name: 'Shoe Stand', image: '/concepts/household/shoe-stand.webp' },
     { id: 30, name: 'Umbrella', image: '/concepts/household/umbrella.webp' },
     { id: 31, name: 'Clock', image: '/concepts/household/clock.webp' },
+    // The noun (a banana peel) — the verb lives in actions as 'Peeling'
+    { id: 32, name: 'Peel', image: '/concepts/household/peel.webp' },
   ],
   'sea-creatures': [
     { id: 0, name: 'Fish', image: '/concepts/sea-creatures/fish.webp' },
@@ -409,5 +419,22 @@ export const conceptItems = {
     { id: 9, name: 'Slide', image: '/concepts/outside/slide.webp' },
     { id: 10, name: 'Park Bench', image: '/concepts/outside/park-bench.webp' },
     { id: 11, name: 'Mailbox', image: '/concepts/outside/mailbox.webp' },
+    { id: 12, name: 'Bell', image: '/concepts/outside/bell.webp' },
+  ],
+  // Spatial words taught with ONE recurring pair — a ginger kitten and a
+  // cardboard box — so the only thing changing between pictures is the
+  // position being named (same-subject contrast, like the opposites pairs).
+  prepositions: [
+    { id: 0, name: 'Inside', image: '/concepts/prepositions/inside.webp' },
+    { id: 1, name: 'Outside', image: '/concepts/prepositions/outside.webp' },
+    { id: 2, name: 'On', image: '/concepts/prepositions/on.webp' },
+    { id: 3, name: 'Under', image: '/concepts/prepositions/under.webp' },
+    { id: 4, name: 'Over', image: '/concepts/prepositions/over.webp' },
+    { id: 5, name: 'Behind', image: '/concepts/prepositions/behind.webp' },
+    { id: 6, name: 'In Front', image: '/concepts/prepositions/in-front.webp' },
+    { id: 7, name: 'Between', image: '/concepts/prepositions/between.webp' },
+    { id: 8, name: 'Next To', image: '/concepts/prepositions/next-to.webp' },
+    { id: 9, name: 'Around', image: '/concepts/prepositions/around.webp' },
+    { id: 10, name: 'Through', image: '/concepts/prepositions/through.webp' },
   ],
 };

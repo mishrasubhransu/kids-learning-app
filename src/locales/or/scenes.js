@@ -19,4 +19,7 @@ export default {
   'which-one-is-running': 'କିଏ ଦୌଡ଼ୁଛି?',
   'which-one-is-fast': 'କେଉଁଟି ଜୋରରେ ଯାଉଛି?',
   'which-one-is-beautiful': 'କେଉଁଟି ସୁନ୍ଦର?',
+  'which-one-is-inside': 'କେଉଁଟି ଭିତରେ?',
+  'which-one-is-here': 'କେଉଁଟି ଏଠି?',
+  'which-one-is-near': 'କେଉଁଟି ପାଖରେ?',
 };

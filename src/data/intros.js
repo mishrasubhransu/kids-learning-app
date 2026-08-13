@@ -115,6 +115,11 @@ export const intros = {
     'So much to see on our street!',
     "[gasps] Look around! What can we spot outside?",
   ],
+  'concepts-prepositions': [
+    "Let's learn where things are!",
+    "Inside, outside, over, under — let's play!",
+    "[gasps] Where is the kitty hiding? Let's find out!",
+  ],
   opposites: [
     "Let's learn about opposites!",
     "Big and small, up and down — let's play with opposites!",

@@ -235,6 +235,42 @@ const opposites = [
       { question: 'Which one is beautiful?', correctAnswer: 'Beautiful', sceneImage: '/opposites/scenes/beautiful-ugly-scene.webp' },
     ],
   },
+  {
+    id: 17,
+    name: 'Inside and Outside',
+    pair: ['Inside', 'Outside'],
+    images: {
+      Inside: '/opposites/inside.webp',
+      Outside: '/opposites/outside.webp',
+    },
+    tests: [
+      { question: 'Which one is inside?', correctAnswer: 'Inside', sceneImage: '/opposites/scenes/inside-outside-scene.webp' },
+    ],
+  },
+  {
+    id: 18,
+    name: 'Here and There',
+    pair: ['Here', 'There'],
+    images: {
+      Here: '/opposites/here.webp',
+      There: '/opposites/there.webp',
+    },
+    tests: [
+      { question: 'Which one is here?', correctAnswer: 'Here', sceneImage: '/opposites/scenes/here-there-scene.webp' },
+    ],
+  },
+  {
+    id: 19,
+    name: 'Near and Far',
+    pair: ['Near', 'Far'],
+    images: {
+      Near: '/opposites/near.webp',
+      Far: '/opposites/far.webp',
+    },
+    tests: [
+      { question: 'Which one is near?', correctAnswer: 'Near', sceneImage: '/opposites/scenes/near-far-scene.webp' },
+    ],
+  },
 ];
 
 export default opposites;

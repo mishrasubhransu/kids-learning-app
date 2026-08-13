@@ -19,4 +19,7 @@ export default {
   'which-one-is-running': '¿Quién está corriendo?',
   'which-one-is-fast': '¿Cuál es el rápido?',
   'which-one-is-beautiful': '¿Cuál es el bonito?',
+  'which-one-is-inside': '¿Cuál está adentro?',
+  'which-one-is-here': '¿Cuál está aquí?',
+  'which-one-is-near': '¿Cuál está cerca?',
 };

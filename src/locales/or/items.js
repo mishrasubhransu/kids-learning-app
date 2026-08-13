@@ -97,6 +97,13 @@ export default {
   snow: { name: 'ବରଫ' },
   lightning: { name: 'ବିଜୁଳି' },
   glacier: { name: 'ହିମବାହ' },
+  // ice shares ବରଫ with snow — Odia genuinely uses one word for both;
+  // ଖଣ୍ଡ (chunk) distinguishes the frozen-cube sense. Flag for family review.
+  ice: { name: 'ବରଫ ଖଣ୍ଡ' },
+  water: { name: 'ପାଣି' },
+  steam: { name: 'ବାମ୍ଫ' },
+  stone: { name: 'ପଥର' },
+  pebbles: { name: 'ଗୋଡ଼ି' },
 
   // Actions (video verbs — refs are present-continuous: "କେଉଁଟି ଦୌଡ଼ୁଛି?")
   running: { name: 'ଦୌଡ଼ିବା', ref: 'ଦୌଡ଼ୁଛି', bare: 'ଦୌଡ଼ିବା' },
@@ -137,6 +144,7 @@ export default {
   reading: { name: 'ବହି ପଢ଼ିବା', ref: 'ବହି ପଢ଼ୁଛି' },
   hiding: { name: 'ଲୁଚିବା', ref: 'ଲୁଚୁଛି' },
   walking: { name: 'ଚାଲିବା', ref: 'ଚାଲୁଛି', bare: 'ଚାଲିବା' },
+  sharing: { name: 'ବାଣ୍ଟିବା', ref: 'ବାଣ୍ଟୁଛି' },
 
   // Bugs & insects
   butterfly: { name: 'ପ୍ରଜାପତି' },
@@ -227,6 +235,7 @@ export default {
   train: { name: 'ରେଳଗାଡ଼ି' },
   aeroplane: { name: 'ଉଡ଼ାଜାହାଜ' },
   rocket: { name: 'ରକେଟ୍' },
+  van: { name: 'ଭ୍ୟାନ୍' },
 
   // Professions
   doctor: { name: 'ଡାକ୍ତର' },
@@ -266,6 +275,7 @@ export default {
   blueberry: { name: 'ବ୍ଲୁବେରୀ' },
   lemon: { name: 'ଲେମ୍ବୁ' },
   coconut: { name: 'ନଡ଼ିଆ' },
+  peel: { name: 'ଚୋପା' },
 
   // Vegetables
   carrot: { name: 'ଗାଜର' },
@@ -435,6 +445,7 @@ export default {
   slide: { name: 'ସ୍ଲାଇଡ୍' },
   'park-bench': { name: 'ବେଞ୍ଚ' },
   mailbox: { name: 'ଚିଠି ବାକ୍ସ' },
+  bell: { name: 'ଘଣ୍ଟା' },
 
   // Opposites pair words (happy/sad/running/walking shared above; plain
   // adjectives need no ref — "କେଉଁଟି ବଡ଼?" / "ବଡ଼ର ଓଲଟା" work bare)
@@ -468,4 +479,22 @@ export default {
   slow: { name: 'ଧୀର' },
   beautiful: { name: 'ସୁନ୍ଦର' },
   ugly: { name: 'ଅସୁନ୍ଦର' },
+  inside: { name: 'ଭିତର', ref: 'ଭିତରେ', bare: 'ଭିତର' },
+  outside: { name: 'ବାହାର', ref: 'ବାହାରେ', bare: 'ବାହାର' },
+  here: { name: 'ଏଠି' },
+  there: { name: 'ସେଠି' },
+  near: { name: 'ପାଖ', ref: 'ପାଖରେ', bare: 'ପାଖ' },
+  far: { name: 'ଦୂର', ref: 'ଦୂରରେ', bare: 'ଦୂର' },
+
+  // Prepositions (inside/outside shared with opposites above; next-to and
+  // near both land on ପାଖରେ — flag for family review)
+  on: { name: 'ଉପରେ' },
+  under: { name: 'ତଳେ' },
+  over: { name: 'ଉପର ଦେଇ', ref: 'ଉପର ଦେଇ ଡେଉଁଛି' },
+  behind: { name: 'ପଛରେ' },
+  'in-front': { name: 'ଆଗରେ' },
+  between: { name: 'ମଝିରେ' },
+  'next-to': { name: 'ପାଖରେ' },
+  around: { name: 'ଚାରିପଟେ', ref: 'ଚାରିପଟେ ବୁଲୁଛି' },
+  through: { name: 'ଭିତର ଦେଇ', ref: 'ଭିତର ଦେଇ ଯାଉଛି' },
 };
