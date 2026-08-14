@@ -4,7 +4,12 @@ import useSpeech from './useSpeech';
 import { useChildProfile } from '../context/ChildProfileContext';
 import { useLocale } from '../context/LocaleContext';
 import { getPack, getTtsLang } from '../lib/locale';
-import { isPraiseManifest, loadPraiseClips, playClipUrl } from '../lib/nameAudio';
+import {
+  isPraiseManifest,
+  loadPraiseClips,
+  playClipUrl,
+  resolveNameAudioPath,
+} from '../lib/nameAudio';
 import { hasVoiceClip, getVoiceClipUrl } from '../lib/voice';
 
 /**
@@ -46,10 +51,10 @@ const useAudioFeedback = () => {
   const { locale } = useLocale();
   const soundsOff = activeChild?.settings?.soundEffects === false;
   const nameOff = activeChild?.settings?.useNameInPraise === false;
-  const manifestPath =
-    !nameOff && isPraiseManifest(activeChild?.name_audio_path)
-      ? activeChild.name_audio_path
-      : null;
+  // Clips are cached per locale; the app locale IS the child's language
+  // (LocaleContext), so this picks the set that matches what's on screen.
+  const clipPath = resolveNameAudioPath(activeChild, locale);
+  const manifestPath = !nameOff && isPraiseManifest(clipPath) ? clipPath : null;
 
   const packFeedback = getPack()?.feedback;
   const tiers = packFeedback?.positiveTiers ?? positiveTiers;

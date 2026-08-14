@@ -10,16 +10,23 @@ import { alertTelegram } from './_lib/telegram-alert.js';
 // proxy for our API key:
 //
 //   name (default) — quick neutral read of the name (~2 s). Fast
-//     confirmation for the parent; uploads <uid>/<cid>/<ts>/name.mp3 and
-//     points name_audio_path at it.
+//     confirmation for the parent; uploads <uid>/<cid>/<locale>/<ts>/name.mp3
+//     and records it in name_audio_paths[locale] (+ name_audio_path, the
+//     legacy "latest" pointer). Pass reset:true (rename) to drop every other
+//     locale's cached clips — they all say the old name.
 //   praise — 8 personalized praise phrases (2 per excitement tier) plus a
-//     manifest.json; points name_audio_path at the manifest. The client
+//     manifest.json; points the same two columns at the manifest. The client
 //     fires this AFTER the name action returns, so nothing waits on it.
 //   delete — removes the child's whole storage folder (called before the
 //     profile row is deleted; only the service role can write this bucket).
 //
-// A name_audio_path ending in .mp3 = neutral-only (praise not ready);
-// ending in manifest.json = personalized praise exists.
+// Clips are cached PER LOCALE (name_audio_paths jsonb, locale → path):
+// switching language only generates when that locale has no manifest yet,
+// and regenerating one locale never touches another's folder. A path ending
+// in .mp3/.wav = neutral-only (praise not ready); ending in manifest.json =
+// personalized praise exists. Pre-cache rows used <uid>/<cid>/<ts>/… with
+// no locale segment — those paths survive in the map until a rename or a
+// same-locale regeneration replaces them.
 //
 // The same endpoint also voices FAMILY MEMBERS (the My Family lesson):
 // pass memberId instead of childId. Members get the neutral name clip and
@@ -195,22 +202,20 @@ const listFilesDeep = async (admin, prefix) => {
   return files;
 };
 
-// Remove every older <timestamp> folder (and legacy loose <ts>.mp3 files)
-// for a child. Runs AFTER name_audio_path points at the new version, so a
-// failure here never strands the profile — worst case is orphaned files.
-const cleanupOldVersions = async (admin, childPrefix, keepTs) => {
+// Remove every file under `prefix` that isn't inside the folder of one of
+// `keepPaths` — the row's current clip paths, so anything a locale still
+// references survives. Runs AFTER the row points at the new version; a
+// failure here never strands a profile — worst case is orphaned files.
+// This is what makes per-locale caching safe: regenerating one locale
+// keeps every other locale's folder (it's still in name_audio_paths), while
+// stale timestamps, legacy loose mp3s, and reset-orphaned locales all go.
+const cleanupUnreferenced = async (admin, prefix, keepPaths) => {
   try {
-    const { data } = await admin.storage
-      .from(BUCKET)
-      .list(childPrefix, { limit: 100 });
-    if (!data) return;
-    const stale = [];
-    for (const entry of data) {
-      if (entry.id) stale.push(`${childPrefix}/${entry.name}`); // legacy loose mp3
-      else if (entry.name !== keepTs) {
-        stale.push(...(await listFilesDeep(admin, `${childPrefix}/${entry.name}`)));
-      }
-    }
+    const keep = keepPaths
+      .filter(Boolean)
+      .map((p) => p.replace(/\/[^/]+$/, '/'));
+    const files = await listFilesDeep(admin, prefix);
+    const stale = files.filter((f) => !keep.some((k) => f.startsWith(k)));
     if (stale.length) await admin.storage.from(BUCKET).remove(stale);
   } catch (error) {
     console.warn('name-audio cleanup failed:', error.message);
@@ -234,6 +239,7 @@ export default async function handler(req, res) {
   }
 
   const { childId, memberId, action = 'name' } = req.body || {};
+  const reset = req.body?.reset === true;
   const subjectId = childId ?? memberId;
   if (!subjectId || typeof subjectId !== 'string') {
     return res.status(400).json({ error: 'childId or memberId is required' });
@@ -357,13 +363,13 @@ export default async function handler(req, res) {
       if (memberUpdateError) {
         throw new Error(`Member update: ${memberUpdateError.message}`);
       }
-      await cleanupOldVersions(admin, prefix, ts);
+      await cleanupUnreferenced(admin, prefix, [path]);
       return res.status(200).json({ path });
     }
 
     const { data: child } = await admin
       .from('child_profiles')
-      .select('id, user_id, name, name_audio_path, settings')
+      .select('id, user_id, name, name_audio_path, name_audio_paths, settings')
       .eq('id', childId)
       .maybeSingle();
     if (!child || child.user_id !== userData.user.id) {
@@ -415,10 +421,19 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Child has no name' });
     }
 
-    const setPath = async (path) => {
+    const savedPaths =
+      child.name_audio_paths && typeof child.name_audio_paths === 'object'
+        ? child.name_audio_paths
+        : {};
+
+    const setPaths = async (path, paths) => {
       const { error } = await admin
         .from('child_profiles')
-        .update({ name_audio_path: path, updated_at: new Date().toISOString() })
+        .update({
+          name_audio_path: path,
+          name_audio_paths: paths,
+          updated_at: new Date().toISOString(),
+        })
         .eq('id', child.id);
       if (error) throw new Error(`Profile update: ${error.message}`);
     };
@@ -430,27 +445,36 @@ export default async function handler(req, res) {
       const audio = await speakName(name);
       // Timestamped folder = every regeneration is a new URL (cache busting)
       const ts = `${Date.now()}`;
-      const path = `${childPrefix}/${ts}/name.${ext}`;
+      const path = `${childPrefix}/${locale}/${ts}/name.${ext}`;
       await upload(admin, path, audio, contentType);
-      await setPath(path);
-      await cleanupOldVersions(admin, childPrefix, ts);
-      return res.status(200).json({ path });
+      // reset (rename) drops every other locale's cached clips — they all
+      // say the old name; cleanup below then removes their folders. The
+      // praise phase that follows sees the already-reset stored map, so
+      // only the name phase needs the flag.
+      const paths = reset ? { [locale]: path } : { ...savedPaths, [locale]: path };
+      await setPaths(path, paths);
+      await cleanupUnreferenced(admin, childPrefix, Object.values(paths));
+      return res.status(200).json({ path, paths });
     }
 
     // action === 'praise' — reuse the folder the name action just made so
-    // the name clip and the praise clips version together; if the profile
-    // is still on the legacy loose-mp3 format (self-heal without a
-    // preceding name action), start a fresh folder and regenerate the name
-    // clip too.
-    let ts = child.name_audio_path?.match(
-      new RegExp(`^${childPrefix}/(\\d+)/name\\.${ext}$`)
+    // the name clip and the praise clips version together; anything else
+    // there (legacy pre-locale layout, a seeded manifest path, no entry at
+    // all) starts a fresh folder and regenerates the name clip too.
+    let ts = savedPaths[locale]?.match(
+      new RegExp(`^${childPrefix}/${locale}/(\\d+)/name\\.${ext}$`)
     )?.[1];
     if (!ts) {
       ts = `${Date.now()}`;
       const audio = await speakName(name);
-      await upload(admin, `${childPrefix}/${ts}/name.${ext}`, audio, contentType);
+      await upload(
+        admin,
+        `${childPrefix}/${locale}/${ts}/name.${ext}`,
+        audio,
+        contentType
+      );
     }
-    const folder = `${childPrefix}/${ts}`;
+    const folder = `${childPrefix}/${locale}/${ts}`;
 
     // Both providers cap concurrency around 2 — generate tier by tier
     // (each tier is exactly a batch of 2). `locale` and `neutral` let the
@@ -487,9 +511,10 @@ export default async function handler(req, res) {
       Buffer.from(JSON.stringify(manifest)),
       'application/json'
     );
-    await setPath(manifestPath);
-    await cleanupOldVersions(admin, childPrefix, ts);
-    return res.status(200).json({ path: manifestPath });
+    const paths = { ...savedPaths, [locale]: manifestPath };
+    await setPaths(manifestPath, paths);
+    await cleanupUnreferenced(admin, childPrefix, Object.values(paths));
+    return res.status(200).json({ path: manifestPath, paths });
   } catch (error) {
     console.error(`generate-name-audio ${action} error:`, error);
     // One budget per issue type (fingerprinted in telegram-alert.js), so a

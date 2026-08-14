@@ -13,7 +13,14 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../../context/ChildProfileContext';
-import { loadPraiseClips, neutralNameUrl, playClipUrl } from '../../lib/nameAudio';
+import {
+  clipLocale,
+  isPraiseManifest,
+  loadPraiseClips,
+  neutralNameUrl,
+  playClipUrl,
+  resolveNameAudioPath,
+} from '../../lib/nameAudio';
 import {
   starterLessonsForAge,
   defaultEnabledLessons,
@@ -102,16 +109,18 @@ const NameAudioStatus = ({ child, status, onGenerate }) => {
     );
   }
 
-  if (child.name_audio_path) {
+  // Demo the clips for the child's OWN language — that's what they hear
+  const clipPath = resolveNameAudioPath(child, clipLocale(child));
+  if (clipPath) {
     const playName = async () => {
       if (playing) return;
       setPlaying(true);
       try {
-        const clips = await loadPraiseClips(child.name_audio_path);
+        const clips = await loadPraiseClips(clipPath);
         const tier0 = clips?.tiers?.[0];
         const url = tier0?.length
           ? tier0[Math.floor(Math.random() * tier0.length)]
-          : (clips?.neutralUrl ?? neutralNameUrl(child.name_audio_path));
+          : (clips?.neutralUrl ?? neutralNameUrl(clipPath));
         await playClipUrl(url);
       } finally {
         setPlaying(false);
@@ -398,12 +407,17 @@ const ParentZone = () => {
                   value={language}
                   onChange={async (v) => {
                     if (v === language) return;
-                    // Name + praise clips follow the language — regenerate
-                    // in the new voice AFTER the setting lands in the DB
-                    // (the API reads language from the profile row). Stock
-                    // praise fills in while the old manifest is ignored.
+                    // Name + praise clips are cached per language — only
+                    // generate when this child has no praise set in the
+                    // target one, AFTER the setting lands in the DB (the
+                    // API reads language from the profile row). Stock
+                    // praise fills in until the new clips are ready.
                     await patch({ language: v });
-                    if (selected && selected.name !== DEFAULT_CHILD_NAME) {
+                    if (
+                      selected &&
+                      selected.name !== DEFAULT_CHILD_NAME &&
+                      !isPraiseManifest(selected.name_audio_paths?.[v])
+                    ) {
                       requestNameAudio(selected.id);
                     }
                   }}

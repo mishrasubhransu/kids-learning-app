@@ -8,7 +8,11 @@ import {
   useRef,
 } from 'react';
 import { supabase } from '../lib/supabase';
-import { isPraiseManifest } from '../lib/nameAudio';
+import {
+  clipLocale,
+  isPraiseManifest,
+  resolveNameAudioPath,
+} from '../lib/nameAudio';
 import { useAuth } from './AuthContext';
 import { setAnalyticsChild } from '../lib/analytics';
 import { defaultEnabledLessons } from '../data/lessons';
@@ -100,9 +104,11 @@ export const ChildProfileProvider = ({ children }) => {
   // the personalized praise phrases (~20 s) that nothing waits on — if a
   // game starts before they're ready, plain praise plays. Never blocks the
   // app; progress and errors land in nameAudioStatus so the Parent Zone can
-  // show them (and offer retry).
+  // show them (and offer retry). Clips generate in the child's current
+  // language and cache per locale (name_audio_paths); reset:true (rename)
+  // tells the API to drop the other locales' clips — they say the old name.
   const requestNameAudio = useCallback(
-    async (childId) => {
+    async (childId, { reset = false } = {}) => {
       const token = session?.access_token;
       if (!token || !childId) return;
       nameAudioAttempts.current.add(childId);
@@ -114,7 +120,7 @@ export const ChildProfileProvider = ({ children }) => {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ childId, action }),
+          body: JSON.stringify({ childId, action, reset }),
         });
         let data = null;
         try {
@@ -126,14 +132,21 @@ export const ChildProfileProvider = ({ children }) => {
         return {
           ok: res.ok && !!data?.path,
           path: data?.path,
+          paths: data?.paths,
           message: data?.error || `Audio service unavailable (HTTP ${res.status})`,
         };
       };
 
-      const applyPath = (path) =>
+      const applyPath = ({ path, paths }) =>
         setProfiles((prev) => {
           const next = (prev || []).map((p) =>
-            p.id === childId ? { ...p, name_audio_path: path } : p
+            p.id === childId
+              ? {
+                  ...p,
+                  name_audio_path: path,
+                  ...(paths ? { name_audio_paths: paths } : {}),
+                }
+              : p
           );
           if (user) writeCache(user.id, next);
           return next;
@@ -149,7 +162,7 @@ export const ChildProfileProvider = ({ children }) => {
           }));
           return;
         }
-        applyPath(name.path);
+        applyPath(name);
         setNameAudioStatus((s) => ({
           ...s,
           [childId]: { state: 'ready', praise: 'generating' },
@@ -164,7 +177,7 @@ export const ChildProfileProvider = ({ children }) => {
 
       try {
         const praise = await call('praise');
-        if (praise.ok) applyPath(praise.path);
+        if (praise.ok) applyPath(praise);
         setNameAudioStatus((s) => ({
           ...s,
           [childId]: {
@@ -257,17 +270,18 @@ export const ChildProfileProvider = ({ children }) => {
     return profiles.find((p) => p.id === activeChildId) || profiles[0];
   }, [profiles, activeChildId]);
 
-  // Self-heal: generation only fires on create/rename, so a one-time failure
-  // (dev server without /api, missing env vars, network) would otherwise
-  // leave a profile silent forever. Retry once per session for named
-  // profiles without a praise manifest — that covers no clip at all AND the
-  // legacy neutral-only .mp3 format, which regenerates into the full set.
+  // Self-heal: generation only fires on create/rename/language-switch, so a
+  // one-time failure (dev server without /api, missing env vars, network)
+  // would otherwise leave a profile silent forever. Retry once per session
+  // for named profiles without a praise manifest in their own language —
+  // that covers no clip at all AND the neutral-only mid-generation format,
+  // which regenerates into the full set.
   useEffect(() => {
     if (!profiles || !session) return;
     profiles.forEach((p) => {
       if (
         p.name !== DEFAULT_CHILD_NAME &&
-        !isPraiseManifest(p.name_audio_path) &&
+        !isPraiseManifest(resolveNameAudioPath(p, clipLocale(p))) &&
         !nameAudioAttempts.current.has(p.id)
       ) {
         nameAudioAttempts.current.add(p.id);
@@ -331,7 +345,8 @@ export const ChildProfileProvider = ({ children }) => {
         return;
       }
       if (fields.name && fields.name !== before?.name) {
-        requestNameAudio(childId);
+        // Every cached locale's clips say the old name — reset them all
+        requestNameAudio(childId, { reset: true });
       }
     },
     [user, profiles, requestNameAudio]
