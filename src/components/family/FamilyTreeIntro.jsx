@@ -1,8 +1,23 @@
-import { Fragment, useEffect, useMemo, useRef, useCallback } from 'react';
+import {
+  Fragment,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useCallback,
+  useState,
+} from 'react';
 import useVoice from '../../hooks/useVoice';
 import { fixedLinePart } from '../../data/voiceLines';
 import { relationByValue } from '../../data/relations';
-import { pathDepth, pathGender, kinshipEmoji } from '../../data/kinship';
+import {
+  pathDepth,
+  pathGender,
+  kinshipEmoji,
+  memberSteps,
+  parentPathsOf,
+  memberOnPath,
+} from '../../data/kinship';
 import { familyPhotoUrl } from '../../lib/familyPhotos';
 import { memberPhotoPaths } from '../../hooks/useFamilyMembers';
 
@@ -23,24 +38,8 @@ import { memberPhotoPaths } from '../../hooks/useFamilyMembers';
 // Tap anywhere (or ArrowRight — it drives everything in this app) to
 // circle-reveal into the lesson.
 
-// Old flat-enum members without a stored path: the unambiguous ones still
-// take their place; side-unknown ones (generic grandma/uncle…) are parked
-// at the outer edge of whichever half of their line is smaller until the
-// parent rebuilds them as a path.
-const LEGACY_STEPS = {
-  mummy: ['mother'],
-  daddy: ['father'],
-  brother: ['brother'],
-  sister: ['sister'],
-};
-
-const stepsOf = (m) =>
-  m.relation_detail?.steps?.length
-    ? m.relation_detail.steps
-    : LEGACY_STEPS[m.relation] || null;
-
 const isFloating = (m) =>
-  !stepsOf(m) && (m.relation === 'friend' || m.relation === 'pet');
+  !memberSteps(m) && (m.relation === 'friend' || m.relation === 'pet');
 
 // father.… = Dad's side, mother.… = Mum's side; one-step paths (Daddy,
 // Mummy, siblings) and everything anchored on the child sit on the middle
@@ -139,12 +138,13 @@ const sortUnits = (units, side) =>
 
 // Everything below scales off --node (set on the tree wrapper; floaters set
 // their own): circle = 1 node, label/heart/gaps/bars are fractions of it.
-const TreeNode = ({ photoUrl, emoji, name, highlight = false }) => (
+const TreeNode = ({ id, photoUrl, emoji, name, highlight = false }) => (
   <span
     className="flex flex-col items-center gap-1"
     style={{ width: 'calc(var(--node) * 1.15)' }}
   >
     <span
+      data-tree-node={id}
       className={`rounded-full overflow-hidden shadow-lg ring-4 flex items-center justify-center bg-white ${
         highlight ? 'ring-amber-400' : 'ring-white'
       }`}
@@ -201,9 +201,12 @@ const Cell = ({ units, justify }) => (
   </div>
 );
 
-const Bar = () => (
+// Spacer between generation lines — the blue/pink parent connectors in the
+// SVG overlay run through this gap (it replaced the old amber trunk bar,
+// which would have floated uselessly among the real lines).
+const Gap = () => (
   <span
-    className="w-1 bg-amber-300 rounded-full my-1"
+    className="my-1"
     style={{ height: 'calc(var(--node) * 0.35)' }}
     aria-hidden="true"
   />
@@ -238,13 +241,16 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
       return lines.get(depth);
     };
     const floaters = [];
+    const treeNodes = []; // everyone placed on a line, for edge drawing
 
     members.forEach((m) => {
-      const steps = stepsOf(m);
+      const steps = memberSteps(m);
       const n = {
         key: m.id,
+        id: m.id,
         name: m.name,
         steps,
+        parents: m.relation_detail?.parents || null,
         photoUrl: familyPhotoUrl(memberPhotoPaths(m)[0]),
         emoji: kinshipEmoji(m) || relationByValue(m.relation)?.emoji || '🙂',
         highlight: Boolean(activeChild && m.child_profile_id === activeChild.id),
@@ -264,6 +270,7 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
       } else {
         line[steps ? sideOf(steps) : 'center'].push(n);
       }
+      treeNodes.push(n);
     });
 
     // The child stands among the kids: their linked member when the parent
@@ -271,15 +278,42 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
     const selfIsMember =
       activeChild && members.some((m) => m.child_profile_id === activeChild.id);
     if (activeChild && !selfIsMember) {
-      lineAt(0).center.unshift({
+      const me = {
         key: 'me',
+        id: 'me',
         name: activeChild.name,
         steps: null,
         photoUrl: null,
         emoji: activeChild.avatar || '🧒',
         highlight: true,
-      });
+      };
+      lineAt(0).center.unshift(me);
+      treeNodes.push(me);
     }
+
+    // Blue child→father / pink child→mother connectors. A parent-picked
+    // explicit link (relation_detail.parents) wins per slot — set-but-gone
+    // draws nothing rather than falling back to a guess the parent already
+    // corrected. Otherwise the pair is inferred from the paths through
+    // memberOnPath, the same resolver behind the editor's defaults — kids
+    // to Daddy♥Mummy, Daddy to his own parents, cousins to uncle♥aunt…
+    // The child's avatar (no path of its own) anchors to Daddy/Mummy.
+    const byId = new Map(treeNodes.map((n) => [n.id, n]));
+    const edges = [];
+    treeNodes.forEach((n) => {
+      const derived = n.steps
+        ? parentPathsOf(n.steps)
+        : n.id === 'me'
+          ? { father: ['father'], mother: ['mother'] }
+          : null;
+      ['father', 'mother'].forEach((kind) => {
+        const parent = n.parents?.[kind]
+          ? byId.get(n.parents[kind])
+          : byId.get(memberOnPath(members, derived?.[kind])?.id);
+        if (parent && parent.id !== n.id)
+          edges.push({ from: n.id, to: parent.id, kind });
+      });
+    });
 
     const rows = [...lines.entries()]
       .sort(([a], [b]) => b - a)
@@ -303,8 +337,56 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
       0
     );
 
-    return { rows, floaters, widest };
+    return { rows, floaters, widest, edges };
   }, [members, activeChild]);
+
+  // The connectors are real pixels between circles the flex/grid layout
+  // placed, so measure the rendered circles and redo it whenever the tree
+  // wrapper resizes (--node is vw/vh-based, so any resize moves everyone).
+  const wrapRef = useRef(null);
+  const [connectors, setConnectors] = useState([]);
+  useLayoutEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return undefined;
+    const measure = () => {
+      const origin = el.getBoundingClientRect();
+      const lines = [];
+      tree.edges.forEach((e) => {
+        const child = el.querySelector(
+          `[data-tree-node="${CSS.escape(e.from)}"]`
+        );
+        const parent = el.querySelector(
+          `[data-tree-node="${CSS.escape(e.to)}"]`
+        );
+        if (!child || !parent) return;
+        const rc = child.getBoundingClientRect();
+        const rp = parent.getBoundingClientRect();
+        // Dad's line leaves the child's head slightly left of center, Mum's
+        // slightly right (boys-left/girls-right, like the couples stand)
+        const x1 =
+          rc.left - origin.left + rc.width * (e.kind === 'father' ? 0.32 : 0.68);
+        const y1 = rc.top - origin.top + rc.height * 0.06;
+        const x2 = rp.left - origin.left + rp.width / 2;
+        const y2 = rp.bottom - origin.top;
+        const bend = Math.max(14, (y1 - y2) * 0.45);
+        lines.push({
+          key: `${e.from}:${e.kind}`,
+          stroke: e.kind === 'father' ? '#60a5fa' : '#f472b6',
+          width: Math.max(2.5, rc.width * 0.05),
+          d: `M ${x1.toFixed(1)} ${y1.toFixed(1)} C ${x1.toFixed(1)} ${(y1 - bend).toFixed(1)}, ${x2.toFixed(1)} ${(y2 + bend).toFixed(1)}, ${x2.toFixed(1)} ${y2.toFixed(1)}`,
+        });
+      });
+      setConnectors(lines);
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(el);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [tree]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -346,24 +428,45 @@ const FamilyTreeIntro = ({ members, activeChild, onReveal }) => {
 
       {/* One line per generation; the 1fr halves keep Dad's side and Mum's
           side split at the exact middle, so the kids' centered line sits
-          directly under the parents' heart */}
+          directly under the parents' heart. The SVG underlay carries the
+          blue (to father) / pink (to mother) connectors; the rows div is
+          positioned so it paints above the lines. */}
       <div
-        className="w-full flex flex-col items-center"
+        ref={wrapRef}
+        className="relative w-full"
         style={{ '--node': nodeSize }}
       >
-        {tree.rows.map((row, i) => (
-          <Fragment key={row.depth}>
-            {i > 0 && <Bar />}
-            <div
-              className="w-full grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start"
-              style={{ columnGap: 'calc(var(--node) * 0.3)' }}
-            >
-              <Cell units={row.left} justify="justify-end" />
-              <Cell units={row.center} justify="justify-center" />
-              <Cell units={row.right} justify="justify-start" />
-            </div>
-          </Fragment>
-        ))}
+        <svg
+          className="absolute inset-0 w-full h-full pointer-events-none"
+          aria-hidden="true"
+        >
+          {connectors.map((l) => (
+            <path
+              key={l.key}
+              d={l.d}
+              fill="none"
+              stroke={l.stroke}
+              strokeWidth={l.width}
+              strokeLinecap="round"
+              opacity="0.85"
+            />
+          ))}
+        </svg>
+        <div className="relative w-full flex flex-col items-center">
+          {tree.rows.map((row, i) => (
+            <Fragment key={row.depth}>
+              {i > 0 && <Gap />}
+              <div
+                className="w-full grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start"
+                style={{ columnGap: 'calc(var(--node) * 0.3)' }}
+              >
+                <Cell units={row.left} justify="justify-end" />
+                <Cell units={row.center} justify="justify-center" />
+                <Cell units={row.right} justify="justify-start" />
+              </div>
+            </Fragment>
+          ))}
+        </div>
       </div>
 
       {tree.floaters.map((n, i) => (

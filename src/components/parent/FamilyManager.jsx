@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Plus,
   Pencil,
@@ -25,6 +25,9 @@ import {
   kinshipEmoji,
   legacyRelationValue,
   pathEmoji,
+  memberSteps,
+  parentPathsOf,
+  memberOnPath,
 } from '../../data/kinship';
 import { useLocale } from '../../context/LocaleContext';
 import { availableLocales } from '../../locales';
@@ -74,15 +77,9 @@ const QUICK_PICKS = [
 
 const samePath = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
-// Old members carry only the flat enum; the unambiguous values open the
-// editor as their equivalent path, the side-of-family-unknown ones (grandma,
-// uncle…) stay legacy until the parent rebuilds them.
-const LEGACY_TO_PATH = {
-  mummy: ['mother'],
-  daddy: ['father'],
-  brother: ['brother'],
-  sister: ['sister'],
-};
+// Stable stand-in for "no path" so hooks keyed on `steps` don't re-fire
+// on a fresh [] every render
+const NO_STEPS = [];
 
 const initialRelState = (initial) => {
   // New members start with NO relation: a preselected "Mummy" was one
@@ -90,11 +87,16 @@ const initialRelState = (initial) => {
   // phonetic suggestion as a false kinship hint. Empty keeps Save disabled
   // (canSave requires a relation) until the parent actually chooses.
   if (!initial) return { kind: 'path', steps: [], seniority: null };
-  const detail = initial.relation_detail;
-  if (detail?.steps?.length)
-    return { kind: 'path', steps: detail.steps, seniority: detail.seniority || null };
-  if (LEGACY_TO_PATH[initial.relation])
-    return { kind: 'path', steps: LEGACY_TO_PATH[initial.relation], seniority: null };
+  // memberSteps also maps the unambiguous flat-enum legacy values onto
+  // their path; the side-of-family-unknown ones (grandma, uncle…) stay
+  // legacy until the parent rebuilds them.
+  const steps = memberSteps(initial);
+  if (steps)
+    return {
+      kind: 'path',
+      steps,
+      seniority: initial.relation_detail?.seniority || null,
+    };
   return { kind: 'legacy', value: initial.relation || 'friend' };
 };
 
@@ -132,6 +134,7 @@ const chipClass = (selected) =>
 const MemberEditor = ({
   initial,
   linkChild = null,
+  members = [],
   onSave,
   onCancel,
   saveLabel = 'Save',
@@ -177,6 +180,21 @@ const MemberEditor = ({
   const [customLabel, setCustomLabel] = useState(
     initial?.relation_detail?.label || ''
   );
+  // Anyone this member could be a child of — everyone but themselves (and
+  // pets). The person the parent may want to pick usually isn't the
+  // inferred one, so no gender filtering: the family knows best.
+  const parentChoices = useMemo(
+    () => members.filter((m) => m.id !== initial?.id && m.relation !== 'pet'),
+    [members, initial?.id]
+  );
+  // Explicit mum/dad in the tree ('' = go with the inferred one). A stored
+  // id whose member has since been deleted counts as unset, so a re-save
+  // sheds it.
+  const [parentIds, setParentIds] = useState(() => {
+    const stored = initial?.relation_detail?.parents || {};
+    const valid = (id) => (members.some((m) => m.id === id) ? id : '');
+    return { father: valid(stored.father), mother: valid(stored.mother) };
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
@@ -221,7 +239,17 @@ const MemberEditor = ({
     []
   );
 
-  const steps = rel.kind === 'path' ? rel.steps : [];
+  const steps = rel.kind === 'path' ? rel.steps : NO_STEPS;
+  // Who the RELATION says their mum and dad are, when someone in the family
+  // actually stands on that derived path — shown as each picker's default,
+  // live against the path being built.
+  const inferredParents = useMemo(() => {
+    const derived = parentPathsOf(steps);
+    return {
+      father: memberOnPath(parentChoices, derived?.father),
+      mother: memberOnPath(parentChoices, derived?.mother),
+    };
+  }, [steps, parentChoices]);
   const setSteps = (nextSteps) =>
     setRel({
       kind: 'path',
@@ -300,6 +328,15 @@ const MemberEditor = ({
     if (!canSave) return;
     setSaving(true);
     setError(null);
+    // Only explicit picks are stored — an empty slot means "infer from the
+    // relation", so the guess keeps tracking future path edits
+    const parents =
+      parentIds.father || parentIds.mother
+        ? {
+            ...(parentIds.father && { father: parentIds.father }),
+            ...(parentIds.mother && { mother: parentIds.mother }),
+          }
+        : null;
     const relationFields =
       rel.kind === 'path'
         ? {
@@ -308,13 +345,20 @@ const MemberEditor = ({
               steps,
               seniority: seniorityApplies(steps) ? rel.seniority : null,
               label: customLabel.trim() || null,
+              ...(parents && { parents }),
             },
           }
         : {
             relation: rel.value,
-            relationDetail: customLabel.trim()
-              ? { steps: null, seniority: null, label: customLabel.trim() }
-              : null,
+            relationDetail:
+              customLabel.trim() || parents
+                ? {
+                    steps: null,
+                    seniority: null,
+                    label: customLabel.trim() || null,
+                    ...(parents && { parents }),
+                  }
+                : null,
           };
     try {
       await onSave({
@@ -655,6 +699,54 @@ const MemberEditor = ({
         )}
       </div>
 
+      {/* Friends and pets float outside the tree, so no lines to pick */}
+      {(rel.kind !== 'legacy' || !['friend', 'pet'].includes(rel.value)) &&
+        parentChoices.length > 0 && (
+          <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-semibold text-gray-600">
+              Their mum &amp; dad{' '}
+              <span className="font-normal text-gray-400">
+                — the pink and blue lines in the family tree; we guess from
+                the relation, pick someone only if the guess is wrong
+              </span>
+            </span>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { kind: 'mother', title: 'Mum', color: 'text-pink-600' },
+                { kind: 'father', title: 'Dad', color: 'text-blue-600' },
+              ].map(({ kind, title, color }) => (
+                <label
+                  key={kind}
+                  className="flex-1 min-w-[11rem] flex flex-col gap-1"
+                >
+                  <span className={`text-xs font-semibold ${color}`}>
+                    {title}
+                  </span>
+                  <select
+                    value={parentIds[kind]}
+                    onChange={(e) =>
+                      setParentIds((prev) => ({
+                        ...prev,
+                        [kind]: e.target.value,
+                      }))
+                    }
+                    className="border border-gray-200 rounded-lg px-2 py-1.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+                  >
+                    <option value="">
+                      {inferredParents[kind]?.name || 'No one yet'}
+                    </option>
+                    {parentChoices.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.name} ({kinshipLabel(m, 'en')})
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
+
       {error && <div className="text-sm text-red-600">{error}</div>}
 
       <div className="flex gap-2 justify-end items-center">
@@ -803,6 +895,7 @@ const FamilyManager = () => {
             <MemberEditor
               key={member.id}
               initial={member}
+              members={members}
               linkChild={
                 (childProfiles || []).find(
                   (p) => p.id === member.child_profile_id
@@ -878,6 +971,7 @@ const FamilyManager = () => {
         <div className="mt-3">
           <MemberEditor
             initial={null}
+            members={members}
             linkChild={
               (childProfiles || []).find((p) => p.id === linkChildId) || null
             }

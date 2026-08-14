@@ -63,6 +63,71 @@ export const pathEmoji = (steps) => {
   return byGen[pathGeneration(steps)][gender];
 };
 
+// A member's kinship path, whichever way it's stored: relation_detail
+// steps when present, else the unambiguous flat-enum values mapped onto
+// their path (side-unknown legacy values — grandma, uncle… — stay null).
+const LEGACY_STEPS = {
+  mummy: ['mother'],
+  daddy: ['father'],
+  brother: ['brother'],
+  sister: ['sister'],
+};
+export const memberSteps = (member) => {
+  const detail = member?.relation_detail ?? member?.relationDetail;
+  return detail?.steps?.length
+    ? detail.steps
+    : LEGACY_STEPS[member?.relation] || null;
+};
+
+// The spouse of the person at path p, canonically: X.wife's husband IS X
+// (drop the step rather than stack spouse-of-spouse), and an ancestor's
+// spouse is the co-parent form the family would actually store (spouse of
+// father.father = father.mother, not father.father.wife). The co-parent
+// swap assumes full-blood couples — where that's wrong (remarriage), the
+// member's explicit parents override wins.
+const spouseOf = (p, want) => {
+  const last = p[p.length - 1];
+  const other = want === 'husband' ? 'wife' : 'husband';
+  if (last === other) return p.slice(0, -1);
+  const coParent = want === 'husband' ? 'father' : 'mother';
+  const own = want === 'husband' ? 'mother' : 'father';
+  if (last === own) return [...p.slice(0, -1), coParent];
+  return [...p, want];
+};
+
+// Where a person's parents stand in path terms. Steps compose from the
+// child, so an ancestor's parents extend their own path; a sibling-step
+// shares the prefix's parents (my brother's father is MY father, not
+// 'brother.father'); a son/daughter's blood parent IS the prefix and the
+// other parent is that prefix's spouse. In-law spouses (…wife/…husband)
+// have no expressible parents in this tree.
+export const parentPathsOf = (steps) => {
+  if (!steps?.length) return null;
+  const last = steps[steps.length - 1];
+  const prefix = steps.slice(0, -1);
+  if (last === 'father' || last === 'mother')
+    return { father: [...steps, 'father'], mother: [...steps, 'mother'] };
+  if (last === 'brother' || last === 'sister')
+    return { father: [...prefix, 'father'], mother: [...prefix, 'mother'] };
+  if (last === 'son' || last === 'daughter') {
+    if (!prefix.length) return null;
+    return pathGender(prefix) === 'f'
+      ? { father: spouseOf(prefix, 'husband'), mother: prefix }
+      : { father: prefix, mother: spouseOf(prefix, 'wife') };
+  }
+  return null;
+};
+
+// The member standing on a path — THE tie-break for inferred parents when
+// two people share a path (sisters both stored as father.mother.sister):
+// first in member-list order wins. The tree's drawn lines and the editor's
+// inferred-parent defaults both resolve through here, so they can never
+// name different people.
+export const memberOnPath = (members, path) =>
+  (path &&
+    members.find((m) => memberSteps(m)?.join('.') === path.join('.'))) ||
+  null;
+
 // Nearest flat-enum value, written to the legacy `relation` column so a
 // stale client (old bundle, old localStorage cache) still shows something
 // sensible for a path-built member.
