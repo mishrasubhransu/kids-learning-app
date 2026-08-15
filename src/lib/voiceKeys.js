@@ -18,6 +18,9 @@ import {
   localizeItem,
   getPack,
   sceneQuestionText,
+  isSpeechOverridden,
+  getSpeechPack,
+  getSpeechTtsLang,
 } from './locale';
 
 export { voiceSlug };
@@ -58,7 +61,34 @@ const EN_PARTS = {
 const partText = (kind, subject) =>
   (getPack()?.voiceParts?.[kind] || EN_PARTS[kind])(subject);
 
+// Subject in the SPEECH language when a lesson pins one (Indian Food): the
+// same English-derived slug, but name/say/ref from the speech pack instead
+// of the app pack (raw English when the override is 'en' — packless).
+const speechSubjectFor = (input) => {
+  const isObj = typeof input === 'object' && input !== null;
+  const enName = String(isObj ? (input.enName ?? input.name ?? input.id ?? '') : input);
+  const slug = (isObj && input.slug) || voiceSlug(enName);
+  const entry = getSpeechPack()?.items?.[slug];
+  const name = entry?.name ?? enName;
+  const say = entry?.say ?? name;
+  return {
+    slug,
+    name,
+    say,
+    ref: entry?.ref ?? say,
+    bare: entry?.bare ?? entry?.ref ?? say,
+    plural: Boolean(entry?.plural),
+  };
+};
+
+// Overridden parts carry `lang` so useVoice's TTS fallback speaks the same
+// language the missing clip would have.
 const buildPart = (kind, group) => (input) => {
+  if (isSpeechOverridden()) {
+    const s = speechSubjectFor(input);
+    const template = getSpeechPack()?.voiceParts?.[kind] || EN_PARTS[kind];
+    return { key: `${group}/${s.slug}`, text: template(s), lang: getSpeechTtsLang() };
+  }
   const s = subjectFor(input);
   return { key: `${group}/${s.slug}`, text: partText(kind, s) };
 };

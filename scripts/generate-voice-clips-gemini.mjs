@@ -50,6 +50,7 @@ const STYLE_PROMPT = {
   es: 'Di esto como una madre dulce y cariñosa hablándole a su hijo de dos años, en español latinoamericano neutro — suave, cálida, pausada y tranquilizadora:',
   zh: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Mandarin Chinese — soft, warm, unhurried, and reassuring:',
   or: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Odia — soft, warm, unhurried, and reassuring:',
+  hi: 'Say this as a gentle, loving mother speaking to her two-year-old, in standard Hindi — soft, warm, unhurried, and reassuring:',
 };
 
 // Bare word clips (items/*) need precise pronunciation, not warmth — the
@@ -60,6 +61,7 @@ const WORD_STYLE_PROMPT = {
   es: 'Di esto en español latinoamericano neutro como una demostración de pronunciación clara y precisa — neutra y articulada, cada sílaba nítida y completamente enunciada, a un ritmo constante y uniforme, sin carga emocional:',
   zh: 'Say this in standard Mandarin Chinese as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
   or: 'Say this in standard Odia as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
+  hi: 'Say this in standard Hindi as a clear, precise pronunciation demonstration — neutral and articulate, every syllable crisp and fully enunciated, at a steady, even pace, without emotional coloring:',
 };
 
 const styleFor = (locale, key) =>
@@ -70,7 +72,9 @@ const styleFor = (locale, key) =>
 // User-auditioned voice per locale (bake-off winners); --voice overrides.
 // NB: or MUST run on gemini-3.1-flash-tts-preview — no other Gemini TTS
 // renders Odia (2.5-pro returns empty audio, 2.5-flash can't batch).
-const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore', or: 'Autonoe' };
+// hi rides the or pipeline: same Autonoe voice + 3.1-flash model (pass
+// --model gemini-3.1-flash-tts-preview), speech-only Indian Food catalog.
+const VOICE_BY_LOCALE = { es: 'Autonoe', zh: 'Kore', or: 'Autonoe', hi: 'Autonoe' };
 
 // .env loader — same as the ElevenLabs script: the project .env OVERRIDES
 // inherited env (the shell profile exports SUPABASE keys for other projects).

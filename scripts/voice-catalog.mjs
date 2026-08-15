@@ -23,7 +23,9 @@ import {
   oppositeOfPart,
   scenePart,
   linePart,
+  voiceSlug,
 } from '../src/lib/voiceKeys.js';
+import hiPack from '../src/locales/hi/index.js';
 import { setActiveLocale, getPack } from '../src/lib/locale.js';
 import { isLessonAvailable } from '../src/data/lessons.js';
 import alphabets from '../src/data/alphabets.js';
@@ -37,6 +39,9 @@ import { FIXED_LINES } from '../src/data/voiceLines.js';
 import { intros } from '../src/data/intros.js';
 
 export function buildCatalog(locale = 'en') {
+  // Hindi is a speech-only locale (SPEECH_LOCALES): no app curriculum, just
+  // the fixed-language Indian Food lesson — its own tiny catalog.
+  if (locale === 'hi') return buildHindiCatalog();
   setActiveLocale(locale);
   const parts = new Map(); // key -> text; same name in two lessons = one clip
 
@@ -54,7 +59,12 @@ export function buildCatalog(locale = 'en') {
     alphabets.forEach((i) => addQuizSet(i.name));
   }
   [...numbers, ...colors, ...shapes].forEach((i) => addQuizSet(i.name));
-  Object.values(conceptItems).flat().forEach((i) => addQuizSet(i.name));
+  // Skip concept lessons the registry hides for this locale (indian-food
+  // for es/zh — its dosa/vada slugs still arrive via the food lesson)
+  Object.entries(conceptItems).forEach(([id, items]) => {
+    if (!isLessonAvailable(locale, `concepts.${id}`)) return;
+    items.forEach((i) => addQuizSet(i.name));
+  });
 
   // 3-letter families are real words (bat, can, cap); 2-letter syllable
   // families are excluded — see header. Locales without phonics skip both.
@@ -104,6 +114,37 @@ export function buildCatalog(locale = 'en') {
     key,
     text: overrides[key] || text,
   }));
+}
+
+// The Indian Food lesson's Hindi clips, straight from the hi speech-only
+// pack — the same names/templates the runtime speech override builds with
+// (lib/voiceKeys.js speechSubjectFor), so clips and fallback text agree.
+function buildHindiCatalog() {
+  const { items, voiceParts, intros } = hiPack;
+  const parts = [];
+  conceptItems['indian-food'].forEach((item) => {
+    const slug = voiceSlug(item.name);
+    const entry = items[slug];
+    if (!entry) throw new Error(`hi pack has no item for slug "${slug}"`);
+    const say = entry.say ?? entry.name;
+    const s = {
+      slug,
+      name: entry.name,
+      say,
+      ref: entry.ref ?? say,
+      bare: entry.bare ?? entry.ref ?? say,
+      plural: Boolean(entry.plural),
+    };
+    parts.push({ key: `items/${slug}`, text: voiceParts.item(s) });
+    parts.push({ key: `quiz/which-one/${slug}`, text: voiceParts.whichOne(s) });
+    parts.push({ key: `quiz/that-was/${slug}`, text: voiceParts.thatWas(s) });
+    parts.push({ key: `quiz/try-to-find/${slug}`, text: voiceParts.tryToFind(s) });
+  });
+  Object.entries(intros).forEach(([categoryKey, lines]) =>
+    lines.forEach((text, i) => parts.push({ key: `intros/${categoryKey}/${i}`, text }))
+  );
+  const overrides = GENERATION_TEXT_OVERRIDES.hi || {};
+  return parts.map(({ key, text }) => ({ key, text: overrides[key] || text }));
 }
 
 // Delivery-only rewrites for generation, per locale: audio tags shape how a

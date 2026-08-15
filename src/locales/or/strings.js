@@ -41,6 +41,7 @@ export default {
   'cat.concepts.gadgets': 'ଗ୍ୟାଜେଟ୍',
   'cat.concepts.outside': 'ବାହାରେ',
   'cat.concepts.prepositions': 'କେଉଁଠି ଅଛି',
+  'cat.concepts.indian-food': 'ଆମ ଖାଦ୍ୟ',
 
   // Category page chrome
   'mode.scroll': 'ଗୋଟି ଗୋଟି',

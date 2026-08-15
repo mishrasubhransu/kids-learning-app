@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 import manifest from '../data/voiceManifest.json';
-import { getActiveLocale } from './locale';
+import { getActiveLocale, getSpeechLocale } from './locale';
 
 // Pre-generated voice clips (ElevenLabs for en, Gemini TTS for the other
 // locales), stored in the public "voice" bucket at <locale>/<key>.mp3 (keys
@@ -18,7 +18,16 @@ const CACHE_NAME = 'voice-v1';
 const clips = manifest.clips || {};
 const objectUrls = new Map();
 
-const entryFor = (key) => clips[`${getActiveLocale()}/${key}`];
+// Keys a fixed-language lesson pins to its own language (item words, quiz
+// sentences, its intro) resolve through the speech locale; everything else
+// (praise, fixed lines) stays with the app locale. With no override active
+// getSpeechLocale() IS the active locale, so this is a no-op everywhere
+// outside the Indian Food page.
+const SPEECH_KEY_RE = /^(items|quiz|intros)\//;
+const localeForKey = (key) =>
+  SPEECH_KEY_RE.test(key) ? getSpeechLocale() : getActiveLocale();
+
+const entryFor = (key) => clips[`${localeForKey(key)}/${key}`];
 
 export const hasVoiceClip = (key) => Boolean(entryFor(key));
 
@@ -32,7 +41,7 @@ const cacheUrl = (fullKey, entry) => `${publicUrl(`${fullKey}.mp3`)}?v=${entry.v
 export async function getVoiceClipUrl(key) {
   const entry = entryFor(key);
   if (!entry) return null;
-  const fullKey = `${getActiveLocale()}/${key}`;
+  const fullKey = `${localeForKey(key)}/${key}`;
   const urlKey = `${fullKey}@${entry.v}`;
   if (objectUrls.has(urlKey)) return objectUrls.get(urlKey);
   try {

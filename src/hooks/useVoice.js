@@ -64,7 +64,9 @@ const useVoice = (recordingCategory = null) => {
       const ttsRemaining = (fromIndex) => {
         if (tokenRef.current !== token) return Promise.resolve();
         const text = parts.slice(fromIndex).map((p) => p.text).join(' ');
-        return tts(text, { lang: getTtsLang(), ...options });
+        // Parts from a fixed-language lesson carry their own lang (their
+        // text is in that language too — see voiceKeys buildPart)
+        return tts(text, { lang: parts[fromIndex]?.lang ?? getTtsLang(), ...options });
       };
 
       return (async () => {

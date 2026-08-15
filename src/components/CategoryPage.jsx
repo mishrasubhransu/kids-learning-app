@@ -13,7 +13,7 @@ import CategoryIntro from './ui/CategoryIntro';
 import { resolveImageStyle, applyImageStyle } from '../lib/imageStyles';
 import { preloadVoiceClips } from '../lib/voice';
 import { itemQuizParts } from '../lib/voiceKeys';
-import { localizeItems } from '../lib/locale';
+import { localizeItems, setSpeechLocale } from '../lib/locale';
 import { useLocale } from '../context/LocaleContext';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
@@ -73,6 +73,14 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Counting range and image style are per-child too (Parent Zone / pills)
   const [numberMax] = useChildSetting('numberMax', '10');
   const [savedImageStyle] = useChildSetting(`imageStyle-${category}`, null);
+
+  // Indian Food speaks the language the parent pinned for it, not the app
+  // language. Stamped during render (before children mount — same pattern
+  // as LocaleProvider stamping the app locale) so the intro, preload and
+  // every quiz sentence resolve against it; cleared when the page unmounts.
+  const [indianFoodLang] = useChildSetting('indianFoodLang', null);
+  setSpeechLocale(category === 'concepts-indian-food' ? indianFoodLang : null);
+  useEffect(() => () => setSpeechLocale(null), []);
 
   const selectMode = (next) => {
     setShowGamePrompt(false);

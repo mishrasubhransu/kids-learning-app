@@ -32,6 +32,11 @@ export const conceptCategories = [
   { id: 'gadgets', name: 'Gadgets', emoji: '📱', color: 'bg-slate-500', hoverColor: 'hover:bg-slate-600' },
   { id: 'outside', name: 'Outside', emoji: '🛝', color: 'bg-green-600', hoverColor: 'hover:bg-green-700' },
   { id: 'prepositions', name: 'Prepositions', emoji: '📦', color: 'bg-cyan-600', hoverColor: 'hover:bg-cyan-700' },
+  // Region-specific lesson: audio plays in a FIXED language the parent picks
+  // (en/or/hi) before enabling, independent of the app language — see
+  // LESSON_LANGUAGE_KEY in data/lessons.js and the speech override in
+  // lib/locale.js. Hidden for es/zh (LOCALE_HIDDEN_LESSONS).
+  { id: 'indian-food', name: 'Indian Food', emoji: '🍛', color: 'bg-amber-600', hoverColor: 'hover:bg-amber-700' },
 ];
 
 export const conceptItems = {
@@ -436,5 +441,31 @@ export const conceptItems = {
     { id: 8, name: 'Next To', image: '/concepts/prepositions/next-to.webp' },
     { id: 9, name: 'Around', image: '/concepts/prepositions/around.webp' },
     { id: 10, name: 'Through', image: '/concepts/prepositions/through.webp' },
+  ],
+  // Dishes the family actually eats — names are the SAME word in every
+  // language (dosa is ଦୋସା is डोसा), so the parent picks which voice says
+  // them (Parent Zone, fixed per child). Dosa/Vada also live in food; the
+  // shared slug means they share those voice clips (voice-catalog dedup).
+  // Spellings follow the family's own usage (Alu, Gupchup, Dahi Machha).
+  'indian-food': [
+    { id: 0, name: 'Dosa', image: '/concepts/indian-food/dosa.webp' },
+    { id: 1, name: 'Idli', image: '/concepts/indian-food/idli.webp' },
+    { id: 2, name: 'Vada', image: '/concepts/indian-food/vada.webp' },
+    { id: 3, name: 'Upma', image: '/concepts/indian-food/upma.webp' },
+    { id: 4, name: 'Roti', image: '/concepts/indian-food/roti.webp' },
+    { id: 5, name: 'Paratha', image: '/concepts/indian-food/paratha.webp' },
+    { id: 6, name: 'Alu Paratha', image: '/concepts/indian-food/alu-paratha.webp' },
+    { id: 7, name: 'Rumali Roti', image: '/concepts/indian-food/rumali-roti.webp' },
+    { id: 8, name: 'Butter Chicken', image: '/concepts/indian-food/butter-chicken.webp' },
+    { id: 9, name: 'Tandoori Chicken', image: '/concepts/indian-food/tandoori-chicken.webp' },
+    { id: 10, name: 'Saag', image: '/concepts/indian-food/saag.webp' },
+    { id: 11, name: 'Alu Gobhi Fry', image: '/concepts/indian-food/alu-gobhi-fry.webp' },
+    { id: 12, name: 'Fish Fry', image: '/concepts/indian-food/fish-fry.webp' },
+    { id: 13, name: 'Dahi Machha', image: '/concepts/indian-food/dahi-machha.webp' },
+    { id: 14, name: 'Dahi Vada', image: '/concepts/indian-food/dahi-vada.webp' },
+    { id: 15, name: 'Gupchup', image: '/concepts/indian-food/gupchup.webp' },
+    { id: 16, name: 'Chowmein', image: '/concepts/indian-food/chowmein.webp' },
+    { id: 17, name: 'Egg Chicken Roll', image: '/concepts/indian-food/egg-chicken-roll.webp' },
+    { id: 18, name: 'Chicken Sweet Corn Soup', image: '/concepts/indian-food/chicken-sweet-corn-soup.webp' },
   ],
 };

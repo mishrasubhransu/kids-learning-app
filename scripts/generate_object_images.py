@@ -76,6 +76,14 @@ STYLE_PROMPTS = {
         "Sharp focus on the food, shallow depth of field. "
         "No text, no labels, no watermarks. Square 1:1 composition."
     ),
+    "indian-food": (
+        "A beautiful, high-quality food photograph of {subject}. "
+        "Photorealistic with vivid appetizing colors, warm studio lighting, "
+        "and a clean, slightly blurred background. Centered and clearly visible. "
+        "Authentic Indian home-style presentation, professional food "
+        "photography, appetizing. Sharp focus on the food, shallow depth of "
+        "field. No text, no labels, no watermarks. Square 1:1 composition."
+    ),
     "transportation": (
         "A beautiful, high-quality photograph of {subject}. "
         "Photorealistic with vivid colors, natural outdoor lighting, "
@@ -323,6 +331,31 @@ ITEMS = {
         "yogurt": "a bowl of creamy white yogurt with a swirl on top",
         "soup": "a bowl of hot vegetable soup with visible steam rising",
         "kebab": "grilled meat kebab pieces on a metal skewer with colorful vegetables",
+    },
+    # Indian Food lesson (concepts/indian-food) — dishes as the family
+    # actually eats them: Odia home style where it matters (saag is simple
+    # stir-fried greens, not creamy Punjabi saag; dahi machha is the light
+    # yellow Odia yogurt-fish curry)
+    "indian-food": {
+        "dosa": "a large crispy golden-brown dosa folded on a steel plate, with small bowls of white coconut chutney and sambar beside it",
+        "idli": "three soft fluffy white steamed idlis on a fresh green banana leaf with coconut chutney and sambar",
+        "vada": "crispy golden medu vadas with the hole in the center clearly visible, served on a plate with coconut chutney",
+        "upma": "a mound of soft yellow rava upma garnished with curry leaves, mustard seeds and cashews on a steel plate",
+        "roti": "a small stack of soft round whole-wheat rotis, lightly browned with a few golden puffed spots, on a plate",
+        "paratha": "a flaky golden layered triangular paratha on a plate, one piece torn to show the soft layers",
+        "alu-paratha": "a golden pan-fried alu paratha cut open to show the spiced potato filling, topped with a melting pat of butter, yogurt on the side",
+        "rumali-roti": "a paper-thin soft rumali roti folded like a handkerchief on a plate",
+        "butter-chicken": "a bowl of creamy orange butter chicken curry with tender chicken pieces, a swirl of cream on top, garnished with fresh cilantro",
+        "tandoori-chicken": "char-grilled bright red tandoori chicken pieces on a plate with onion rings and a lemon wedge",
+        "saag": "a plate of simple home-style stir-fried green leafy saag with garlic, served beside white rice",
+        "alu-gobhi-fry": "a plate of golden stir-fried alu gobhi fry — potato cubes and cauliflower florets with turmeric, garnished with cilantro",
+        "fish-fry": "crispy golden pan-fried fish pieces, Indian machha bhaja style, with sliced red onions and a lemon wedge on a steel plate",
+        "dahi-machha": "Odia-style dahi machha — fish pieces in a light yellow yogurt and mustard curry in a traditional bowl, garnished with a curry leaf",
+        "dahi-vada": "soft white dahi vadas soaked in creamy whipped yogurt, topped with sweet tamarind chutney and a light sprinkle of spice powder",
+        "gupchup": "crispy hollow round gupchup (pani puri) shells on a plate, one filled with spiced potato, next to a small bowl of tangy pani",
+        "chowmein": "a plate of Indian street-style vegetable chowmein noodles tossed with colorful capsicum, carrots and cabbage",
+        "egg-chicken-roll": "a Kolkata-style egg chicken roll partly wrapped in paper, the egg-coated paratha filled with chicken pieces, onions and sauce spilling from the open end",
+        "chicken-sweet-corn-soup": "a bowl of thick creamy Indo-Chinese chicken sweet corn soup with visible corn kernels and shredded chicken, steam rising, soup spoon beside it",
     },
     "transportation": {
         "bicycle": "a classic bicycle standing on its kickstand, side view",

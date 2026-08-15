@@ -394,6 +394,8 @@ const ParentZone = () => {
               enabled={enabledLessons || defaultEnabledLessons()}
               onChange={(next) => patch({ enabledLessons: next })}
               locale={language}
+              settings={settings}
+              onSetting={(key, value) => patch({ [key]: value })}
             />
 
             {/* ---- Personalization ---- */}

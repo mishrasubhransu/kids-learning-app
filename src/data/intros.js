@@ -120,6 +120,14 @@ export const intros = {
     "Inside, outside, over, under — let's play!",
     "[gasps] Where is the kitty hiding? Let's find out!",
   ],
+  // Fixed-language lesson: the SCREEN text follows the app language (this
+  // table / the or pack), but the CLIP plays in the child's chosen Indian
+  // Food language — CategoryIntro resolves it via the speech locale.
+  'concepts-indian-food': [
+    "Let's learn about Indian food!",
+    '[gasps] Something smells yummy! What are we eating today?',
+    "Dosa, roti, idli — let's eat!",
+  ],
   opposites: [
     "Let's learn about opposites!",
     "Big and small, up and down — let's play with opposites!",

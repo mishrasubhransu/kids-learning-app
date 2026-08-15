@@ -1,6 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronRight, Check, Minus } from 'lucide-react';
-import { lessonTree, isLessonAvailable } from '../../data/lessons';
+import {
+  lessonTree,
+  isLessonAvailable,
+  LESSON_LANGUAGE_KEY,
+  LESSON_LANGUAGE_OPTIONS,
+} from '../../data/lessons';
 
 // Two-level checkbox tree over the lesson registry. Tri-state parents:
 // full check when every child is on, dash when only some are. Sub states
@@ -10,17 +15,25 @@ import { lessonTree, isLessonAvailable } from '../../data/lessons';
 //
 // `locale` hides lessons that don't exist in the child's language (phonics
 // for Spanish) — hidden, not disabled, because there is nothing to decide.
+//
+// Language-gated lessons (LESSON_LANGUAGE_KEY — Indian Food) show a voice-
+// language picker in their row; their checkbox stays disabled until the
+// parent picks one, because there is nothing the lesson could play yet.
+// `settings`/`onSetting` read and write that choice on the child profile.
 
-const CheckBox = ({ state, onClick, label }) => (
+const CheckBox = ({ state, onClick, label, disabled = false }) => (
   <button
     onClick={onClick}
+    disabled={disabled}
     role="checkbox"
     aria-checked={state === 'some' ? 'mixed' : state === 'on'}
     aria-label={label}
     className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center shrink-0 transition-colors ${
-      state === 'off'
-        ? 'border-gray-300 bg-white hover:border-indigo-400'
-        : 'border-indigo-600 bg-indigo-600 text-white'
+      disabled
+        ? 'border-gray-200 bg-gray-100 cursor-not-allowed'
+        : state === 'off'
+          ? 'border-gray-300 bg-white hover:border-indigo-400'
+          : 'border-indigo-600 bg-indigo-600 text-white'
     }`}
   >
     {state === 'on' && <Check size={18} strokeWidth={3} />}
@@ -34,24 +47,31 @@ const NewBadge = () => (
   </span>
 );
 
-const LessonTree = ({ enabled, onChange, locale = 'en' }) => {
+const LessonTree = ({ enabled, onChange, locale = 'en', settings = {}, onSetting }) => {
   const [open, setOpen] = useState({});
   const visibleTree = lessonTree.filter((node) =>
     isLessonAvailable(locale, node.key)
   );
 
+  const langChosen = (key) => {
+    const langKey = LESSON_LANGUAGE_KEY[key];
+    return !langKey || Boolean(settings[langKey]);
+  };
+
   const toggleTop = (node) => {
     const turningOn = !enabled[node.key];
     const next = { ...enabled, [node.key]: turningOn };
     // Enabling a category none of whose children are on would leave it
-    // invisible (menus hide empty categories) — seed all children on
+    // invisible (menus hide empty categories) — seed all children on.
+    // Language-gated children without a chosen language stay off: they
+    // can't play yet, so bulk-on must not claim they will.
     if (
       turningOn &&
       node.children &&
       !node.children.some((c) => enabled[c.key])
     ) {
       node.children.forEach((c) => {
-        next[c.key] = true;
+        if (langChosen(c.key)) next[c.key] = true;
       });
     }
     onChange(next);
@@ -113,18 +133,46 @@ const LessonTree = ({ enabled, onChange, locale = 'en' }) => {
 
             {node.children && isOpen && (
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 px-3 pb-3 pl-6">
-                {node.children.map((child) => (
-                  <div key={child.key} className="flex items-center gap-2.5 py-1">
-                    <CheckBox
-                      state={enabled[child.key] ? 'on' : 'off'}
-                      onClick={() => toggleChild(node, child)}
-                      label={`${child.name} topic`}
-                    />
-                    <span aria-hidden="true">{child.emoji}</span>
-                    <span className="text-sm text-gray-700">{child.name}</span>
-                    {enabled[child.key] === undefined && <NewBadge />}
-                  </div>
-                ))}
+                {node.children.map((child) => {
+                  const langKey = LESSON_LANGUAGE_KEY[child.key];
+                  const chosen = langChosen(child.key);
+                  return (
+                    <div key={child.key} className="flex flex-col py-1">
+                      <div className="flex items-center gap-2.5">
+                        <CheckBox
+                          state={enabled[child.key] && chosen ? 'on' : 'off'}
+                          disabled={!chosen}
+                          onClick={() => chosen && toggleChild(node, child)}
+                          label={`${child.name} topic`}
+                        />
+                        <span aria-hidden="true">{child.emoji}</span>
+                        <span className="text-sm text-gray-700">{child.name}</span>
+                        {enabled[child.key] === undefined && <NewBadge />}
+                      </div>
+                      {langKey && (
+                        <div className="flex items-center gap-1.5 flex-wrap pl-9 pt-1.5">
+                          <span className="text-xs text-gray-400">
+                            {settings[langKey] ? 'Voice:' : 'Pick a voice first:'}
+                          </span>
+                          {LESSON_LANGUAGE_OPTIONS[child.key].map((opt) => (
+                            <button
+                              key={opt.id}
+                              onClick={() => onSetting?.(langKey, opt.id)}
+                              aria-pressed={settings[langKey] === opt.id}
+                              className={`text-xs rounded-full px-2.5 py-1 border transition-colors ${
+                                settings[langKey] === opt.id
+                                  ? 'border-indigo-600 bg-indigo-600 text-white'
+                                  : 'border-gray-300 text-gray-600 hover:border-indigo-400'
+                              }`}
+                            >
+                              {opt.label}
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>

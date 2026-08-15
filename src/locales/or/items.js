@@ -224,6 +224,28 @@ export default {
   soup: { name: 'ସୁପ୍' },
   kebab: { name: 'କବାବ' },
 
+  // Indian food (fixed-language lesson; dosa/vada shared with Food above).
+  // Restaurant/street dishes keep their loanword names — that IS what the
+  // family calls them. Flagged for native review: 'alu-gobhi-fry' uses
+  // ଫୁଲକୋବି (native) though the family may say ଗୋଭି like Hindi.
+  idli: { name: 'ଇଡ଼ଲି' },
+  upma: { name: 'ଉପମା' },
+  roti: { name: 'ରୁଟି' },
+  paratha: { name: 'ପରଟା' },
+  'alu-paratha': { name: 'ଆଳୁ ପରଟା' },
+  'rumali-roti': { name: 'ରୁମାଲି ରୁଟି' },
+  'butter-chicken': { name: 'ବଟର ଚିକେନ୍' },
+  'tandoori-chicken': { name: 'ତନ୍ଦୁରୀ ଚିକେନ୍' },
+  saag: { name: 'ଶାଗ' },
+  'alu-gobhi-fry': { name: 'ଆଳୁ ଫୁଲକୋବି ଭଜା' },
+  'fish-fry': { name: 'ମାଛ ଭଜା' },
+  'dahi-machha': { name: 'ଦହି ମାଛ' },
+  'dahi-vada': { name: 'ଦହି ବରା' },
+  gupchup: { name: 'ଗୁପଚୁପ' },
+  chowmein: { name: 'ଚାଉମିନ୍' },
+  'egg-chicken-roll': { name: 'ଏଗ୍ ଚିକେନ୍ ରୋଲ୍' },
+  'chicken-sweet-corn-soup': { name: 'ଚିକେନ୍ ସ୍ୱିଟ୍ କର୍ଣ୍ଣ ସୁପ୍' },
+
   // Transportation
   bicycle: { name: 'ସାଇକେଲ' },
   'electric-scooter': { name: 'ଇଲେକ୍ଟ୍ରିକ୍ ସ୍କୁଟର' },

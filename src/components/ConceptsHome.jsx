@@ -3,17 +3,26 @@ import { conceptCategories, conceptItems } from '../data/concepts';
 import HomeButton from './ui/HomeButton';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
-import { isLessonEnabled } from '../data/lessons';
+import { isLessonEnabled, isLessonAvailable, lessonLanguageChosen } from '../data/lessons';
 import { useChildProfile } from '../context/ChildProfileContext';
 import { useLocale } from '../context/LocaleContext';
 
 const ConceptsHome = () => {
   const { activeChild } = useChildProfile();
-  const { t } = useLocale();
-  const enabledLessons = activeChild?.settings?.enabledLessons;
-  const visibleCategories = conceptCategories.filter((cat) =>
-    isLessonEnabled(enabledLessons, `concepts.${cat.id}`)
-  );
+  const { t, locale } = useLocale();
+  const settings = activeChild?.settings;
+  const enabledLessons = settings?.enabledLessons;
+  // Besides enablement: locale availability (indian-food doesn't exist for
+  // es/zh) and the language gate (it stays hidden until the parent picks
+  // its voice language in the Parent Zone)
+  const visibleCategories = conceptCategories.filter((cat) => {
+    const key = `concepts.${cat.id}`;
+    return (
+      isLessonAvailable(locale, key) &&
+      isLessonEnabled(enabledLessons, key) &&
+      lessonLanguageChosen(settings, key)
+    );
+  });
 
   return (
     <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">

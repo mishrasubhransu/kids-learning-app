@@ -1,4 +1,4 @@
-import { LOCALES } from '../locales';
+import { LOCALES, SPEECH_LOCALES } from '../locales';
 
 // Active-locale state shared by non-React modules (lib/voice.js clip
 // resolution, lib/voiceKeys.js sentence building). LocaleProvider stamps it
@@ -22,6 +22,35 @@ export const getActiveLocale = () => activeLocale;
 export const getPack = () => LOCALES[activeLocale]?.pack || null;
 
 export const getTtsLang = () => LOCALES[activeLocale]?.ttsLang || 'en-US';
+
+// ---- Speech-locale override --------------------------------------------
+// A fixed-language lesson (Indian Food) speaks the language the parent
+// pinned for it — possibly one the app can't even run in (Hindi). While its
+// page is mounted it stamps the override here (during render, the same way
+// LocaleProvider stamps activeLocale) and clears it on unmount. Scope: item
+// and quiz clips + the lesson's own intro (lib/voice.js keys them through
+// getSpeechLocale); display text, praise and UI lines stay on activeLocale.
+
+const speechMeta = (locale) => LOCALES[locale] || SPEECH_LOCALES[locale] || null;
+
+let speechLocale = null;
+
+export const setSpeechLocale = (locale) => {
+  speechLocale =
+    locale && speechMeta(locale) && locale !== activeLocale ? locale : null;
+};
+
+export const isSpeechOverridden = () => speechLocale !== null;
+
+export const getSpeechLocale = () => speechLocale ?? activeLocale;
+
+// The override's pack (null for an 'en' override — English is packless),
+// or the app pack when no override is set.
+export const getSpeechPack = () =>
+  speechLocale ? speechMeta(speechLocale).pack || null : getPack();
+
+export const getSpeechTtsLang = () =>
+  speechLocale ? speechMeta(speechLocale).ttsLang || 'en-US' : getTtsLang();
 
 // Canonical slug — derived from the ENGLISH name, never the translation, so
 // it stays the stable join key for voice-clip paths, rotation state,

@@ -45,9 +45,36 @@ export const allLessonKeys = lessonTree.flatMap((l) => [
 // enabledLessons map keeps its entries, so switching languages back restores
 // their choices untouched.
 const LOCALE_HIDDEN_LESSONS = {
-  es: ['phonics'],
-  zh: ['alphabets', 'phonics', 'typing'],
+  es: ['phonics', 'concepts.indian-food'],
+  zh: ['alphabets', 'phonics', 'typing', 'concepts.indian-food'],
   or: ['alphabets', 'phonics', 'typing'],
+};
+
+// Lessons whose audio plays in a FIXED language the parent must pick before
+// the lesson can be enabled (region-specific vocabulary — the words are the
+// same in every language, only the voice differs). The value is the child
+// settings key holding the choice; its options come from
+// LESSON_LANGUAGE_OPTIONS (clips are pre-generated for exactly those).
+// The chosen language does NOT follow the app language — see the speech
+// override in lib/locale.js.
+export const LESSON_LANGUAGE_KEY = {
+  'concepts.indian-food': 'indianFoodLang',
+};
+
+export const LESSON_LANGUAGE_OPTIONS = {
+  'concepts.indian-food': [
+    { id: 'en', label: 'English' },
+    { id: 'or', label: 'ଓଡ଼ିଆ' },
+    { id: 'hi', label: 'हिंदी' },
+  ],
+};
+
+// True when the lesson either needs no language choice or has one saved.
+// Menus and the route guard hide language-gated lessons until then, even if
+// enabledLessons somehow says on.
+export const lessonLanguageChosen = (settings, key) => {
+  const settingKey = LESSON_LANGUAGE_KEY[key];
+  return !settingKey || Boolean(settings?.[settingKey]);
 };
 
 export const isLessonAvailable = (locale, key) => {
@@ -57,8 +84,10 @@ export const isLessonAvailable = (locale, key) => {
   return !hidden.includes(top) && !hidden.includes(key);
 };
 
+// Language-gated lessons start off everywhere — they can't play until the
+// parent picks their language, so a default of on would just be confusing.
 export const defaultEnabledLessons = () =>
-  Object.fromEntries(allLessonKeys.map((k) => [k, true]));
+  Object.fromEntries(allLessonKeys.map((k) => [k, !LESSON_LANGUAGE_KEY[k]]));
 
 // Sub-lessons need their parent on too, so unchecking a category hides the
 // whole subtree while the individual sub states survive for re-enabling.
@@ -124,7 +153,7 @@ export const starterLessonsForAge = (ageYears) => {
 
   const starters = ageYears < 2 ? under2 : ageYears < 3 ? under3 : allLessonKeys;
   return Object.fromEntries(
-    allLessonKeys.map((k) => [k, starters.includes(k)])
+    allLessonKeys.map((k) => [k, !LESSON_LANGUAGE_KEY[k] && starters.includes(k)])
   );
 };
 

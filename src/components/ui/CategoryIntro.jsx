@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import useSpeech from '../../hooks/useSpeech';
 import { pickIntro, stripAudioTags } from '../../data/intros';
-import { getActiveLocale, getTtsLang } from '../../lib/locale';
+import { getSpeechLocale, getTtsLang } from '../../lib/locale';
 import { getVoiceClipUrl } from '../../lib/voice';
 
 // Full-screen intro shown when a lesson opens: a collage of the lesson's own
@@ -39,7 +39,10 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
     // English intro clips ship as static files; other locales keep theirs in
     // the voice bucket (intros/<key>/<i>, cache-first) — the URL resolves
     // async, so the clip starts silent-src and gets its source when known.
-    const locale = getActiveLocale();
+    // Speech locale = app locale everywhere except a fixed-language lesson
+    // (Indian Food), whose intro clip plays in its pinned language while the
+    // screen text (and the TTS fallback) stay in the app language.
+    const locale = getSpeechLocale();
     const clip = new Audio();
     let cancelled = false;
     // Clip missing (not generated yet) or blocked: same line via TTS. Both
