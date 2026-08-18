@@ -252,7 +252,6 @@ export default {
   roti: { name: 'ରୁଟି' },
   paratha: { name: 'ପରଟା' },
   'alu-paratha': { name: 'ଆଳୁ ପରଟା' },
-  'rumali-roti': { name: 'ରୁମାଲି ରୁଟି' },
   'butter-chicken': { name: 'ବଟର ଚିକେନ୍' },
   'tandoori-chicken': { name: 'ତନ୍ଦୁରୀ ଚିକେନ୍' },
   saag: { name: 'ଶାଗ' },

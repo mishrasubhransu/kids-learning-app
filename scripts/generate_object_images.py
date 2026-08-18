@@ -354,7 +354,6 @@ ITEMS = {
         "roti": "a small stack of soft round whole-wheat rotis, lightly browned with a few golden puffed spots, on a plate",
         "paratha": "a flaky golden layered triangular paratha on a plate, one piece torn to show the soft layers",
         "alu-paratha": "a golden pan-fried alu paratha cut open to show the spiced potato filling, topped with a melting pat of butter, yogurt on the side",
-        "rumali-roti": "a paper-thin soft rumali roti folded like a handkerchief on a plate",
         "butter-chicken": "a bowl of creamy orange butter chicken curry with tender chicken pieces, a swirl of cream on top, garnished with fresh cilantro",
         "tandoori-chicken": "char-grilled bright red tandoori chicken pieces on a plate with onion rings and a lemon wedge",
         "saag": "a plate of simple home-style stir-fried green leafy saag with garlic, served beside white rice",
