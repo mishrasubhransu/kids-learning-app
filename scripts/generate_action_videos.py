@@ -90,6 +90,15 @@ VERBS = {
     "hiding": "a young child running to a long window curtain and hiding behind it, the curtain swaying with small feet peeking out underneath",
     "walking": "a happy young child walking calmly along a sunny park path toward the camera, taking steady unhurried steps",
     "sharing": "two happy toddlers sitting side by side on a picnic blanket, one child warmly handing a cookie from their small plate to the other child, who takes it and smiles",
+    # close-up hands-only framing — a full-body attempt came back as a
+    # surprised baby with a fist at its mouth, no pinch anywhere; a loose
+    # close-up read as wrist-holding, so the fold-of-skin is spelled out
+    "pinching": "a young child's left forearm resting flat on a wooden table, the child's right hand reaching in and pinching the skin in the middle of the forearm, thumb and index finger clearly lifting a small fold of skin up like a tiny tent, holding it for a moment, then letting go, exactly two hands in frame",
+    "crushing": "a pair of adult hands crushing a big white pill into powder with a small metal hammer on a wooden kitchen table, gentle taps clearly breaking the pill into small white pieces and powder",
+    "pulling": "a young child pulling a big brown cardboard box across a living room floor with a rope, leaning back and stepping backward, the box clearly sliding along the floor toward the child",
+    "pushing": "a young child pushing a big brown cardboard box across a living room floor with both hands, leaning forward with effort, the box clearly sliding forward",
+    # second squeezing variant — concepts.js lists both under `videos`
+    "squeezing-toothpaste": "a young child's hands squeezing a soft colorful toothpaste tube over a toothbrush, a thick ribbon of toothpaste clearly coming out of the tube onto the brush bristles",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")

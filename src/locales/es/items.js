@@ -152,6 +152,12 @@ export default {
   hiding: { name: 'Escondiéndose', ref: 'el que está escondiéndose' },
   walking: { name: 'Caminando', ref: 'el que está caminando', bare: 'caminar' },
   sharing: { name: 'Compartiendo', ref: 'el que está compartiendo' },
+  pinching: { name: 'Pellizcando', ref: 'el que está pellizcando' },
+  // aplastar over triturar — the everyday word, video shows a hammer on a pill
+  crushing: { name: 'Aplastando', ref: 'el que está aplastando' },
+  // jalar — the neutral-LatAm choice; tirar reads as "throw away" in places
+  pulling: { name: 'Jalando', ref: 'el que está jalando' },
+  pushing: { name: 'Empujando', ref: 'el que está empujando' },
 
   // Bugs & insects
   butterfly: { name: 'Mariposa', ref: 'la mariposa' },

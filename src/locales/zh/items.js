@@ -137,6 +137,11 @@ export default {
   hiding: { name: '躲猫猫', ref: '正在躲猫猫的' },
   walking: { name: '走路', ref: '正在走路的', bare: '走路' },
   sharing: { name: '分享', ref: '正在分享的' },
+  // 掐 not 捏 — 捏 is already squeezing's word; the clip shows self-pinching
+  pinching: { name: '掐自己', ref: '正在掐自己的' },
+  crushing: { name: '砸碎', ref: '正在砸碎东西的' },
+  pulling: { name: '拉', ref: '正在拉箱子的' },
+  pushing: { name: '推', ref: '正在推箱子的' },
 
   // Bugs & insects
   butterfly: { name: '蝴蝶' },

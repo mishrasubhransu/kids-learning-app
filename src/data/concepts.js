@@ -1,13 +1,16 @@
 import emotions from './emotions';
 
-// Some items list several interchangeable photos in `images` (e.g. nature);
-// resolve each to a single random `image` for this visit.
+// Some items list several interchangeable photos in `images` (e.g. nature)
+// or clips in `videos` (e.g. actions' squeezing); resolve each to a single
+// random `image`/`video` for this visit.
 export const pickItemVariants = (items) =>
-  items.map((item) =>
-    item.images
-      ? { ...item, image: item.images[Math.floor(Math.random() * item.images.length)] }
-      : item
-  );
+  items.map((item) => {
+    if (item.images)
+      return { ...item, image: item.images[Math.floor(Math.random() * item.images.length)] };
+    if (item.videos)
+      return { ...item, video: item.videos[Math.floor(Math.random() * item.videos.length)] };
+    return item;
+  });
 
 export const conceptCategories = [
   { id: 'animals', name: 'Animals', emoji: '🦁', color: 'bg-amber-500', hoverColor: 'hover:bg-amber-600' },
@@ -89,7 +92,7 @@ export const conceptItems = {
     { id: 12, name: 'Throwing', video: '/concepts/actions/throwing.mp4' },
     { id: 13, name: 'Catching', video: '/concepts/actions/catching.mp4' },
     { id: 14, name: 'Breaking', video: '/concepts/actions/breaking.mp4' },
-    { id: 15, name: 'Squeezing', video: '/concepts/actions/squeezing.mp4' },
+    { id: 15, name: 'Squeezing', videos: ['/concepts/actions/squeezing.mp4', '/concepts/actions/squeezing-toothpaste.mp4'] },
     { id: 16, name: 'Flying', video: '/concepts/actions/flying.mp4' },
     { id: 17, name: 'Swimming', video: '/concepts/actions/swimming.mp4' },
     { id: 18, name: 'Driving', video: '/concepts/actions/driving.mp4' },
@@ -113,6 +116,10 @@ export const conceptItems = {
     { id: 36, name: 'Hiding', video: '/concepts/actions/hiding.mp4' },
     { id: 37, name: 'Walking', video: '/concepts/actions/walking.mp4' },
     { id: 38, name: 'Sharing', video: '/concepts/actions/sharing.mp4' },
+    { id: 39, name: 'Pinching', video: '/concepts/actions/pinching.mp4' },
+    { id: 40, name: 'Crushing', video: '/concepts/actions/crushing.mp4' },
+    { id: 41, name: 'Pulling', video: '/concepts/actions/pulling.mp4' },
+    { id: 42, name: 'Pushing', video: '/concepts/actions/pushing.mp4' },
   ],
   bugs: [
     { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },

@@ -147,6 +147,12 @@ export default {
   hiding: { name: 'ଲୁଚିବା', ref: 'ଲୁଚୁଛି' },
   walking: { name: 'ଚାଲିବା', ref: 'ଚାଲୁଛି', bare: 'ଚାଲିବା' },
   sharing: { name: 'ବାଣ୍ଟିବା', ref: 'ବାଣ୍ଟୁଛି' },
+  pinching: { name: 'ଚିମୁଟିବା', ref: 'ନିଜକୁ ଚିମୁଟୁଛି' },
+  // ଗୁଣ୍ଡ କରିବା (powdering) over ଚକଟିବା (mashing) — the clip crushes a pill
+  // to powder with a hammer. Flag for family review.
+  crushing: { name: 'ଗୁଣ୍ଡ କରିବା', ref: 'ଔଷଧ ଗୁଣ୍ଡ କରୁଛି' },
+  pulling: { name: 'ଟାଣିବା', ref: 'ବାକ୍ସ ଟାଣୁଛି' },
+  pushing: { name: 'ଠେଲିବା', ref: 'ବାକ୍ସ ଠେଲୁଛି' },
 
   // Bugs & insects
   butterfly: { name: 'ପ୍ରଜାପତି' },
