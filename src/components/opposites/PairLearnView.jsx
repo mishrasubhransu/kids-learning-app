@@ -158,6 +158,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
             const media = chosenMedia[`${currentItem.id}:${word}`];
             return typeof media === 'string' ? { image: media } : media;
           })()}
+          playing={isActive}
           alt={localizedName(word)}
           className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
         />

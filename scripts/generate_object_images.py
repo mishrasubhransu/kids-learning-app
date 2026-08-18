@@ -645,6 +645,21 @@ ITEMS = {
         "there": "the same little girl pointing far away across a wide green park at the same red ball sitting tiny in the distance",
         "near": "a colorful striped hot air balloon floating very close and huge, filling most of the frame above a green meadow",
         "far": "the same colorful striped hot air balloon tiny and far away in a big open sky above the same green meadow",
+        # Float/sink share one pond-cross-section framing so the only
+        # difference is where the object ends up: surface vs bottom
+        "float": "a sunny pond seen from the side in cross-section with the water surface line clearly visible, a bright green leaf resting lightly ON TOP of the water surface, floating with gentle ripples around it, clear blue water and a sandy bottom below",
+        "sink": "the same sunny pond seen from the side in cross-section with the water surface line clearly visible, a small round grey pebble lying sunk at the very bottom on the sand, deep under the clear blue water, a few tiny bubbles rising above it, nothing floating on the surface",
+        # Easy/difficult rotates four same-activity scenarios (slots pair
+        # up: easy-N shows against difficult-N); the readable cue is
+        # always the face — relaxed smile vs visible strain
+        "easy": "a cheerful man in a red t-shirt lifting a small light pink dumbbell high overhead with just one hand, standing tall and relaxed with a big easy smile",
+        "difficult": "the same slim cheerful man with short brown hair in the same red t-shirt straining to lift a huge heavy black barbell with giant weight plates only up to his knees, knees bent, arms shaking, cheeks puffed and face scrunched with effort, little sweat drops flying",
+        "easy-2": "a happy toddler playing with a tiny simple bead-maze toy that has one short gently curved wire and three chunky beads, sliding a bead along with one finger, smiling proudly",
+        "difficult-2": "the same happy toddler staring puzzled at a giant tangled bead-maze toy with many twisting looping colorful wires and dozens of beads, scratching their head with a furrowed thinking face",
+        "easy-3": "a happy little girl with a brown bob haircut in a rainbow striped t-shirt at a wooden table finishing a simple toddler jigsaw puzzle with only three big chunky pieces, holding one classic jigsaw puzzle piece with bumpy knobs in her hand, about to fit it into the last matching empty jigsaw-shaped gap, proud smile",
+        "difficult-3": "the same little girl with the same brown bob haircut and the same rainbow striped t-shirt, no glasses, at the same wooden table overwhelmed by a huge jigsaw puzzle of hundreds of tiny scattered pieces covering the whole tabletop, hands on her head, puzzled frowning face",
+        "easy-4": "a smiling girl walking along easily carrying one small picture book under her arm, light springy steps",
+        "difficult-4": "the same girl staggering under a giant wobbly stack of heavy books piled way over her head, knees bending, arms wrapped around the pile, strained face peeking out from the side",
     },
     "opposites-scenes": {
         "big-small-scene": "a great big dog and a tiny kitten sitting side by side on the same rug, the size difference dramatic and clear",
@@ -667,6 +682,8 @@ ITEMS = {
         "inside-outside-scene": "two identical red doghouses side by side: a white puppy sitting inside one with its face in the doorway, and another white puppy standing on the grass outside the other",
         "here-there-scene": "a child in a park with one red ball sitting right at the child's feet in the near foreground, and an identical red ball sitting tiny far away in the distance on the same lawn",
         "near-far-scene": "two identical striped hot air balloons in one sky: one very close and huge on one side, the other tiny and far away near the horizon on the other side",
+        "float-sink-scene": "a sunny pond seen from the side in cross-section: a bright green leaf floating on top of the water surface on one side while a small grey pebble lies sunk on the sandy bottom deep below on the other side, the water surface line clearly visible",
+        "easy-difficult-scene": "the same cheerful man in a red t-shirt twice side by side: on one side lifting a tiny pink dumbbell overhead with one hand and an easy relaxed smile, on the other side straining red-faced with puffed cheeks under a huge heavy black barbell he can barely lift to his knees",
     },
     # Nature concepts support several photo variants per item; filenames are
     # suffixed -1, -2, … and listed in src/data/concepts.js `images` arrays.

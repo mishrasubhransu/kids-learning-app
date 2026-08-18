@@ -22,4 +22,6 @@ export default {
   'which-one-is-inside': '¿Cuál está adentro?',
   'which-one-is-here': '¿Cuál está aquí?',
   'which-one-is-near': '¿Cuál está cerca?',
+  'which-one-is-floating': '¿Cuál está flotando?',
+  'which-one-is-easy': '¿Cuál es fácil?',
 };

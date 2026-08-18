@@ -16,7 +16,9 @@
 //   - eagle "ଚିଲ" is strictly the kite bird; vulture ଶାଗୁଣା is solid
 //   - digger "ଜେସିବି" — brand name, but THE word Indian toddlers know
 //   - confused "ହଇରାଣ", excited "ଉତ୍ସାହିତ", fast/slow "ଦ୍ରୁତ/ଧୀର",
-//     gray "ଧୂସର", ugly "ଅସୁନ୍ଦର" — lean formal/bookish
+//     gray "ଧୂସର", ugly "ଅସୁନ୍ଦର", difficult "କଠିନ" — lean formal/bookish
+//   - float/sink "ଭାସିବା/ବୁଡ଼ିବା" verbal nouns as card labels — check the
+//     family would rather hear "ଭାସୁଛି/ବୁଡ଼ୁଛି"
 //   - trapezoid/rhombus transliterated (ଟ୍ରାପିଜିୟମ୍/ରମ୍ବସ୍), heart "ହୃଦୟ"
 //   - hen/rooster "ମାଈ/ଅଣ୍ଡିରା କୁକୁଡ଼ା"; frying-pan "କଡ଼େଇ" (kadai);
 //     construction-worker "ରାଜମିସ୍ତ୍ରୀ" (mason); moped "ସ୍କୁଟି"
@@ -518,6 +520,10 @@ export default {
   there: { name: 'ସେଠି' },
   near: { name: 'ପାଖ', ref: 'ପାଖରେ', bare: 'ପାଖ' },
   far: { name: 'ଦୂର', ref: 'ଦୂରରେ', bare: 'ଦୂର' },
+  float: { name: 'ଭାସିବା', ref: 'ଭାସୁଛି', bare: 'ଭାସିବା' },
+  sink: { name: 'ବୁଡ଼ିବା', ref: 'ବୁଡ଼ୁଛି', bare: 'ବୁଡ଼ିବା' },
+  easy: { name: 'ସହଜ' },
+  difficult: { name: 'କଠିନ' },
 
   // Prepositions (inside/outside shared with opposites above; next-to and
   // near both land on ପାଖରେ — flag for family review)

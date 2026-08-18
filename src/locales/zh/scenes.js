@@ -22,4 +22,6 @@ export default {
   'which-one-is-inside': '哪个在里面？',
   'which-one-is-here': '哪个在这里？',
   'which-one-is-near': '哪个离得近？',
+  'which-one-is-floating': '哪个浮在水上？',
+  'which-one-is-easy': '哪个是容易的？',
 };

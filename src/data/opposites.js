@@ -271,6 +271,47 @@ const opposites = [
       { question: 'Which one is near?', correctAnswer: 'Near', sceneImage: '/opposites/scenes/near-far-scene.webp' },
     ],
   },
+  // Both sides share the same pond-cross-section framing so the only
+  // difference is where the object ends up: on the surface vs the bottom.
+  {
+    id: 20,
+    name: 'Float and Sink',
+    pair: ['Float', 'Sink'],
+    images: {
+      Float: ['/opposites/float.webp', { video: '/opposites/float.mp4' }],
+      Sink: ['/opposites/sink.webp', { video: '/opposites/sink.mp4' }],
+    },
+    tests: [
+      { question: 'Which one is floating?', correctAnswer: 'Float', sceneImage: '/opposites/scenes/float-sink-scene.webp' },
+    ],
+  },
+  // Easy/difficult is abstract, so it rotates through four concrete
+  // scenarios (weights, bead maze, puzzle, book stack) — one random slot
+  // per visit, like the phonics example words. Each slot is the same
+  // activity where only the effort changes: relaxed smile vs straining
+  // face.
+  {
+    id: 21,
+    name: 'Easy and Difficult',
+    pair: ['Easy', 'Difficult'],
+    images: {
+      Easy: [
+        '/opposites/easy.webp',
+        '/opposites/easy-2.webp',
+        '/opposites/easy-3.webp',
+        '/opposites/easy-4.webp',
+      ],
+      Difficult: [
+        '/opposites/difficult.webp',
+        '/opposites/difficult-2.webp',
+        '/opposites/difficult-3.webp',
+        '/opposites/difficult-4.webp',
+      ],
+    },
+    tests: [
+      { question: 'Which one is easy?', correctAnswer: 'Easy', sceneImage: '/opposites/scenes/easy-difficult-scene.webp' },
+    ],
+  },
 ];
 
 export default opposites;

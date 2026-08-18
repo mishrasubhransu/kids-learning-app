@@ -499,6 +499,10 @@ export default {
   there: { name: 'Allá', ref: 'el de allá', bare: 'allá' },
   near: { name: 'Cerca', ref: 'el que está cerca', bare: 'cerca' },
   far: { name: 'Lejos', ref: 'el que está lejos', bare: 'lejos' },
+  float: { name: 'Flotando', ref: 'el que está flotando', bare: 'flotar' },
+  sink: { name: 'Hundiéndose', ref: 'el que se está hundiendo', bare: 'hundirse' },
+  easy: { name: 'Fácil', ref: 'el fácil', bare: 'fácil' },
+  difficult: { name: 'Difícil', ref: 'el difícil', bare: 'difícil' },
 
   // Prepositions (inside/outside shared with opposites above)
   on: { name: 'Encima', ref: 'el de encima' },

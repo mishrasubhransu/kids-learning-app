@@ -22,4 +22,6 @@ export default {
   'which-one-is-inside': 'କେଉଁଟି ଭିତରେ?',
   'which-one-is-here': 'କେଉଁଟି ଏଠି?',
   'which-one-is-near': 'କେଉଁଟି ପାଖରେ?',
+  'which-one-is-floating': 'କେଉଁଟି ଭାସୁଛି?',
+  'which-one-is-easy': 'କେଉଁଟି ସହଜ?',
 };

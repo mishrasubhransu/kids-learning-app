@@ -484,6 +484,10 @@ export default {
   there: { name: '那里', ref: '在那里的', bare: '那里' },
   near: { name: '近', ref: '近的', bare: '近' },
   far: { name: '远', ref: '远的', bare: '远' },
+  float: { name: '浮', ref: '浮着的', bare: '浮' },
+  sink: { name: '沉', ref: '沉下去的', bare: '沉' },
+  easy: { name: '容易', ref: '容易的', bare: '容易' },
+  difficult: { name: '难', ref: '难的', bare: '难' },
 
   // Prepositions (inside/outside shared with opposites above; 'on' reads
   // the same as 'up' in Chinese — both 上面 — which is simply correct)
