@@ -95,7 +95,9 @@ VERBS = {
     # close-up read as wrist-holding, so the fold-of-skin is spelled out
     "pinching": "a young child's left forearm resting flat on a wooden table, the child's right hand reaching in and pinching the skin in the middle of the forearm, thumb and index finger clearly lifting a small fold of skin up like a tiny tent, holding it for a moment, then letting go, exactly two hands in frame",
     "crushing": "a pair of adult hands crushing a big white pill into powder with a small metal hammer on a wooden kitchen table, gentle taps clearly breaking the pill into small white pieces and powder",
-    "pulling": "a young child pulling a big brown cardboard box across a living room floor with a rope, leaning back and stepping backward, the box clearly sliding along the floor toward the child",
+    # side view with the box BEHIND the child — a face-the-box version read
+    # as the box sliding forward on its own, dragging the child
+    "pulling": "seen from the side, a young child gripping a rope over their shoulder with both hands, leaning far forward and taking slow effortful steps, dragging a big heavy brown cardboard box along the floor behind them, the rope pulled taut, the box sliding only a little with each strained step",
     "pushing": "a young child pushing a big brown cardboard box across a living room floor with both hands, leaning forward with effort, the box clearly sliding forward",
     # second squeezing variant — concepts.js lists both under `videos`
     "squeezing-toothpaste": "a young child's hands squeezing a soft colorful toothpaste tube over a toothbrush, a thick ribbon of toothpaste clearly coming out of the tube onto the brush bristles",
