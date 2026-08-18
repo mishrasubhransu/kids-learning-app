@@ -647,7 +647,11 @@ ITEMS = {
         "far": "the same colorful striped hot air balloon tiny and far away in a big open sky above the same green meadow",
         # Float/sink share one pond-cross-section framing so the only
         # difference is where the object ends up: surface vs bottom
-        "float": "a sunny pond seen from the side in cross-section with the water surface line clearly visible, a bright green leaf resting lightly ON TOP of the water surface, floating with gentle ripples around it, clear blue water and a sandy bottom below",
+        # The shipped float.webp was made by feeding sink.webp back to
+        # Gemini as a reference image (pebble out, paper boat in) so the
+        # two stills share the exact same pond — a plain text regen from
+        # this prompt will lose that match
+        "float": "a sunny pond seen from the side in cross-section with the water surface line clearly visible, a cute white folded paper boat resting lightly ON TOP of the water surface, clearly above the waterline with gentle ripples around its hull, clear blue water and an empty sandy bottom below",
         "sink": "the same sunny pond seen from the side in cross-section with the water surface line clearly visible, a small round grey pebble lying sunk at the very bottom on the sand, deep under the clear blue water, a few tiny bubbles rising above it, nothing floating on the surface",
         # Easy/difficult rotates four same-activity scenarios (slots pair
         # up: easy-N shows against difficult-N); the readable cue is
