@@ -4,6 +4,7 @@ import {
   Pencil,
   Trash2,
   Camera,
+  ClipboardPaste,
   Loader2,
   X,
   Delete,
@@ -53,6 +54,12 @@ const toDecodableBlob = async (file) => {
 
 // Enough photos for the lesson to shuffle, few enough to stay manageable
 const MAX_PHOTOS = 6;
+
+// clipboard.read() needs Safari 13.4+/HTTPS; on iOS the tap surfaces the
+// native "Paste" callout, and WebKit hands copied photos over as image/png
+// (transcoded), so pasted photos never need the HEIC path.
+const CAN_PASTE_IMAGES =
+  typeof navigator !== 'undefined' && Boolean(navigator.clipboard?.read);
 
 // Voice languages whose script isn't Latin: picking one auto-fills the
 // phonetic spelling with an AI transliteration (via /api/transliterate-name)
@@ -239,6 +246,46 @@ const MemberEditor = ({
     []
   );
 
+  // Explicit Paste tile — the only discoverable clipboard route on iOS.
+  // read() must be called inside the tap handler for Safari's gesture check.
+  const pastePhoto = async () => {
+    setError(null);
+    try {
+      const items = await navigator.clipboard.read();
+      const item = items.find((i) =>
+        i.types.some((t) => t.startsWith('image/'))
+      );
+      if (!item) {
+        setError('No photo on the clipboard — copy one first, then tap Paste.');
+        return;
+      }
+      pickPhoto(
+        await item.getType(item.types.find((t) => t.startsWith('image/')))
+      );
+    } catch (e) {
+      // NotAllowedError = the paste callout was dismissed — not a failure
+      if (e?.name !== 'NotAllowedError') {
+        setError("Couldn't read the clipboard — try the camera button instead.");
+      }
+    }
+  };
+
+  // Desktop route: Ctrl/Cmd+V anywhere while this editor is open (only one
+  // mounts at a time). Text pastes fall through to whatever field has focus.
+  useEffect(() => {
+    const onPaste = (e) => {
+      if (photos.length >= MAX_PHOTOS || converting || cropSource) return;
+      const file = Array.from(e.clipboardData?.files || []).find(
+        (f) => f.type.startsWith('image/') || isHeic(f)
+      );
+      if (!file) return;
+      e.preventDefault();
+      pickPhoto(file);
+    };
+    document.addEventListener('paste', onPaste);
+    return () => document.removeEventListener('paste', onPaste);
+  }, [photos.length, converting, cropSource]);
+
   const steps = rel.kind === 'path' ? rel.steps : NO_STEPS;
   // Who the RELATION says their mum and dad are, when someone in the family
   // actually stands on that derived path — shown as each picker's default,
@@ -420,6 +467,17 @@ const MemberEditor = ({
               ) : (
                 <Camera size={24} />
               )}
+            </button>
+          )}
+          {photos.length < MAX_PHOTOS && CAN_PASTE_IMAGES && (
+            <button
+              onClick={pastePhoto}
+              disabled={converting}
+              aria-label="Paste photo from clipboard"
+              className="w-20 h-20 rounded-2xl bg-gray-100 flex flex-col items-center justify-center gap-0.5 ring-2 ring-gray-200 hover:ring-indigo-400 text-gray-400 transition-shadow"
+            >
+              <ClipboardPaste size={22} />
+              <span className="text-[10px] font-semibold">Paste</span>
             </button>
           )}
         </div>
