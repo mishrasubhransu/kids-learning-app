@@ -1,14 +1,15 @@
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useLayoutEffect, useCallback, useRef, useMemo } from 'react';
 import { ChevronLeft, ChevronRight, Volume2 } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
 import useWordCase from '../../hooks/useWordCase';
+import useChildSetting from '../../hooks/useChildSetting';
 import { itemPart } from '../../lib/voiceKeys';
 import { localizedName } from '../../lib/locale';
 import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import ItemMedia from '../ui/ItemMedia';
-import { pickPairExamples } from '../../data/opposites';
+import { pairExamplesAt, exampleSlotCount } from '../../data/opposites';
 
 // The two poles of every pair: warm for the first word, cool for its opposite.
 const POLES = [
@@ -25,23 +26,40 @@ function shuffle(arr) {
   return a;
 }
 
+// Per-child record of the example slot each pair showed last, JSON { id:
+// slot } (useChildSetting mirrors it to localStorage) — the rotation
+// continues across sessions instead of restarting or coin-flipping.
+const parseShownSlots = (raw) => {
+  try {
+    const o = JSON.parse(raw);
+    return o && typeof o === 'object' ? o : {};
+  } catch {
+    return {};
+  }
+};
+
+const upcomingSlot = (item, shownSlots) => {
+  const last = Number.isInteger(shownSlots[item.id]) ? shownSlots[item.id] : -1;
+  return (last + 1) % exampleSlotCount(item);
+};
+
+// The slot a pair is showing right now = the one its latest arrival wrote
+// (single-slot pairs are never written and always show 0)
+const shownSlot = (item, shownSlots) =>
+  Number.isInteger(shownSlots[item.id]) ? shownSlots[item.id] : 0;
+
 // One linear sequence: pair 0 word 0, pair 0 word 1, pair 1 word 0, ...
 // The right arrow always means "what comes next".
 const PairLearnView = ({ items, holdIntro = false }) => {
   const displayItems = useMemo(() => shuffle(items), [items]);
-  // One media example (image path or { video }) per word, fixed for this
-  // visit so cards never swap while the child is looking at them; both
-  // sides of a pair share a slot so the contrast stays apples-to-apples
-  const chosenMedia = useMemo(() => {
-    const chosen = {};
-    displayItems.forEach((item) => {
-      const examples = pickPairExamples(item);
-      item.pair.forEach((w) => {
-        chosen[`${item.id}:${w}`] = examples[w];
-      });
-    });
-    return chosen;
-  }, [displayItems]);
+  // Which example slot each pair shows comes straight from the per-child
+  // record: arriving at a pair advances its entry (see the layout effect
+  // below), and the map only ever changes for the pair being arrived at —
+  // so cards never swap mid-look, and leaving and coming back, even in
+  // the same session, brings the pair's next scenario. Both sides share
+  // a slot so the contrast stays apples-to-apples.
+  const [shownSlotsRaw, setShownSlots] = useChildSetting('slotShown-opposites', null);
+  const shownSlots = useMemo(() => parseShownSlots(shownSlotsRaw), [shownSlotsRaw]);
   const [step, setStep] = useState(0);
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const { speak } = useVoice();
@@ -58,6 +76,26 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const activeWord = currentItem.pair[side];
   const pole = POLES[side];
 
+  // Arrival at a pair: advance its rotation. Layout effect so the frame
+  // that still derives the pair's PREVIOUS slot is never painted; the
+  // item-ref guard keeps word-to-word steps (and StrictMode's double
+  // pass) from advancing again.
+  const arrivedItemRef = useRef(null);
+  useLayoutEffect(() => {
+    const item = displayItems[pairIndex];
+    if (!item || arrivedItemRef.current === item) return;
+    arrivedItemRef.current = item;
+    if (exampleSlotCount(item) < 2) return;
+    const shown = parseShownSlots(shownSlotsRaw);
+    setShownSlots(JSON.stringify({ ...shown, [item.id]: upcomingSlot(item, shown) }));
+  }, [pairIndex, displayItems, shownSlotsRaw, setShownSlots]);
+
+  // Media the current pair shows, one example per word from its shown slot
+  const currentExamples = useMemo(
+    () => pairExamplesAt(currentItem, shownSlot(currentItem, shownSlots)),
+    [currentItem, shownSlots]
+  );
+
   // Speak whenever the highlight moves (and once on mount — held while the
   // category intro page is up, so the first word lands as the reveal opens)
   useEffect(() => {
@@ -68,16 +106,16 @@ const PairLearnView = ({ items, holdIntro = false }) => {
     }
   }, [step, displayItems, speak, holdIntro]);
 
-  // Warm the next pair's images so the word never plays over blank cards
+  // Warm the images the NEXT pair will show on arrival — its upcoming
+  // slot is deterministic, so this predicts it without advancing anything
   // (video examples stream on their own; only images preload)
   useEffect(() => {
     const next = displayItems[(pairIndex + 1) % displayItems.length];
     if (!next) return;
-    const paths = next.pair
-      .map((w) => chosenMedia[`${next.id}:${w}`])
-      .filter((m) => typeof m === 'string');
+    const examples = pairExamplesAt(next, upcomingSlot(next, shownSlots));
+    const paths = Object.values(examples).filter((m) => typeof m === 'string');
     if (paths.length) preloadImages(paths);
-  }, [pairIndex, displayItems, chosenMedia]);
+  }, [pairIndex, displayItems, shownSlots]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -155,7 +193,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
       >
         <ItemMedia
           item={(() => {
-            const media = chosenMedia[`${currentItem.id}:${word}`];
+            const media = currentExamples[word];
             return typeof media === 'string' ? { image: media } : media;
           })()}
           playing={isActive}

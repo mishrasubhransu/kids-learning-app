@@ -12,18 +12,26 @@ export const wordImages = (item, word) =>
 
 export const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
 
+export const exampleSlotCount = (item, listFor = wordExamples) =>
+  Math.max(...item.pair.map((w) => listFor(item, w).length));
+
 // One example per word of a pair, with both words drawn from the SAME slot
 // so the two cards differ only along the dimension being taught (cartoon
 // with cartoon, video with video — never a video paired with a still).
 // listFor picks the example pool: wordExamples, or wordImages for the
 // image-only games. A shorter list clamps to its last example.
-export const pickPairExamples = (item, listFor = wordExamples) => {
-  const lists = item.pair.map((w) => listFor(item, w));
-  const slot = Math.floor(Math.random() * Math.max(...lists.map((l) => l.length)));
-  return Object.fromEntries(
-    item.pair.map((w, i) => [w, lists[i][Math.min(slot, lists[i].length - 1)]])
+export const pairExamplesAt = (item, slot, listFor = wordExamples) =>
+  Object.fromEntries(
+    item.pair.map((w) => {
+      const list = listFor(item, w);
+      return [w, list[Math.min(slot, list.length - 1)]];
+    })
   );
-};
+
+// Random slot — the games use this; the learn view cycles slots instead
+// (see PairLearnView) so every scenario gets its turn.
+export const pickPairExamples = (item, listFor = wordExamples) =>
+  pairExamplesAt(item, Math.floor(Math.random() * exampleSlotCount(item, listFor)), listFor);
 
 const opposites = [
   {
@@ -286,10 +294,10 @@ const opposites = [
     ],
   },
   // Easy/difficult is abstract, so it rotates through four concrete
-  // scenarios (weights, bead maze, puzzle, book stack) — one random slot
-  // per visit, like the phonics example words. Each slot is the same
-  // activity where only the effort changes: relaxed smile vs straining
-  // face.
+  // scenarios (weights, bead maze, puzzle, book stack) — the learn view
+  // cycles to the next slot on every arrival at the pair, even within one
+  // session. Each slot is the same activity where only the effort
+  // changes: relaxed smile vs straining face.
   {
     id: 21,
     name: 'Easy and Difficult',
