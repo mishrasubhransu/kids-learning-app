@@ -318,11 +318,17 @@ ITEMS = {
         "eagle": "a bald eagle perched majestically on a branch",
         "vulture": "a vulture perched with wings slightly spread, full body visible",
     },
+    # Western revamp 2026-08-18: dosa/vada live in indian-food now, kebab cut
     "food": {
+        "bread": "a rustic loaf of freshly baked bread on a wooden board with two soft slices cut, golden crust",
+        "sandwich": "a triangle-cut sandwich with ham, yellow cheese, lettuce and tomato visible between soft white bread slices",
+        "eggs": "two sunny-side-up fried eggs with bright yellow yolks on a white plate",
+        "cheese": "a wedge of yellow Swiss-style cheese with round holes on a wooden board",
+        "milk": "a clear glass full of fresh white milk with a small glass jug of milk beside it",
+        "pancakes": "a stack of fluffy golden pancakes topped with a melting pat of butter and dripping maple syrup",
         "pizza": "a delicious pepperoni pizza with melted cheese on a wooden board",
         "burger": "a juicy cheeseburger with lettuce, tomato, and sesame bun",
-        "dosa": "a crispy golden South Indian masala dosa with coconut chutney and sambar",
-        "vada": "crispy golden South Indian medu vada served with coconut chutney",
+        "hot-dog": "a classic hot dog in a soft bun topped with a neat wavy line of yellow mustard, on a plain plate, simple clean background with no drinks",
         "rice": "a plate of fluffy steaming white basmati rice",
         "ice-cream": "a colorful ice cream cone with three scoops of different flavors",
         "french-fries": "a generous serving of crispy golden french fries",
@@ -330,7 +336,11 @@ ITEMS = {
         "pasta": "a plate of spaghetti pasta with rich red marinara sauce",
         "yogurt": "a bowl of creamy white yogurt with a swirl on top",
         "soup": "a bowl of hot vegetable soup with visible steam rising",
-        "kebab": "grilled meat kebab pieces on a metal skewer with colorful vegetables",
+        "salad": "a colorful fresh garden salad in a bowl with green lettuce, cherry tomatoes, cucumber slices and carrot ribbons",
+        "cake": "a frosted birthday cake with pink icing and colorful sprinkles on a cake stand",
+        "cookies": "golden chocolate chip cookies on a plate, one cookie with a bite taken out",
+        "donut": "a pink frosted ring donut covered in rainbow sprinkles on a small plate",
+        "popcorn": "a classic red-and-white striped box overflowing with fluffy buttered popcorn",
     },
     # Indian Food lesson (concepts/indian-food) — dishes as the family
     # actually eats them: Odia home style where it matters (saag is simple

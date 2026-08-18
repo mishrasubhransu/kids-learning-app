@@ -216,11 +216,17 @@ export default {
   eagle: { name: 'Águila', ref: 'el águila' },
   vulture: { name: 'Buitre', ref: 'el buitre' },
 
-  // Food
+  // Food (Western revamp 2026-08-18; dosa/vada/kebab dropped — the lesson
+  // that uses dosa/vada now, indian-food, is hidden for es)
+  bread: { name: 'Pan', ref: 'el pan' },
+  sandwich: { name: 'Sándwich', ref: 'el sándwich' },
+  eggs: { name: 'Huevos', ref: 'los huevos', plural: true },
+  cheese: { name: 'Queso', ref: 'el queso' },
+  milk: { name: 'Leche', ref: 'la leche' },
+  pancakes: { name: 'Panqueques', ref: 'los panqueques', plural: true },
   pizza: { name: 'Pizza', ref: 'la pizza' },
   burger: { name: 'Hamburguesa', ref: 'la hamburguesa' },
-  dosa: { name: 'Dosa', ref: 'la dosa' },
-  vada: { name: 'Vada', ref: 'la vada' },
+  'hot-dog': { name: 'Hot dog', ref: 'el hot dog' }, // regional (pancho/jocho) — neutral loanword wins
   rice: { name: 'Arroz', ref: 'el arroz' },
   'ice-cream': { name: 'Helado', ref: 'el helado' },
   'french-fries': { name: 'Papas fritas', ref: 'las papas fritas', plural: true },
@@ -228,7 +234,10 @@ export default {
   pasta: { name: 'Pasta', ref: 'la pasta' },
   yogurt: { name: 'Yogur', ref: 'el yogur' },
   soup: { name: 'Sopa', ref: 'la sopa' },
-  kebab: { name: 'Kebab', ref: 'el kebab' },
+  salad: { name: 'Ensalada', ref: 'la ensalada' },
+  cake: { name: 'Pastel', ref: 'el pastel' },
+  donut: { name: 'Dona', ref: 'la dona' },
+  popcorn: { name: 'Palomitas', ref: 'las palomitas', plural: true },
 
   // Transportation
   bicycle: { name: 'Bicicleta', ref: 'la bicicleta' },

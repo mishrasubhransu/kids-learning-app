@@ -210,9 +210,17 @@ export default {
   eagle: { name: 'ଚିଲ' },
   vulture: { name: 'ଶାଗୁଣା' },
 
-  // Food
+  // Food (Western revamp 2026-08-18: kebab dropped; dosa/vada kept below —
+  // the indian-food lesson still uses them)
+  bread: { name: 'ପାଉଁରୁଟି' },
+  sandwich: { name: 'ସ୍ୟାଣ୍ଡୱିଚ୍' },
+  eggs: { name: 'ଅଣ୍ଡା' },
+  cheese: { name: 'ଚିଜ୍' },
+  milk: { name: 'ଦୁଧ' },
+  pancakes: { name: 'ପ୍ୟାନକେକ୍' },
   pizza: { name: 'ପିଜା' },
   burger: { name: 'ବର୍ଗର' },
+  'hot-dog': { name: 'ହଟ୍ ଡଗ୍' },
   dosa: { name: 'ଦୋସା' },
   vada: { name: 'ବରା' },
   rice: { name: 'ଭାତ' },
@@ -222,7 +230,10 @@ export default {
   pasta: { name: 'ପାସ୍ତା' },
   yogurt: { name: 'ଦହି' },
   soup: { name: 'ସୁପ୍' },
-  kebab: { name: 'କବାବ' },
+  salad: { name: 'ସାଲାଡ୍' },
+  cake: { name: 'କେକ୍' },
+  donut: { name: 'ଡୋନଟ୍' },
+  popcorn: { name: 'ପପକର୍ନ' },
 
   // Indian food (fixed-language lesson; dosa/vada shared with Food above).
   // Restaurant/street dishes keep their loanword names — that IS what the

@@ -201,11 +201,17 @@ export default {
   eagle: { name: '老鹰' },
   vulture: { name: '秃鹫' },
 
-  // Food
+  // Food (Western revamp 2026-08-18; dosa/vada/kebab dropped — the lesson
+  // that uses dosa/vada now, indian-food, is hidden for zh)
+  bread: { name: '面包' },
+  sandwich: { name: '三明治' },
+  eggs: { name: '鸡蛋' },
+  cheese: { name: '奶酪' },
+  milk: { name: '牛奶' },
+  pancakes: { name: '松饼' },
   pizza: { name: '披萨' },
   burger: { name: '汉堡' },
-  dosa: { name: '印度薄饼' },
-  vada: { name: '印度炸圈' },
+  'hot-dog': { name: '热狗' },
   rice: { name: '米饭' },
   'ice-cream': { name: '冰淇淋' },
   'french-fries': { name: '薯条' },
@@ -213,7 +219,10 @@ export default {
   pasta: { name: '意大利面' },
   yogurt: { name: '酸奶' },
   soup: { name: '汤' },
-  kebab: { name: '烤肉串' },
+  salad: { name: '沙拉' },
+  cake: { name: '蛋糕' },
+  donut: { name: '甜甜圈' },
+  popcorn: { name: '爆米花' },
 
   // Transportation
   bicycle: { name: '自行车' },
