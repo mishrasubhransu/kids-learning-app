@@ -65,6 +65,13 @@ const hashText = (text) => createHash('sha1').update(text).digest('hex').slice(0
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
+// --seed: try to force a new take. NB: eleven_v3 appears to IGNORE seed and
+// serve its request-cache (items/salad came back byte-identical across
+// --force and seeded runs, 2026-08-18) — for v3 the reliable re-roll is a
+// GENERATION_TEXT_OVERRIDES tweak in voice-catalog.mjs, which changes the
+// request text itself. Kept for v2-model runs where seed is honored.
+let SEED = null;
+
 async function generateClip(text, voiceId, model, settings, apiKey) {
   // 429s (concurrent-request limit) are routine on long runs — back off
   for (let attempt = 0; ; attempt++) {
@@ -73,7 +80,12 @@ async function generateClip(text, voiceId, model, settings, apiKey) {
       {
         method: 'POST',
         headers: { 'xi-api-key': apiKey, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text, model_id: model, voice_settings: settings }),
+        body: JSON.stringify({
+          text,
+          model_id: model,
+          voice_settings: settings,
+          ...(SEED != null ? { seed: SEED } : {}),
+        }),
       }
     );
     if (res.ok) return Buffer.from(await res.arrayBuffer());
@@ -100,6 +112,8 @@ async function main() {
   const concurrency = Number(getArg('concurrency', 2));
   const voiceId = getArg('voice', DEFAULT_VOICE_ID);
   const model = getArg('model', DEFAULT_MODEL);
+  const seedArg = getArg('seed', null);
+  if (seedArg != null) SEED = Number(seedArg);
 
   // Same profile as the letter-sound clips — one voice across the app
   const settings = {

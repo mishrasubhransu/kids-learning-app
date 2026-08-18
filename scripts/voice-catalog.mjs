@@ -158,6 +158,10 @@ const GENERATION_TEXT_OVERRIDES = {
     // "Quiet" should sound like the thing it names — a half whisper
     'items/quiet': '[whispers] Quiet!',
     'quiz/that-was/quiet': 'That was [whispers] Quiet.',
+    // The bare take came out in a drifted voice (eleven_v3 short-word
+    // drift) and EL serves the cached take for the identical request —
+    // the tag re-rolls it (user report 2026-08-18)
+    'items/salad': '[cheerfully] Salad!',
   },
   es: {
     // Words that trip Gemini's safety filter (PROHIBITED_CONTENT) when
