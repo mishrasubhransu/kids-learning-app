@@ -17,15 +17,16 @@ import { setScreenContext } from '../../lib/analytics';
 // people. Members come from the account-wide list the parent manages in
 // the Parent Zone.
 
-// Salted at module load (NOT during render — render must stay pure), so a
-// multi-photo member leads with a different photo on each app visit while
-// every render of one visit agrees on the pick.
+// Salted at module load (NOT during render — render must stay pure), so
+// the per-visit picks (which photo leads, where the random-turn members
+// land) differ on each app visit while every render of one visit agrees.
 const VISIT_SALT = Math.floor(Math.random() * 0xffffffff);
-const visitPhotoIndex = (memberId, count) => {
+const visitHash = (key) => {
   let h = VISIT_SALT;
-  for (const ch of String(memberId)) h = (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0;
-  return h % count;
+  for (const ch of String(key)) h = (Math.imul(h, 31) + ch.charCodeAt(0)) >>> 0;
+  return h;
 };
+const visitPhotoIndex = (memberId, count) => visitHash(memberId) % count;
 const FamilyPage = ({ backTo = '/home' }) => {
   const { members, loading } = useFamilyMembers();
   const { activeChild } = useChildProfile();
@@ -36,25 +37,32 @@ const FamilyPage = ({ backTo = '/home' }) => {
   // child should recognise the person, not one particular picture. Learn
   // mode re-shuffles per interaction via `images`; the test inherits the
   // per-visit pick.
-  const items = useMemo(
-    () =>
-      members.map((m) => {
-        const images = memberPhotoPaths(m).map(familyPhotoUrl);
-        return {
-          id: m.id,
-          name: m.name,
-          relation: m.relation,
-          relationDetail: m.relation_detail,
-          childProfileId: m.child_profile_id,
-          nameLang: m.name_lang || 'en',
-          namePhonetic: m.name_phonetic || null,
-          images,
-          image: images.length ? images[visitPhotoIndex(m.id, images.length)] : null,
-          audioPath: m.name_audio_path,
-        };
-      }),
-    [members]
-  );
+  const items = useMemo(() => {
+    const mapped = members.map((m) => {
+      const images = memberPhotoPaths(m).map(familyPhotoUrl);
+      return {
+        id: m.id,
+        name: m.name,
+        relation: m.relation,
+        relationDetail: m.relation_detail,
+        childProfileId: m.child_profile_id,
+        nameLang: m.name_lang || 'en',
+        namePhonetic: m.name_phonetic || null,
+        sortOrder: m.sort_order || 0,
+        images,
+        image: images.length ? images[visitPhotoIndex(m.id, images.length)] : null,
+        audioPath: m.name_audio_path,
+      };
+    });
+    // Members with a fixed turn keep the hook's 1, 2, 3… order; everyone
+    // on random follows them, reshuffled each app visit.
+    return [
+      ...mapped.filter((i) => i.sortOrder),
+      ...mapped
+        .filter((i) => !i.sortOrder)
+        .sort((a, b) => visitHash(`${a.id}:turn`) - visitHash(`${b.id}:turn`)),
+    ];
+  }, [members]);
 
   // The test is a picture quiz, so only members with photos qualify; the
   // parent-configured test cap rotates them like every other category

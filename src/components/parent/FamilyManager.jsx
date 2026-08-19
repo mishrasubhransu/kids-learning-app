@@ -84,6 +84,16 @@ const QUICK_PICKS = [
 
 const samePath = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
+// 1 → "1st" — the fixed-turn picker and the list badge speak ordinals
+const ordinal = (n) => {
+  const rem = n % 100;
+  const suffix =
+    rem >= 11 && rem <= 13
+      ? 'th'
+      : { 1: 'st', 2: 'nd', 3: 'rd' }[n % 10] || 'th';
+  return `${n}${suffix}`;
+};
+
 // Stable stand-in for "no path" so hooks keyed on `steps` don't re-fire
 // on a fresh [] every render
 const NO_STEPS = [];
@@ -202,6 +212,27 @@ const MemberEditor = ({
     const valid = (id) => (members.some((m) => m.id === id) ? id : '');
     return { father: valid(stored.father), mother: valid(stored.mother) };
   });
+  // Turn in the lesson: 0 = a random slot after the fixed ones (the
+  // default), 1, 2, 3… = that exact position
+  const [sortOrder, setSortOrder] = useState(initial?.sort_order || 0);
+  // One fixed position per member (counting this one); a stored number
+  // beyond that (members since removed) stays on offer so the saved value
+  // never silently changes.
+  const turnChoices = useMemo(() => {
+    const count = Math.max(
+      members.length + (initial ? 0 : 1),
+      initial?.sort_order || 0
+    );
+    return Array.from({ length: count }, (_, i) => i + 1);
+  }, [members.length, initial]);
+  // Whoever already holds the picked turn — saving bumps them one down
+  // (and so on along the chain), so say it up front
+  const bumpTarget =
+    sortOrder > 0
+      ? members.find(
+          (m) => m.id !== initial?.id && (m.sort_order || 0) === sortOrder
+        )
+      : null;
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const fileInputRef = useRef(null);
@@ -414,6 +445,7 @@ const MemberEditor = ({
         childProfileId: linkChild?.id ?? initial?.child_profile_id ?? null,
         nameLang,
         namePhonetic: namePhonetic.trim() || null,
+        sortOrder,
         photoFiles: photos.filter((p) => p.blob).map((p) => p.blob),
         keptPhotoPaths: photos.filter((p) => p.path).map((p) => p.path),
       });
@@ -757,6 +789,35 @@ const MemberEditor = ({
         )}
       </div>
 
+      <div className="flex items-center gap-2 flex-wrap">
+        <label className="flex items-center gap-2">
+          <span className="text-xs font-semibold text-gray-500">
+            Turn in the lesson
+          </span>
+          <select
+            value={sortOrder}
+            onChange={(e) => setSortOrder(Number(e.target.value))}
+            className="border border-gray-200 rounded-lg px-2 py-1 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <option value={0}>Random</option>
+            {turnChoices.map((n) => (
+              <option key={n} value={n}>
+                {ordinal(n)}
+              </option>
+            ))}
+          </select>
+        </label>
+        {bumpTarget ? (
+          <span className="text-xs font-medium text-amber-600">
+            {bumpTarget.name} moves to {ordinal(sortOrder + 1)}
+          </span>
+        ) : (
+          <span className="text-xs text-gray-400">
+            — fixed turns go first, everyone on Random follows shuffled
+          </span>
+        )}
+      </div>
+
       {/* Friends and pets float outside the tree, so no lines to pick */}
       {(rel.kind !== 'legacy' || !['friend', 'pet'].includes(rel.value)) &&
         parentChoices.length > 0 && (
@@ -985,6 +1046,7 @@ const FamilyManager = () => {
               <span className="text-xs text-gray-400 font-medium">
                 {kinshipLabel(member, 'en')}
                 {member.child_profile_id && ' · your child'}
+                {member.sort_order > 0 && ` · goes ${ordinal(member.sort_order)}`}
                 {memberPhotoPaths(member).length === 0 && ' · no photo yet'}
                 {isStranded(member) && (
                   <span className="text-amber-600">
