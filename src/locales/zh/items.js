@@ -142,6 +142,11 @@ export default {
   crushing: { name: '砸碎', ref: '正在砸碎东西的' },
   pulling: { name: '拉', ref: '正在拉箱子的' },
   pushing: { name: '推', ref: '正在推箱子的' },
+  writing: { name: '写字', ref: '正在写字的' },
+  // 画画 goes to drawing (pencil sketch); painting (brush + paints) takes
+  // 涂颜色 to keep the two verbs distinct. Flag for native review.
+  drawing: { name: '画画', ref: '正在画画的' },
+  painting: { name: '涂颜色', ref: '正在涂颜色的' },
 
   // Bugs & insects
   butterfly: { name: '蝴蝶' },

@@ -153,6 +153,11 @@ export default {
   crushing: { name: 'ଗୁଣ୍ଡ କରିବା', ref: 'ଔଷଧ ଗୁଣ୍ଡ କରୁଛି' },
   pulling: { name: 'ଟାଣିବା', ref: 'ବାକ୍ସ ଟାଣୁଛି' },
   pushing: { name: 'ଠେଲିବା', ref: 'ବାକ୍ସ ଠେଲୁଛି' },
+  writing: { name: 'ଲେଖିବା', ref: 'କାଗଜରେ ଲେଖୁଛି' },
+  // drawing vs painting: ଚିତ୍ର ଆଙ୍କିବା (sketching a picture) vs ରଙ୍ଗ କରିବା
+  // (applying color/paint). Flag for family review.
+  drawing: { name: 'ଚିତ୍ର ଆଙ୍କିବା', ref: 'ଘୋଡ଼ା ଚିତ୍ର ଆଙ୍କୁଛି' },
+  painting: { name: 'ରଙ୍ଗ କରିବା', ref: 'ଫୁଲ ରଙ୍ଗ କରୁଛି' },
 
   // Bugs & insects
   butterfly: { name: 'ପ୍ରଜାପତି' },

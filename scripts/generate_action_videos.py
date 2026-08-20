@@ -101,6 +101,10 @@ VERBS = {
     "pushing": "a young child pushing a big brown cardboard box across a living room floor with both hands, leaning forward with effort, the box clearly sliding forward",
     # second squeezing variant — concepts.js lists both under `videos`
     "squeezing-toothpaste": "a young child's hands squeezing a soft colorful toothpaste tube over a toothbrush, a thick ribbon of toothpaste clearly coming out of the tube onto the brush bristles",
+    # writing is NOT here — STYLE forbids on-screen text, so it runs with a
+    # custom --prompt on the piapi script (words "cat bat mat" must be legible)
+    "drawing": "a close-up top-down view of a child's hand holding a pencil, quickly sketching the simple outline of a horse on a white sheet of paper on a wooden table, the pencil line visibly growing into the horse shape as the hand moves, exactly one hand in frame",
+    "painting": "a close-up view of a child's hand holding a small paintbrush, painting a big red flower on white paper on a wooden table, the brush leaving clear wet strokes of red paint on the petals, a small palette of watercolors beside the paper, exactly one hand in frame",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
@@ -129,7 +133,8 @@ def archive_to_genlab(output_path, prompt, model, item_name, notes=None, provide
         print(f"  ⚠  genlab archive failed for actions/{item_name}: {e}")
 
 
-def generate_video(item_name, subject_desc, tier, suffix_tier=False, force=False):
+def generate_video(item_name, subject_desc, tier, suffix_tier=False, force=False,
+                   raw_prompt=None):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     filename = f"{item_name}-{tier}.mp4" if suffix_tier else f"{item_name}.mp4"
     output_path = os.path.join(OUTPUT_DIR, filename)
@@ -139,7 +144,7 @@ def generate_video(item_name, subject_desc, tier, suffix_tier=False, force=False
         return True
 
     model = TIER_MODELS[tier]
-    prompt = STYLE.format(subject=subject_desc)
+    prompt = raw_prompt if raw_prompt else STYLE.format(subject=subject_desc)
     print(f"  🎬 Generating {filename} via {model}...")
 
     try:
@@ -182,9 +187,16 @@ def main():
     parser.add_argument("--suffix-tier", action="store_true",
                         help="Append -<tier> to filenames (for quality comparisons)")
     parser.add_argument("--force", action="store_true", help="Overwrite existing videos")
+    parser.add_argument("--prompt", help="Full prompt used verbatim (requires exactly one --item, "
+                        "which then only names the output file); bypasses VERBS/STYLE")
     args = parser.parse_args()
 
-    items = {name: VERBS[name] for name in (args.item or VERBS)}
+    if args.prompt:
+        if not args.item or len(args.item) != 1:
+            sys.exit("--prompt requires exactly one --item (used as the output filename)")
+        items = {args.item[0]: None}
+    else:
+        items = {name: VERBS[name] for name in (args.item or VERBS)}
 
     cost_per_sec = {"standard": 0.40, "fast": 0.15, "lite": 0.05}
     est = sum(cost_per_sec[t] for t in args.tier) * DURATION_SECONDS * len(items)
@@ -195,7 +207,8 @@ def main():
     for item_name, subject_desc in items.items():
         for tier in args.tier:
             ok = generate_video(item_name, subject_desc, tier,
-                                suffix_tier=args.suffix_tier, force=args.force)
+                                suffix_tier=args.suffix_tier, force=args.force,
+                                raw_prompt=args.prompt)
             if ok:
                 success += 1
             else:

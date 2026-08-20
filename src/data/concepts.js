@@ -120,6 +120,9 @@ export const conceptItems = {
     { id: 40, name: 'Crushing', video: '/concepts/actions/crushing.mp4' },
     { id: 41, name: 'Pulling', video: '/concepts/actions/pulling.mp4' },
     { id: 42, name: 'Pushing', video: '/concepts/actions/pushing.mp4' },
+    { id: 43, name: 'Writing', video: '/concepts/actions/writing.mp4' },
+    { id: 44, name: 'Drawing', video: '/concepts/actions/drawing.mp4' },
+    { id: 45, name: 'Painting', video: '/concepts/actions/painting.mp4' },
   ],
   bugs: [
     { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },

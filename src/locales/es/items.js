@@ -158,6 +158,9 @@ export default {
   // jalar — the neutral-LatAm choice; tirar reads as "throw away" in places
   pulling: { name: 'Jalando', ref: 'el que está jalando' },
   pushing: { name: 'Empujando', ref: 'el que está empujando' },
+  writing: { name: 'Escribiendo', ref: 'el que está escribiendo' },
+  drawing: { name: 'Dibujando', ref: 'el que está dibujando' },
+  painting: { name: 'Pintando', ref: 'el que está pintando' },
 
   // Bugs & insects
   butterfly: { name: 'Mariposa', ref: 'la mariposa' },
