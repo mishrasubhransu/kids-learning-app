@@ -103,8 +103,10 @@ VERBS = {
     "squeezing-toothpaste": "a young child's hands squeezing a soft colorful toothpaste tube over a toothbrush, a thick ribbon of toothpaste clearly coming out of the tube onto the brush bristles",
     # writing is NOT here — STYLE forbids on-screen text, so it runs with a
     # custom --prompt on the piapi script (words "cat bat mat" must be legible)
-    "drawing": "a close-up top-down view of a child's hand holding a pencil, quickly sketching the simple outline of a horse on a white sheet of paper on a wooden table, the pencil line visibly growing into the horse shape as the hand moves, exactly one hand in frame",
-    "painting": "a close-up view of a child's hand holding a small paintbrush, painting a big red flower on white paper on a wooden table, the brush leaving clear wet strokes of red paint on the petals, a small palette of watercolors beside the paper, exactly one hand in frame",
+    # drawing/painting: start from PARTIAL artwork and add to it — a
+    # finished-picture start state gets scribbled over and ruined
+    "drawing": "a close-up top-down view of a child's hand holding a pencil over a mostly blank white sheet of paper on a wooden table, only the head and neck of a simple horse outline drawn so far, the hand steadily extending the single clean pencil line to add the horse's back, belly and legs, the outline growing neatly stroke by stroke, never scribbling over lines that are already drawn, exactly one hand in frame",
+    "painting": "a close-up view of a child's hand holding a small paintbrush over white paper on a wooden table, a big flower outline with only two petals filled in with red paint so far, the brush filling the empty petals one by one with smooth strokes of bright red wet paint, staying inside the outlines, never painting over the petals that are already finished, a small palette of watercolors beside the paper, exactly one hand in frame",
 }
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
