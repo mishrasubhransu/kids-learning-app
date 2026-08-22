@@ -34,6 +34,7 @@ import colors from '../src/data/colors.js';
 import { shapes } from '../src/data/shapes.jsx';
 import { conceptItems } from '../src/data/concepts.js';
 import { phonicsWords } from '../src/data/phonics.js';
+import { letterSounds } from '../src/data/letterSounds.js';
 import opposites from '../src/data/opposites.js';
 import { FIXED_LINES } from '../src/data/voiceLines.js';
 import { intros } from '../src/data/intros.js';
@@ -72,6 +73,10 @@ export function buildCatalog(locale = 'en') {
     ['at', 'an', 'ap'].forEach((family) =>
       phonicsWords[family].forEach((w) => addQuizSet(w.name))
     );
+    // Letter Sounds words ("B is for Baby") are offered as bare reading
+    // words by the My Words custom list, so they need item + quiz clips;
+    // about half already arrive via concepts lessons and dedupe here.
+    letterSounds.forEach((l) => l.words.forEach((w) => addQuizSet(w.name)));
   }
 
   // The typing keyboard has a 0 key; the numbers lesson starts at 1

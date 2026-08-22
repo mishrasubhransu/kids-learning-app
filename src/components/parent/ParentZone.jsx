@@ -25,10 +25,12 @@ import {
   starterLessonsForAge,
   defaultEnabledLessons,
   ageFromBirthdate,
+  isLessonAvailable,
 } from '../../data/lessons';
 import { availableLocales } from '../../locales';
 import HoldGate from './HoldGate';
 import LessonTree from './LessonTree';
+import CustomWordsEditor from './CustomWordsEditor';
 import ProfileEditor from './ProfileEditor';
 import FamilyManager from './FamilyManager';
 import VoiceSelector from '../ui/VoiceSelector';
@@ -397,6 +399,24 @@ const ParentZone = () => {
               settings={settings}
               onSetting={(key, value) => patch({ [key]: value })}
             />
+
+            {/* ---- My Words ---- */}
+            {/* Phonics is an English-curriculum lesson, so the custom word
+                list hides with it for languages that hide phonics */}
+            {isLessonAvailable(language, 'phonics') && (
+              <>
+                <SectionTitle>My Words</SectionTitle>
+                <p className="text-sm text-gray-500 -mt-2 mb-3">
+                  A reading list you build from words already in the app.
+                  It appears as &quot;My Words&quot; under Phonics once it has
+                  at least one word — remove them all to hide it again.
+                </p>
+                <CustomWordsEditor
+                  words={settings.customWords || []}
+                  onChange={(next) => patch({ customWords: next })}
+                />
+              </>
+            )}
 
             {/* ---- Personalization ---- */}
             <SectionTitle>Personalization</SectionTitle>

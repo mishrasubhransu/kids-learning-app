@@ -15,6 +15,7 @@ import { preloadVoiceClips } from '../lib/voice';
 import { itemQuizParts } from '../lib/voiceKeys';
 import { localizeItems, setSpeechLocale } from '../lib/locale';
 import { useLocale } from '../context/LocaleContext';
+import { useChildProfile } from '../context/ChildProfileContext';
 import { setScreenContext } from '../lib/analytics';
 import useChildSetting from '../hooks/useChildSetting';
 import useSessionItems from '../hooks/useSessionItems';
@@ -26,6 +27,7 @@ import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { conceptCategories, conceptItems, pickItemVariants } from '../data/concepts';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
+import { customWordItems } from '../data/wordLibrary';
 
 const categoryData = {
   alphabets: { items: alphabets, title: 'Alphabets' },
@@ -47,6 +49,10 @@ phonicsFamilies.forEach((family) => {
     title: family.name,
   };
 });
+
+// Parent-curated reading list — items resolve per child at render time
+// (settings.customWords), not from this static table
+categoryData['phonics-my-words'] = { items: null, title: 'My Words' };
 
 const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const { user } = useAuth();
@@ -104,10 +110,17 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // nature lesson); pick one at random per visit so repeat visits vary but
   // the picture never swaps mid-session. Localization adds slug/enName and
   // swaps display names for the active language.
+  const { activeChild } = useChildProfile();
+  const customWordKeys =
+    category === 'phonics-my-words' ? activeChild?.settings?.customWords : null;
   const resolvedItems = useMemo(() => {
-    const categoryItems = categoryData[category]?.items;
-    return categoryItems ? localizeItems(pickItemVariants(categoryItems)) : null;
-  }, [category, locale]); // eslint-disable-line react-hooks/exhaustive-deps
+    const categoryItems = customWordKeys
+      ? customWordItems(customWordKeys)
+      : categoryData[category]?.items;
+    return categoryItems?.length
+      ? localizeItems(pickItemVariants(categoryItems))
+      : null;
+  }, [category, locale, customWordKeys]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Numbers honor the per-child counting range before any session capping
   const sizedItems = useMemo(() => {

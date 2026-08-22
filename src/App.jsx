@@ -10,6 +10,7 @@ import ConceptsHome from './components/ConceptsHome';
 import ConceptsCategoryPage from './components/ConceptsCategoryPage';
 import PhonicsHome from './components/PhonicsHome';
 import PhonicsCategoryPage from './components/PhonicsCategoryPage';
+import MyWordsPage from './components/MyWordsPage';
 import LetterSoundsView from './components/LetterSoundsView';
 import OppositesPage from './components/opposites/OppositesPage';
 import FamilyPage from './components/family/FamilyPage';
@@ -73,6 +74,7 @@ const App = () => {
         <Route path="/objects/*" element={<Navigate to="/concepts" replace />} />
         <Route path="/phonics" element={<ProtectedRoute><LessonGuard lesson="phonics"><PhonicsHome /></LessonGuard></ProtectedRoute>} />
         <Route path="/phonics/letters" element={<ProtectedRoute><LessonGuard lesson="phonics.letters"><LetterSoundsView /></LessonGuard></ProtectedRoute>} />
+        <Route path="/phonics/my-words" element={<ProtectedRoute><LessonGuard lesson="phonics"><MyWordsPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/phonics/:family/*" element={<ProtectedRoute><LessonGuard prefix="phonics" param="family"><PhonicsCategoryPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/opposites/*" element={<ProtectedRoute><LessonGuard lesson="opposites"><OppositesPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/family" element={<ProtectedRoute><LessonGuard lesson="family"><FamilyPage /></LessonGuard></ProtectedRoute>} />

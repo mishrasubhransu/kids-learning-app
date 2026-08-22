@@ -117,9 +117,21 @@ const TileView = ({ items, category, objectIcons, shapeColor, objectType }) => {
               onClick={() => handleClick(item)}
               className={`${baseClasses} bg-white p-6 md:p-8 flex items-center justify-center`}
             >
-              <span className={`text-4xl md:text-6xl font-bold tracking-wide ${caseClass}`}>
-                <span className="text-gray-700">{item.onset}</span>
-                <span className="text-orange-500">{item.rime}</span>
+              {/* My Words entries have no rime split — one plain word,
+                  smaller so long ones (Excavator) still fit the tile */}
+              <span
+                className={`${
+                  item.onset ? 'text-4xl md:text-6xl' : 'text-2xl md:text-4xl break-words min-w-0'
+                } font-bold tracking-wide ${caseClass}`}
+              >
+                {item.onset ? (
+                  <>
+                    <span className="text-gray-700">{item.onset}</span>
+                    <span className="text-orange-500">{item.rime}</span>
+                  </>
+                ) : (
+                  <span className="text-gray-700">{item.name}</span>
+                )}
               </span>
             </button>
           );

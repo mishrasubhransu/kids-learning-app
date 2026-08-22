@@ -57,7 +57,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     if (next?.image) preloadImages([next.image]);
   }, [currentIndex, displayItems]);
   const isRevealCategory = Boolean(
-    category?.startsWith('phonics-') && displayItems[0]?.image
+    category?.startsWith('phonics-') &&
+      (displayItems[0]?.image || displayItems[0]?.video)
   );
 
   const speakCurrent = useCallback((options) => {
@@ -283,25 +284,40 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
 
       default:
         if (category?.startsWith('phonics-')) {
-          const hasImage = Boolean(currentItem.image);
+          const hasMedia = Boolean(currentItem.image || currentItem.video);
+          const word = currentItem.onset
+            ? `${currentItem.onset}${currentItem.rime}`
+            : String(currentItem.name);
           return (
             <div className="flex flex-row items-center justify-center gap-6 md:gap-12">
               <span
-                className={`font-bold leading-none select-none tracking-wide ${caseClass}`}
+                className={`font-bold leading-none select-none tracking-wide text-center ${caseClass}`}
                 style={{
-                  fontSize: hasImage ? 'min(16vw, 26vh)' : 'min(22vw, 32vh)',
+                  // My Words entries can be long (Excavator) — shrink with
+                  // length so word and picture share the row; 3-letter
+                  // family words cap out at the classic size
+                  fontSize: hasMedia
+                    ? `min(${Math.min(16, 110 / word.length)}vw, 26vh)`
+                    : 'min(22vw, 32vh)',
                   fontFamily: 'Arial, sans-serif',
                 }}
               >
-                <span className="text-gray-700">{currentItem.onset}</span>
-                <span className="text-orange-500">{currentItem.rime}</span>
+                {currentItem.onset ? (
+                  <>
+                    <span className="text-gray-700">{currentItem.onset}</span>
+                    <span className="text-orange-500">{currentItem.rime}</span>
+                  </>
+                ) : (
+                  // Custom words read as one plain word — no rime split
+                  <span className="text-gray-700">{word}</span>
+                )}
               </span>
               {/* Slot is always reserved so the word never moves on reveal */}
-              {hasImage && (
+              {hasMedia && (
                 <div className="w-[var(--img-hero)] h-[var(--img-hero)] flex-shrink-0">
                   {revealed && (
-                    <img
-                      src={currentItem.image}
+                    <ItemMedia
+                      item={currentItem}
                       alt={currentItem.name}
                       className="w-full h-full object-contain rounded-2xl shadow-lg bg-white"
                     />
