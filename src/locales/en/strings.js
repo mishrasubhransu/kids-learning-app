@@ -63,7 +63,7 @@ export default {
 
   // Learning views
   'scroll.hint': 'Click the letter or use Arrow Keys | Space to hear',
-  'scroll.revealHint': 'Press → to see the picture!',
+  'scroll.revealHint': 'Say the word, then press → !',
   'scroll.autoplay': 'Autoplay',
   'tile.hint': 'Click any item to hear its name',
   'pair.hint': 'Press the right arrow to keep going',

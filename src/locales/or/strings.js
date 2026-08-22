@@ -54,7 +54,7 @@ export default {
 
   // Learning views
   'scroll.hint': 'ଛବିକୁ ଟିପ କିମ୍ବା ତୀର ଚିହ୍ନ ଦବାଅ | ଆଉ ଥରେ ଶୁଣିବାକୁ ସ୍ପେସ୍ ଦବାଅ',
-  'scroll.revealHint': '→ ଦବାଅ, ଛବି ଦେଖ!',
+  'scroll.revealHint': 'ଆଗେ କୁହ, ତା\'ପରେ → ଦବାଅ!',
   'scroll.autoplay': 'ଆପେ ଆପେ ଚାଲିବ',
   'tile.hint': 'ଟିପି ଦିଅ, ନାଁ ଶୁଣ',
   'pair.hint': 'ଆଗକୁ ଯିବାକୁ → ଦବାଅ',

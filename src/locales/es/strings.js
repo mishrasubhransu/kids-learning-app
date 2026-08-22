@@ -57,7 +57,7 @@ export default {
 
   // Learning views
   'scroll.hint': 'Toca la imagen o usa las flechas | Espacio para escuchar',
-  'scroll.revealHint': '¡Presiona → para ver la imagen!',
+  'scroll.revealHint': '¡Di la palabra y presiona → !',
   'scroll.autoplay': 'Automático',
   'tile.hint': 'Toca cualquier cosa para escuchar su nombre',
   'pair.hint': 'Presiona la flecha derecha para seguir',

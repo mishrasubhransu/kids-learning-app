@@ -35,8 +35,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const [isAutoplay, setIsAutoplay] = useState(false);
-  // Word-first reveal: phonics words with images show the word alone until
-  // the right arrow reveals the picture, so sound maps to the word first.
+  // Word-first reveal: phonics words with images show the word alone and
+  // silent — the child gets a beat to sound it out — then the right arrow
+  // brings the picture and the spoken word in together.
   const [revealed, setRevealed] = useState(false);
   // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
   // browser TTS as the last resort (2-letter syllables stay TTS by design)
@@ -85,7 +86,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   useEffect(() => {
     if (holdIntro || spokeOnMount.current || isAutoplay) return;
     spokeOnMount.current = true;
-    speakCurrent({ enqueue: true });
+    // Reveal categories open silent so the child reads the word first
+    if (!isRevealCategory) speakCurrent({ enqueue: true });
     hasInteracted.current = true;
   }, [holdIntro]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -93,13 +95,14 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   useEffect(() => {
     if (isAutoplay) return;
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
-      speakCurrent();
+      // Reveal categories land on the next word silent (spoken on reveal)
+      if (!isRevealCategory) speakCurrent();
       if (category === 'alphabets') {
         setBgColor((c) => nextBgColor(bgColors, c));
       }
     }
     prevIndexRef.current = currentIndex;
-  }, [currentIndex, speakCurrent, isAutoplay, category]);
+  }, [currentIndex, speakCurrent, isAutoplay, category, isRevealCategory]);
 
   // Autoplay effect: speak current item, then advance after speech ends
   useEffect(() => {
@@ -109,6 +112,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     let fallbackTimer;
     let cancelled = false;
 
+    // Autoplay is passive listening, so the voice keeps its picture pairing:
+    // reveal stays on for the whole run instead of gating each word
+    if (isRevealCategory) setRevealed(true);
     const ended = speakItem(currentItem);
     if (category === 'alphabets') {
       setBgColor((c) => nextBgColor(bgColors, c));
@@ -141,7 +147,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       clearTimeout(advanceTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [isAutoplay, currentIndex, speakItem, currentItem, category, displayItems.length, onAutoplayComplete]);
+  }, [isAutoplay, currentIndex, speakItem, currentItem, category, displayItems.length, onAutoplayComplete, isRevealCategory]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -158,14 +164,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     stopAutoplay();
     hasInteracted.current = true;
     if (isRevealCategory && !revealed) {
-      // Reveal the picture silently — the word was already spoken
+      // Picture and voice arrive together, after the child's silent try
       setRevealed(true);
+      speakCurrent();
     } else {
       setRevealed(false);
       setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
     }
     startCooldown();
-  }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed]);
+  }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed, speakCurrent]);
 
   // Going back is a correction, so it mirrors goNext step-for-step and
   // skips the cooldown that only exists to stop forward mashing.
