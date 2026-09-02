@@ -41,6 +41,7 @@ export default {
   'cat.concepts.gadgets': '电子产品',
   'cat.concepts.outside': '户外',
   'cat.concepts.prepositions': '方位',
+  'cat.concepts.routine': '日常',
 
   // Category page chrome
   'mode.scroll': '滑动',

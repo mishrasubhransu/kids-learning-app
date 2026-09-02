@@ -45,6 +45,7 @@ export default {
   'cat.concepts.gadgets': 'Aparatos',
   'cat.concepts.outside': 'Afuera',
   'cat.concepts.prepositions': 'Posiciones',
+  'cat.concepts.routine': 'Rutina',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

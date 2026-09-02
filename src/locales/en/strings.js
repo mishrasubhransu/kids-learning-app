@@ -50,6 +50,7 @@ export default {
   'cat.concepts.gadgets': 'Gadgets',
   'cat.concepts.outside': 'Outside',
   'cat.concepts.prepositions': 'Prepositions',
+  'cat.concepts.routine': 'Routine',
   'cat.concepts.indian-food': 'Indian Food',
 
   // Category page chrome

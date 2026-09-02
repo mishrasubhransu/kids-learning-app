@@ -38,7 +38,7 @@ export const conceptCategories = [
   // A day in the life, morning to night, told with ONE recurring boy and his
   // dad (see the routine style prompt in scripts/generate_object_images.py).
   // Order is the lesson: keep items in wake-to-sleep sequence.
-  { id: 'routine', name: 'My Day', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
+  { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
   // LESSON_LANGUAGE_KEY in data/lessons.js and the speech override in
