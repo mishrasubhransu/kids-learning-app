@@ -143,6 +143,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const capExempt =
     category === 'numbers' ||
     category === 'alphabets' ||
+    category === 'concepts-routine' ||
     category.startsWith('phonics-');
   const lessonPool = useSessionItems(category, 'lesson', sizedItems, capExempt ? 'all' : lessonCap, mode !== 'test');
   const testPool = useSessionItems(category, 'test', sizedItems, capExempt ? 'all' : testCap, mode === 'test');

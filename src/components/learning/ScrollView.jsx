@@ -17,7 +17,9 @@ const bgColors = [
   '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
 
-const orderedCategories = ['alphabets', 'numbers'];
+// Sets whose sequence IS the lesson: never shuffled. My Day runs wake-up
+// to sleep in the order the child's day actually goes.
+const orderedCategories = ['alphabets', 'numbers', 'concepts-routine'];
 
 function shuffle(arr) {
   const a = [...arr];

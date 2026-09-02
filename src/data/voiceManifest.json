@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-02T02:29:35.692Z",
+  "version": "2026-09-02T04:58:30.560Z",
   "clips": {
     "en/lines/this-is-my-family": {
       "v": 1785378972,
@@ -33988,6 +33988,310 @@
     "zh/items/38": {
       "v": 1788316175,
       "h": "e560d56045"
+    },
+    "en/items/wake-up": {
+      "v": 1788325070,
+      "h": "53f7195b8d"
+    },
+    "en/quiz/which-one/wake-up": {
+      "v": 1788325070,
+      "h": "7f645894fe"
+    },
+    "en/quiz/that-was/wake-up": {
+      "v": 1788325072,
+      "h": "a28b63b254"
+    },
+    "en/quiz/try-to-find/wake-up": {
+      "v": 1788325072,
+      "h": "eb0eb34f96"
+    },
+    "en/items/brush-teeth": {
+      "v": 1788325072,
+      "h": "fb95f865e7"
+    },
+    "en/quiz/which-one/brush-teeth": {
+      "v": 1788325073,
+      "h": "d737c98adf"
+    },
+    "en/quiz/that-was/brush-teeth": {
+      "v": 1788325073,
+      "h": "8ca6bab798"
+    },
+    "en/quiz/try-to-find/brush-teeth": {
+      "v": 1788325074,
+      "h": "93d2c44bb6"
+    },
+    "en/items/potty": {
+      "v": 1788325074,
+      "h": "fdc5ec4c45"
+    },
+    "en/quiz/which-one/potty": {
+      "v": 1788325075,
+      "h": "9d59fe78a2"
+    },
+    "en/quiz/that-was/potty": {
+      "v": 1788325076,
+      "h": "365cbd69d7"
+    },
+    "en/quiz/try-to-find/potty": {
+      "v": 1788325076,
+      "h": "37d6cc9238"
+    },
+    "en/items/shower": {
+      "v": 1788325076,
+      "h": "a8d310294b"
+    },
+    "en/quiz/that-was/shower": {
+      "v": 1788325077,
+      "h": "f2d6883313"
+    },
+    "en/quiz/which-one/shower": {
+      "v": 1788325077,
+      "h": "14b0636487"
+    },
+    "en/items/get-dressed": {
+      "v": 1788325078,
+      "h": "cd8d46839f"
+    },
+    "en/quiz/try-to-find/shower": {
+      "v": 1788325078,
+      "h": "0bed39f3a1"
+    },
+    "en/quiz/that-was/get-dressed": {
+      "v": 1788325079,
+      "h": "341295a796"
+    },
+    "en/quiz/which-one/get-dressed": {
+      "v": 1788325080,
+      "h": "d8de274ffe"
+    },
+    "en/quiz/try-to-find/get-dressed": {
+      "v": 1788325080,
+      "h": "a3119aed40"
+    },
+    "en/items/breakfast": {
+      "v": 1788325080,
+      "h": "d57cb8d6b9"
+    },
+    "en/quiz/that-was/breakfast": {
+      "v": 1788325081,
+      "h": "62804fe8d5"
+    },
+    "en/quiz/which-one/breakfast": {
+      "v": 1788325082,
+      "h": "11362c4eb9"
+    },
+    "en/quiz/try-to-find/breakfast": {
+      "v": 1788325082,
+      "h": "f4a61d0e36"
+    },
+    "en/items/go-to-school": {
+      "v": 1788325083,
+      "h": "d10e63d731"
+    },
+    "en/quiz/that-was/go-to-school": {
+      "v": 1788325084,
+      "h": "258e948d14"
+    },
+    "en/quiz/which-one/go-to-school": {
+      "v": 1788325084,
+      "h": "97f69b2626"
+    },
+    "en/items/circle-time": {
+      "v": 1788325085,
+      "h": "f8db690f31"
+    },
+    "en/quiz/try-to-find/go-to-school": {
+      "v": 1788325085,
+      "h": "100d6739d7"
+    },
+    "en/quiz/that-was/circle-time": {
+      "v": 1788325086,
+      "h": "2003f920d5"
+    },
+    "en/quiz/which-one/circle-time": {
+      "v": 1788325086,
+      "h": "e9282b5e63"
+    },
+    "en/items/lunch": {
+      "v": 1788325087,
+      "h": "a8878ea6d8"
+    },
+    "en/quiz/try-to-find/circle-time": {
+      "v": 1788325087,
+      "h": "9f8b1c830b"
+    },
+    "en/quiz/which-one/lunch": {
+      "v": 1788325088,
+      "h": "579b089d7c"
+    },
+    "en/quiz/that-was/lunch": {
+      "v": 1788325088,
+      "h": "fb95205b43"
+    },
+    "en/items/nap-time": {
+      "v": 1788325089,
+      "h": "62f609cf11"
+    },
+    "en/quiz/try-to-find/lunch": {
+      "v": 1788325089,
+      "h": "75d381d56c"
+    },
+    "en/quiz/that-was/nap-time": {
+      "v": 1788325090,
+      "h": "fa4e972559"
+    },
+    "en/quiz/which-one/nap-time": {
+      "v": 1788325090,
+      "h": "4f70d40500"
+    },
+    "en/items/play-outside": {
+      "v": 1788325091,
+      "h": "cf2bc7d803"
+    },
+    "en/quiz/try-to-find/nap-time": {
+      "v": 1788325091,
+      "h": "f573a8a5d8"
+    },
+    "en/quiz/which-one/play-outside": {
+      "v": 1788325092,
+      "h": "4e2059d504"
+    },
+    "en/quiz/that-was/play-outside": {
+      "v": 1788325093,
+      "h": "d4b3b006ad"
+    },
+    "en/quiz/try-to-find/play-outside": {
+      "v": 1788325093,
+      "h": "a3bd04848f"
+    },
+    "en/items/snack": {
+      "v": 1788325093,
+      "h": "eaf7064f09"
+    },
+    "en/quiz/that-was/snack": {
+      "v": 1788325094,
+      "h": "d9a05dd670"
+    },
+    "en/quiz/which-one/snack": {
+      "v": 1788325094,
+      "h": "edd7543462"
+    },
+    "en/quiz/try-to-find/snack": {
+      "v": 1788325095,
+      "h": "75529c43a8"
+    },
+    "en/items/daddy-s-here": {
+      "v": 1788325095,
+      "h": "4eb9baf475"
+    },
+    "en/quiz/which-one/daddy-s-here": {
+      "v": 1788325097,
+      "h": "c89140dc85"
+    },
+    "en/quiz/that-was/daddy-s-here": {
+      "v": 1788325097,
+      "h": "ab7e587fca"
+    },
+    "en/quiz/try-to-find/daddy-s-here": {
+      "v": 1788325098,
+      "h": "39b7fcfe3c"
+    },
+    "en/items/walk-home": {
+      "v": 1788325098,
+      "h": "f3a5866dd2"
+    },
+    "en/quiz/which-one/walk-home": {
+      "v": 1788325099,
+      "h": "54adf47ed8"
+    },
+    "en/quiz/that-was/walk-home": {
+      "v": 1788325099,
+      "h": "bad2a66dd4"
+    },
+    "en/items/park": {
+      "v": 1788325100,
+      "h": "c7aa5fe2be"
+    },
+    "en/quiz/try-to-find/walk-home": {
+      "v": 1788325100,
+      "h": "2b5a20a3d5"
+    },
+    "en/quiz/which-one/park": {
+      "v": 1788325101,
+      "h": "fca6e5c017"
+    },
+    "en/quiz/that-was/park": {
+      "v": 1788325101,
+      "h": "730dc05433"
+    },
+    "en/quiz/try-to-find/park": {
+      "v": 1788325102,
+      "h": "be4d7851f9"
+    },
+    "en/items/dinner": {
+      "v": 1788325102,
+      "h": "2d4f43b6fa"
+    },
+    "en/quiz/which-one/dinner": {
+      "v": 1788325103,
+      "h": "d7fe123c5f"
+    },
+    "en/quiz/that-was/dinner": {
+      "v": 1788325103,
+      "h": "eeb78cc596"
+    },
+    "en/items/play-time": {
+      "v": 1788325104,
+      "h": "3dd0f45f32"
+    },
+    "en/quiz/try-to-find/dinner": {
+      "v": 1788325104,
+      "h": "9b5d965fe8"
+    },
+    "en/quiz/that-was/play-time": {
+      "v": 1788325105,
+      "h": "bcc3b8bc93"
+    },
+    "en/quiz/which-one/play-time": {
+      "v": 1788325105,
+      "h": "19e0f719cb"
+    },
+    "en/items/story-time": {
+      "v": 1788325106,
+      "h": "e6b3c3b723"
+    },
+    "en/quiz/try-to-find/play-time": {
+      "v": 1788325106,
+      "h": "e3dba27441"
+    },
+    "en/quiz/which-one/story-time": {
+      "v": 1788325107,
+      "h": "3905e81dd0"
+    },
+    "en/quiz/that-was/story-time": {
+      "v": 1788325107,
+      "h": "603bd0be1d"
+    },
+    "en/items/sleep": {
+      "v": 1788325108,
+      "h": "3abb7f7525"
+    },
+    "en/quiz/try-to-find/story-time": {
+      "v": 1788325108,
+      "h": "9b4f6b9c4b"
+    },
+    "en/quiz/which-one/sleep": {
+      "v": 1788325109,
+      "h": "7a81078073"
+    },
+    "en/quiz/that-was/sleep": {
+      "v": 1788325109,
+      "h": "d443d1089f"
+    },
+    "en/quiz/try-to-find/sleep": {
+      "v": 1788325110,
+      "h": "92d9da1183"
     }
   }
 }
