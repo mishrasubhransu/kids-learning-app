@@ -137,6 +137,7 @@ export const starterLessonsForAge = (ageYears) => {
     'concepts.vegetables',
     'concepts.bodyparts',
     'concepts.transportation',
+    'concepts.routine',
   ];
   const under3 = [
     ...under2,

@@ -35,6 +35,10 @@ export const conceptCategories = [
   { id: 'gadgets', name: 'Gadgets', emoji: '📱', color: 'bg-slate-500', hoverColor: 'hover:bg-slate-600' },
   { id: 'outside', name: 'Outside', emoji: '🛝', color: 'bg-green-600', hoverColor: 'hover:bg-green-700' },
   { id: 'prepositions', name: 'Prepositions', emoji: '📦', color: 'bg-cyan-600', hoverColor: 'hover:bg-cyan-700' },
+  // A day in the life, morning to night, told with ONE recurring boy and his
+  // dad (see the routine style prompt in scripts/generate_object_images.py).
+  // Order is the lesson: keep items in wake-to-sleep sequence.
+  { id: 'routine', name: 'My Day', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
   // LESSON_LANGUAGE_KEY in data/lessons.js and the speech override in
@@ -463,6 +467,27 @@ export const conceptItems = {
     { id: 8, name: 'Next To', image: '/concepts/prepositions/next-to.webp' },
     { id: 9, name: 'Around', image: '/concepts/prepositions/around.webp' },
     { id: 10, name: 'Through', image: '/concepts/prepositions/through.webp' },
+  ],
+  routine: [
+    { id: 0, name: 'Wake Up', image: '/concepts/routine/wake-up.webp' },
+    { id: 1, name: 'Brush Teeth', image: '/concepts/routine/brush-teeth.webp' },
+    { id: 2, name: 'Potty', image: '/concepts/routine/potty.webp' },
+    { id: 3, name: 'Shower', image: '/concepts/routine/shower.webp' },
+    { id: 4, name: 'Get Dressed', image: '/concepts/routine/get-dressed.webp' },
+    { id: 5, name: 'Breakfast', image: '/concepts/routine/breakfast.webp' },
+    { id: 6, name: 'Go to School', image: '/concepts/routine/go-to-school.webp' },
+    { id: 7, name: 'Circle Time', image: '/concepts/routine/circle-time.webp' },
+    { id: 8, name: 'Lunch', image: '/concepts/routine/lunch.webp' },
+    { id: 9, name: 'Nap Time', image: '/concepts/routine/nap-time.webp' },
+    { id: 10, name: 'Play Outside', image: '/concepts/routine/play-outside.webp' },
+    { id: 11, name: 'Snack', image: '/concepts/routine/snack.webp' },
+    { id: 12, name: "Daddy's Here", image: '/concepts/routine/daddys-here.webp' },
+    { id: 13, name: 'Walk Home', image: '/concepts/routine/walk-home.webp' },
+    { id: 14, name: 'Park', image: '/concepts/routine/park.webp' },
+    { id: 15, name: 'Dinner', image: '/concepts/routine/dinner.webp' },
+    { id: 16, name: 'Play Time', image: '/concepts/routine/play-time.webp' },
+    { id: 17, name: 'Story Time', image: '/concepts/routine/story-time.webp' },
+    { id: 18, name: 'Sleep', image: '/concepts/routine/sleep.webp' },
   ],
   // Dishes the family actually eats — names are the SAME word in every
   // language (dosa is ଦୋସା is डोसा), so the parent picks which voice says

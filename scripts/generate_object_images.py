@@ -276,7 +276,28 @@ STYLE_PROMPTS = {
         "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
         "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
     ),
+    # My Day / daily routine (concepts/routine): ONE recurring family — the
+    # same toddler boy and the same dad — so the only thing changing between
+    # pictures is the moment of the day (same-subject storytelling, like the
+    # prepositions kitten). Cartoon realism, not the chunky toy look.
+    "routine": (
+        "A warm cartoon-realism 3D-rendered illustration, like a still from a modern "
+        "Pixar-style animated feature film: realistic lighting and soft skin and fabric "
+        "textures with gently stylized proportions and big expressive eyes. "
+        "The boy is ALWAYS the same character: a cheerful two-year-old Indian toddler boy "
+        "with short black hair, big brown eyes, round chubby cheeks and a light brown skin tone. "
+        "His dad, whenever present, is ALWAYS the same character: a tall friendly young "
+        "Indian man with short black hair, clean-shaven, warm smile, wearing a light blue "
+        "shirt and dark trousers. Scene: {subject} "
+        "The moment of the day must be instantly obvious at a single glance to a two-year-old, "
+        "with the boy as the clear focus of the frame. Cozy, joyful, child-safe mood, "
+        "uncluttered composition, soft depth of field. "
+        "No text, no letters, no numbers, no logos, no watermarks. Square 1:1 composition."
+    ),
 }
+
+PJ = "wearing his blue pajamas with little white stars"
+DAY = "wearing a yellow t-shirt and blue shorts"
 
 # Subject descriptions for each item — detailed enough for good image generation
 ITEMS = {
@@ -908,8 +929,30 @@ ITEMS = {
         "nap": "a cute toddler napping peacefully under a cozy blanket",
         "tap": "a shiny silver water tap with water flowing into a sink",
     },
+    # My Day — ordered morning-to-night. Pajamas before Get Dressed and after
+    # Play Time; the yellow t-shirt for the whole day between.
+    "routine": {
+        "wake-up": f"the boy {PJ} sitting up in his small bed, stretching both arms wide with a big sleepy yawn and smile, golden morning sunlight streaming through the bedroom window, a teddy bear beside his pillow.",
+        "brush-teeth": f"the boy {PJ} standing on a little step stool at the bathroom sink, brushing his teeth with a small blue toothbrush, a bit of white foam on his lips, looking at himself in the mirror, bright morning bathroom.",
+        "potty": f"the boy {PJ} top sitting happily on a small green toddler potty chair on the bathroom floor, holding a picture book, smiling proudly, tasteful and fully child-safe, bright bathroom.",
+        "shower": f"the boy wearing blue swim shorts standing in a white bathtub under a gentle warm shower spray from a handheld shower head, a big pile of shampoo bubbles on his head and foam on his shoulders, water droplets sparkling, laughing with eyes squeezed shut, bright tiled bathroom with a rubber duck on the tub edge.",
+        "get-dressed": f"the boy sitting on the edge of his bed pulling a yellow t-shirt down over his head with both hands, his head just popping through the neck hole with a grin, blue shorts already on, his dad kneeling beside him helping, morning bedroom.",
+        "breakfast": f"the boy {DAY} sitting in his high chair at the kitchen table, spooning oatmeal with banana slices into his mouth, a small cup of milk beside the bowl, morning light in a cozy kitchen.",
+        "go-to-school": f"the boy {DAY} with a small red backpack holding his dad's hand, walking up the path toward the front entrance of a cheerful little preschool building with a colorful sign-free facade, morning sunshine, seen from outside the school.",
+        "circle-time": f"the boy {DAY} sitting cross-legged on a colorful round rug in a circle with five other toddlers, a friendly teacher sitting with them holding up an open picture book, bright preschool classroom with low shelves and paper crafts on the walls.",
+        "lunch": f"the boy {DAY} sitting at a small low classroom table with two other toddlers, eating from an open lunchbox with a sandwich cut in triangles and grapes, drinking from a small bottle, sunny preschool lunch corner.",
+        "nap-time": f"the boy {DAY} sleeping peacefully on a small nap cot under a soft blue blanket, hugging his teddy bear, other toddlers asleep on cots in the background, dimmed cozy preschool classroom with curtains drawn. His dad is NOT in this picture; no adults at all.",
+        "play-outside": f"the boy {DAY} laughing while playing in a sandbox with two other toddlers, plastic buckets and shovels, a small slide and climbing frame behind them, bright preschool playground on a sunny afternoon. His dad is NOT in this picture; the only adult is a teacher far in the background.",
+        "snack": f"the boy {DAY} sitting at a small table with other toddlers, holding up an apple slice with a big smile, a little plate of apple slices and crackers in front of him, afternoon preschool snack time. His dad is NOT in this picture; the only adult is a teacher far in the background.",
+        "daddys-here": f"the boy {DAY} running across the classroom floor with both arms stretched wide open and a huge joyful smile toward his dad, who is crouching at the open classroom doorway with open arms ready to catch him, pickup time in a bright preschool classroom.",
+        "walk-home": f"the boy {DAY} with his small red backpack walking hand in hand with his dad along a tree-lined neighborhood sidewalk, looking up and chatting happily, warm late-afternoon sunlight, houses and a mailbox in the background.",
+        "park": f"the boy {DAY} sitting in a toddler bucket swing squealing with delight as his dad gently pushes the swing from behind, green park with big trees and a slide in the background, warm golden afternoon light.",
+        "dinner": f"the boy {DAY} sitting in his high chair at the family dining table eating rice and vegetables with a small spoon, his dad sitting beside him at the table smiling, warm evening light from a pendant lamp, cozy dining room.",
+        "play-time": f"the boy {DAY} sitting alone on the living room rug happily stacking colorful wooden blocks into a tall tower, toy cars scattered around him, warm evening lamp light, cozy living room.",
+        "story-time": f"the boy {PJ} snuggled in bed next to his dad, who is sitting on the bed reading a big picture book aloud, the boy pointing at a page with wide eyes, soft bedside lamp glow, nighttime bedroom.",
+        "sleep": f"the boy {PJ} fast asleep in his small bed under a cozy blanket, hugging his teddy bear, a soft night light glowing, a crescent moon and stars visible through the bedroom window, peaceful dark blue night.",
+    },
 }
-
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), "..")
 OUTPUT_BASE = os.path.join(PROJECT_ROOT, "public", "concepts")
 

@@ -114,6 +114,11 @@ export default {
     '¡Adentro, afuera, encima, debajo! ¡A jugar!',
     '[gasps] ¿Dónde se esconde el gatito? ¡Vamos a ver!',
   ],
+  'concepts-routine': [
+    '¡Vamos a ver qué hacemos todo el día!',
+    '¡Buenos días! ¡Arriba, arriba!',
+    '[gasps] De despertarse hasta dormir — ¡qué día tan ocupado!',
+  ],
   opposites: [
     '¡Vamos a aprender los opuestos!',
     '¡Grande y pequeño, arriba y abajo! ¡Juguemos con los opuestos!',

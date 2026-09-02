@@ -528,4 +528,26 @@ export default {
   'next-to': { name: 'Al lado', ref: 'el de al lado' },
   around: { name: 'Alrededor', ref: 'el que da vueltas alrededor' },
   through: { name: 'A través', ref: 'el que pasa a través' },
+
+  // My Day / daily routine (AI-first draft — moments of the day, so the
+  // quiz form is "la hora de …"; flag for native review)
+  'wake-up': { name: 'Despertarse', ref: 'la hora de despertarse' },
+  'brush-teeth': { name: 'Lavarse los dientes', ref: 'la hora de lavarse los dientes' },
+  potty: { name: 'Ir al baño', ref: 'la hora de ir al baño' },
+  shower: { name: 'Ducha', ref: 'la hora de la ducha' },
+  'get-dressed': { name: 'Vestirse', ref: 'la hora de vestirse' },
+  breakfast: { name: 'Desayuno', ref: 'el desayuno' },
+  'go-to-school': { name: 'Ir a la escuela', ref: 'la hora de ir a la escuela' },
+  'circle-time': { name: 'Hora del círculo', ref: 'la hora del círculo' },
+  lunch: { name: 'Almuerzo', ref: 'el almuerzo' },
+  'nap-time': { name: 'Siesta', ref: 'la hora de la siesta' },
+  'play-outside': { name: 'Jugar afuera', ref: 'la hora de jugar afuera' },
+  snack: { name: 'Merienda', ref: 'la merienda' },
+  'daddy-s-here': { name: 'Llegó papá', ref: 'la llegada de papá' },
+  'walk-home': { name: 'Caminar a casa', ref: 'la caminata a casa' },
+  park: { name: 'Parque', ref: 'el parque' },
+  dinner: { name: 'Cena', ref: 'la cena' },
+  'play-time': { name: 'Hora de jugar', ref: 'la hora de jugar' },
+  'story-time': { name: 'Cuento', ref: 'la hora del cuento' },
+  sleep: { name: 'Dormir', ref: 'la hora de dormir' },
 };

@@ -549,4 +549,26 @@ export default {
   'next-to': { name: 'ପାଖରେ' },
   around: { name: 'ଚାରିପଟେ', ref: 'ଚାରିପଟେ ବୁଲୁଛି' },
   through: { name: 'ଭିତର ଦେଇ', ref: 'ଭିତର ଦେଇ ଯାଉଛି' },
+
+  // My Day / daily routine (AI-first draft — "… ବେଳ" = "… time" for the
+  // quiz form; lunch/dinner/circle-time wording especially needs family review)
+  'wake-up': { name: 'ଉଠିବା', ref: 'ଉଠିବା ବେଳ' },
+  'brush-teeth': { name: 'ଦାନ୍ତ ଘଷିବା', ref: 'ଦାନ୍ତ ଘଷିବା ବେଳ' },
+  potty: { name: 'ପଟି', ref: 'ପଟି ବେଳ' },
+  shower: { name: 'ଗାଧୋଇବା', ref: 'ଗାଧୋଇବା ବେଳ' },
+  'get-dressed': { name: 'ପୋଷାକ ପିନ୍ଧିବା', ref: 'ପୋଷାକ ପିନ୍ଧିବା ବେଳ' },
+  breakfast: { name: 'ଜଳଖିଆ', ref: 'ଜଳଖିଆ ବେଳ' },
+  'go-to-school': { name: 'ସ୍କୁଲ ଯିବା', ref: 'ସ୍କୁଲ ଯିବା ବେଳ' },
+  'circle-time': { name: 'ଗୋଲେଇ ବସିବା', ref: 'ଗୋଲେଇ ବସିବା ବେଳ' },
+  lunch: { name: 'ଦିନ ଖାଇବା', ref: 'ଦିନ ଖାଇବା ବେଳ' },
+  'nap-time': { name: 'ଦିନ ଶୋଇବା', ref: 'ଦିନ ଶୋଇବା ବେଳ' },
+  'play-outside': { name: 'ବାହାରେ ଖେଳିବା', ref: 'ବାହାରେ ଖେଳିବା ବେଳ' },
+  snack: { name: 'ଟିଫିନ', ref: 'ଟିଫିନ ବେଳ' },
+  'daddy-s-here': { name: 'ବାପା ଆସିଲେ', ref: 'ବାପା ଆସିବା ବେଳ' },
+  'walk-home': { name: 'ଘରକୁ ଚାଲିବା', ref: 'ଘରକୁ ଚାଲିବା ବେଳ' },
+  park: { name: 'ପାର୍କ', ref: 'ପାର୍କ ବେଳ' },
+  dinner: { name: 'ରାତି ଖାଇବା', ref: 'ରାତି ଖାଇବା ବେଳ' },
+  'play-time': { name: 'ଖେଳିବା', ref: 'ଖେଳିବା ବେଳ' },
+  'story-time': { name: 'ଗପ ଶୁଣିବା', ref: 'ଗପ ଶୁଣିବା ବେଳ' },
+  sleep: { name: 'ଶୋଇବା', ref: 'ଶୋଇବା ବେଳ' },
 };
