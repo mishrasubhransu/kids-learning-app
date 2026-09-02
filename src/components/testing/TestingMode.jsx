@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Volume2, Play } from 'lucide-react';
+import CountingFrames from '../ui/CountingFrames';
 import useVoice from '../../hooks/useVoice';
 import useWordCase from '../../hooks/useWordCase';
 import { whichOnePart, thatWasPart, tryToFindPart } from '../../lib/voiceKeys';
@@ -293,6 +294,11 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [hasStarted, isCorrect, nextQuestion, askQuestion, options, testComplete]);
 
+  // Quiz choices show every object too (a child counts them); the size
+  // steps down with the range so a 1–40 option stays a tidy card
+  const choiceCell =
+    items.length <= 10 ? '1.5rem' : items.length <= 20 ? '1.25rem' : '1rem';
+
   const renderOption = (item) => {
     const isSelected = selectedAnswer === item.id;
     const isCorrectAnswer = item.id === correctAnswer?.id;
@@ -348,13 +354,11 @@ const TestingMode = ({ items, category, difficulty, objectIcons, shapeColor, obj
             <span className="text-4xl md:text-6xl font-bold text-gray-500">
               {item.value}
             </span>
-            <div className="grid grid-cols-5 justify-items-center gap-1">
-              {Array.from({ length: item.value }).map((_, i) => (
-                <span key={i} className="text-2xl">
-                  {objectIcons?.[objectType] || '🥚'}
-                </span>
-              ))}
-            </div>
+            <CountingFrames
+              count={item.value}
+              icon={objectIcons?.[objectType] || '🥚'}
+              cell={choiceCell}
+            />
           </button>
         );
 

@@ -11,7 +11,7 @@ const features = [
   },
   {
     icon: Hash,
-    title: 'Numbers 1–20',
+    title: 'Numbers 1–40',
     description: 'Learn counting with colorful objects and visual aids',
     color: 'bg-green-100 text-green-600',
   },

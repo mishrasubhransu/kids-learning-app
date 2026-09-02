@@ -33,6 +33,11 @@ const NUMBER_NAMES = [
   'cero', 'uno', 'dos', 'tres', 'cuatro', 'cinco', 'seis', 'siete', 'ocho',
   'nueve', 'diez', 'once', 'doce', 'trece', 'catorce', 'quince', 'dieciséis',
   'diecisiete', 'dieciocho', 'diecinueve', 'veinte',
+  'veintiuno', 'veintidós', 'veintitrés', 'veinticuatro', 'veinticinco',
+  'veintiséis', 'veintisiete', 'veintiocho', 'veintinueve', 'treinta',
+  'treinta y uno', 'treinta y dos', 'treinta y tres', 'treinta y cuatro',
+  'treinta y cinco', 'treinta y seis', 'treinta y siete', 'treinta y ocho',
+  'treinta y nueve', 'cuarenta',
 ];
 NUMBER_NAMES.forEach((sayName, n) => {
   numbers[String(n)] = { name: String(n), say: sayName, ref: `el ${sayName}` };

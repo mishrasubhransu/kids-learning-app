@@ -10,6 +10,8 @@ import { useChildProfile, DEFAULT_CHILD_NAME } from '../context/ChildProfileCont
 import { useLocale } from '../context/LocaleContext';
 import useChildSetting from '../hooks/useChildSetting';
 
+const NUMBER_RANGES = ['10', '20', '30', '40'];
+
 const Home = () => {
   const { activeChild } = useChildProfile();
   const { locale, t } = useLocale();
@@ -23,9 +25,12 @@ const Home = () => {
     setObjectType(objectKeys[(objectKeys.indexOf(objectType) + 1) % objectKeys.length]);
   };
 
+  // 1–10 → 1–20 → 1–30 → 1–40 → back around; the lesson lays out ten-frames
+  // for the whole range up front (see ui/CountingFrames)
   const [numberMax, setNumberMax] = useChildSetting('numberMax', '10');
   const toggleNumberMax = () => {
-    setNumberMax(numberMax === '10' ? '20' : '10');
+    const idx = NUMBER_RANGES.indexOf(numberMax);
+    setNumberMax(NUMBER_RANGES[(idx + 1) % NUMBER_RANGES.length]);
   };
 
   // ABC/Aa on the Letter Sounds card — the same setting the lesson reads

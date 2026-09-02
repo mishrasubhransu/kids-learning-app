@@ -6,6 +6,8 @@ import { recordingCategoryFor } from '../../lib/recordings';
 import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ItemMedia from '../ui/ItemMedia';
+import CountingFrames from '../ui/CountingFrames';
+import useShortViewport from '../../hooks/useShortViewport';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
 
@@ -233,24 +235,28 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
           </span>
         );
 
-      case 'numbers':
+      case 'numbers': {
+        // Every ten-frame the chosen range needs is reserved from item 1,
+        // sized so the tallest stack (1–40) still fits under the numeral
+        const capacity = displayItems.length;
         return (
-          <div className="flex flex-col items-center gap-8">
+          <div
+            className={`flex items-center ${
+              shortViewport ? 'flex-row gap-6' : 'flex-col gap-4 md:gap-6'
+            }`}
+          >
             <span className="text-6xl md:text-8xl font-bold text-gray-400">
               {currentItem.value}
             </span>
-            <div className="grid grid-cols-5 gap-2 md:gap-4 justify-items-center min-h-[7.5rem] md:min-h-[14rem] content-start">
-              {Array.from({ length: currentItem.value }).map((_, i) => (
-                <div
-                  key={i}
-                  className="text-[3rem] md:text-[5rem] leading-none filter drop-shadow-lg transform transition-all motion-safe:hover:scale-110 duration-200"
-                >
-                  {objectIcons?.[objectType] || '🥚'}
-                </div>
-              ))}
-            </div>
+            <CountingFrames
+              count={currentItem.value}
+              capacity={capacity}
+              icon={objectIcons?.[objectType] || '🥚'}
+              hero
+            />
           </div>
         );
+      }
 
       case 'colors':
         return (
@@ -346,6 +352,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   };
 
   const isAlphabets = category === 'alphabets';
+  const shortViewport = useShortViewport();
 
   return (
     <div
