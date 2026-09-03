@@ -39,6 +39,8 @@ import {
 
 const FLIGHT_MS = 1400; // one hop — slow enough to follow with the eyes
 const MIN_STEP_MS = 1700; // never count faster than this, clip or no clip
+const ABSORB_MS = 500; // quiet beat after the answer before "next" opens
+const MAX_HOLD_MS = 10000; // a stuck clip must never brick the arrow
 const HOP_LIFT = 0.6; // fraction of the object size the arc rises
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -93,6 +95,12 @@ const AdditionPage = () => {
   const [phase, setPhase] = useState('ask');
   const [flight, setFlight] = useState({ landed: 0, flying: null });
   const [isCoolingDown, setIsCoolingDown] = useState(false);
+  // Forward is closed while a line is still playing (and for the absorb
+  // beat after the answer) — the child hears every question and answer
+  // through. Left stays open: back is a correction. Ref for the key
+  // handler, state for the button's look.
+  const [isBusy, setIsBusy] = useState(false);
+  const busyRef = useRef(false);
   const [introState, setIntroState] = useState('intro');
 
   const problem = sums[Math.min(index, sums.length - 1)];
@@ -149,7 +157,21 @@ const AdditionPage = () => {
   const stop = useCallback(() => {
     runTokenRef.current += 1;
     cancel();
+    busyRef.current = false;
+    setIsBusy(false);
   }, [cancel]);
+
+  // Close forward until `promise` settles (capped), unless something else
+  // has taken over in the meantime — then that owner clears the hold
+  const hold = useCallback(async (promise) => {
+    const token = runTokenRef.current;
+    busyRef.current = true;
+    setIsBusy(true);
+    await Promise.race([promise, wait(MAX_HOLD_MS)]);
+    if (runTokenRef.current !== token) return;
+    busyRef.current = false;
+    setIsBusy(false);
+  }, []);
 
   useEffect(() => () => clearTimeout(cooldownTimerRef.current), []);
 
@@ -162,9 +184,9 @@ const AdditionPage = () => {
       setIndex(i);
       setPhase('ask');
       setFlight({ landed: 0, flying: null });
-      speak(fixedLinePart(askSlug(p.a, p.b)));
+      hold(speak(fixedLinePart(askSlug(p.a, p.b))));
     },
-    [sums, speak, stop]
+    [sums, speak, stop, hold]
   );
 
   const arriveDone = useCallback(
@@ -175,11 +197,18 @@ const AdditionPage = () => {
       setIndex(i);
       setPhase('done');
       setFlight({ landed: p.a + p.b, flying: null });
-      speak(fixedLinePart(answerSlug(p.a, p.b))).then(() => {
-        if (celebrate && runTokenRef.current === token) playPositive();
-      });
+      hold(
+        (async () => {
+          await speak(fixedLinePart(answerSlug(p.a, p.b)));
+          if (runTokenRef.current !== token) return;
+          if (celebrate) await playPositive();
+          if (runTokenRef.current !== token) return;
+          // let the answer sink in before the next sum can be taken
+          await wait(ABSORB_MS);
+        })()
+      );
     },
-    [sums, speak, stop, playPositive]
+    [sums, speak, stop, hold, playPositive]
   );
 
   // The first question lands as the intro's window opens
@@ -252,7 +281,7 @@ const AdditionPage = () => {
   }, []);
 
   const goNext = useCallback(() => {
-    if (phase === 'counting' || isCoolingDownRef.current) return;
+    if (phase === 'counting' || busyRef.current || isCoolingDownRef.current) return;
     startCooldown();
     if (phase === 'ask') {
       runCount();
@@ -453,9 +482,9 @@ const AdditionPage = () => {
             </button>
             <button
               onClick={goNext}
-              disabled={isCoolingDown || phase === 'counting'}
+              disabled={isCoolingDown || isBusy || phase === 'counting'}
               className={`pointer-events-auto p-3 md:p-4 rounded-full transition-all ${
-                isCoolingDown || phase === 'counting'
+                isCoolingDown || isBusy || phase === 'counting'
                   ? 'opacity-15 cursor-not-allowed'
                   : 'opacity-70 md:opacity-40 hover:opacity-100 hover:bg-white/60 motion-safe:active:scale-95 active:opacity-100'
               }`}
