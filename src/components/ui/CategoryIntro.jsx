@@ -101,7 +101,8 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
     >
       {/* Scattered polaroid collage of the lesson's own assets. Videos show
           their first frame (#t=0.1 forces browsers to paint one); pair tiles
-          (opposites) put both sides in one frame. */}
+          (opposites) put both sides in one frame; emoji tiles (addition)
+          have no image assets at all. */}
       <div className="flex flex-wrap items-center justify-center gap-3 md:gap-4 max-w-3xl">
         {tiles.map((tile, i) => (
           <div
@@ -109,7 +110,11 @@ const CategoryIntro = ({ categoryKey, title, emoji, tiles, onReveal }) => {
             className="bg-white rounded-2xl shadow-lg p-1.5 md:p-2"
             style={{ transform: `rotate(${TILE_TILTS[i % TILE_TILTS.length]}deg)` }}
           >
-            {tile.video ? (
+            {tile.emoji ? (
+              <div className="w-24 h-24 md:w-32 md:h-32 flex items-center justify-center text-4xl md:text-5xl font-black text-gray-700 leading-none">
+                {tile.emoji}
+              </div>
+            ) : tile.video ? (
               <video
                 src={`${tile.video}#t=0.1`}
                 preload="metadata"

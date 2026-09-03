@@ -10,6 +10,8 @@ export default {
 
   // Lesson card names
   'cat.numbers': '数字',
+  'cat.addition': '加法',
+  'cat.addition.desc': '把它们数在一起',
   'cat.colors': '颜色',
   'cat.colors.desc': '认识颜色',
   'cat.shapes': '形状',
@@ -58,6 +60,12 @@ export default {
   'scroll.autoplay': '自动播放',
   'tile.hint': '点一点，听听它的名字',
   'pair.hint': '按右箭头继续',
+
+  // Addition
+  'addition.upTo': '最多到 {n}',
+  'addition.hintAsk': '按右箭头开始数',
+  'addition.hintCounting': '数一数…',
+  'addition.hintDone': '按右箭头看下一题',
 
   // Test mode
   'test.ready': '准备好开始测验了吗？',

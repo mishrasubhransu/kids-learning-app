@@ -13,6 +13,7 @@ import PhonicsCategoryPage from './components/PhonicsCategoryPage';
 import MyWordsPage from './components/MyWordsPage';
 import LetterSoundsView from './components/LetterSoundsView';
 import OppositesPage from './components/opposites/OppositesPage';
+import AdditionPage from './components/addition/AdditionPage';
 import FamilyPage from './components/family/FamilyPage';
 import FeedbackButton from './components/FeedbackButton';
 import LoginPage from './components/LoginPage';
@@ -66,6 +67,7 @@ const App = () => {
         <Route path="/parent" element={<ProtectedRoute><Suspense fallback={null}><ParentZone /></Suspense></ProtectedRoute>} />
         <Route path="/alphabets/*" element={<ProtectedRoute><LessonGuard lesson="alphabets"><CategoryPage category="alphabets" /></LessonGuard></ProtectedRoute>} />
         <Route path="/numbers/*" element={<ProtectedRoute><LessonGuard lesson="numbers"><CategoryPage category="numbers" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/addition" element={<ProtectedRoute><LessonGuard lesson="addition"><AdditionPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/colors/*" element={<ProtectedRoute><LessonGuard lesson="colors"><CategoryPage category="colors" /></LessonGuard></ProtectedRoute>} />
         <Route path="/shapes/*" element={<ProtectedRoute><LessonGuard lesson="shapes"><CategoryPage category="shapes" /></LessonGuard></ProtectedRoute>} />
         <Route path="/concepts" element={<ProtectedRoute><LessonGuard lesson="concepts"><ConceptsHome /></LessonGuard></ProtectedRoute>} />

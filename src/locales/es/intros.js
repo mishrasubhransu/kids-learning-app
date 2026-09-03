@@ -119,6 +119,11 @@ export default {
     '¡Buenos días! ¡Arriba, arriba!',
     '[gasps] De despertarse hasta dormir — ¡qué día tan ocupado!',
   ],
+  addition: [
+    '¡Vamos a sumar!',
+    '[gasps] ¿Cuántos hay en total? ¡Vamos a contar!',
+    'Uno más uno — ¡vamos a aprender a sumar!',
+  ],
   opposites: [
     '¡Vamos a aprender los opuestos!',
     '¡Grande y pequeño, arriba y abajo! ¡Juguemos con los opuestos!',

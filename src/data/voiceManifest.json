@@ -1,5 +1,5 @@
 {
-  "version": "2026-09-02T05:34:39.718Z",
+  "version": "2026-09-02T19:37:22.208Z",
   "clips": {
     "en/lines/this-is-my-family": {
       "v": 1785378972,
@@ -35240,6 +35240,370 @@
     "or/intros/concepts-routine/2": {
       "v": 1788327279,
       "h": "ac2ae11da8"
+    },
+    "en/lines/add-lets-count": {
+      "v": 1788377760,
+      "h": "7732efa48f"
+    },
+    "en/lines/add-answer-1-1": {
+      "v": 1788377762,
+      "h": "f066a972e4"
+    },
+    "en/lines/add-ask-1-2": {
+      "v": 1788377763,
+      "h": "b447e2fca6"
+    },
+    "en/lines/add-ask-1-1": {
+      "v": 1788377764,
+      "h": "5c4ce44a39"
+    },
+    "en/lines/add-answer-1-2": {
+      "v": 1788377765,
+      "h": "de1031b9c5"
+    },
+    "en/lines/add-ask-2-1": {
+      "v": 1788377765,
+      "h": "70a11668a0"
+    },
+    "en/lines/add-answer-2-1": {
+      "v": 1788377766,
+      "h": "4907ab693c"
+    },
+    "en/lines/add-ask-1-3": {
+      "v": 1788377767,
+      "h": "dbc203bb5a"
+    },
+    "en/lines/add-answer-1-3": {
+      "v": 1788377767,
+      "h": "b9a7a7d0cb"
+    },
+    "en/lines/add-ask-2-2": {
+      "v": 1788377768,
+      "h": "9134b284f3"
+    },
+    "en/lines/add-ask-3-1": {
+      "v": 1788377769,
+      "h": "02d0c523af"
+    },
+    "en/lines/add-answer-3-1": {
+      "v": 1788377771,
+      "h": "8e7e70ef49"
+    },
+    "en/lines/add-answer-2-2": {
+      "v": 1788377771,
+      "h": "4a35c43cdd"
+    },
+    "en/lines/add-ask-1-4": {
+      "v": 1788377772,
+      "h": "3bc814e7f6"
+    },
+    "en/lines/add-ask-2-3": {
+      "v": 1788377773,
+      "h": "c20d86bc3e"
+    },
+    "en/lines/add-answer-1-4": {
+      "v": 1788377774,
+      "h": "1f8d693625"
+    },
+    "en/lines/add-answer-2-3": {
+      "v": 1788377775,
+      "h": "fc0bc740e6"
+    },
+    "en/lines/add-ask-3-2": {
+      "v": 1788377775,
+      "h": "93aa58dd4f"
+    },
+    "en/lines/add-ask-4-1": {
+      "v": 1788377777,
+      "h": "3745376be0"
+    },
+    "en/lines/add-answer-3-2": {
+      "v": 1788377777,
+      "h": "c58b3a44ac"
+    },
+    "en/lines/add-ask-1-5": {
+      "v": 1788377778,
+      "h": "27c4cd73d5"
+    },
+    "en/lines/add-answer-4-1": {
+      "v": 1788377778,
+      "h": "2f25988b32"
+    },
+    "en/lines/add-ask-2-4": {
+      "v": 1788377780,
+      "h": "32672eb58f"
+    },
+    "en/lines/add-answer-1-5": {
+      "v": 1788377780,
+      "h": "f4906e077c"
+    },
+    "en/lines/add-ask-3-3": {
+      "v": 1788377781,
+      "h": "8cfd143054"
+    },
+    "en/lines/add-answer-2-4": {
+      "v": 1788377781,
+      "h": "7551e83f88"
+    },
+    "en/lines/add-answer-3-3": {
+      "v": 1788377782,
+      "h": "d80299c201"
+    },
+    "en/lines/add-ask-4-2": {
+      "v": 1788377783,
+      "h": "151a38777a"
+    },
+    "en/lines/add-ask-5-1": {
+      "v": 1788377784,
+      "h": "3b9ffa42f0"
+    },
+    "en/lines/add-answer-4-2": {
+      "v": 1788377784,
+      "h": "c1ea97aba2"
+    },
+    "en/lines/add-ask-1-6": {
+      "v": 1788377785,
+      "h": "7cd731580d"
+    },
+    "en/lines/add-answer-5-1": {
+      "v": 1788377786,
+      "h": "f3312ceddf"
+    },
+    "en/lines/add-ask-2-5": {
+      "v": 1788377787,
+      "h": "fc42711c5d"
+    },
+    "en/lines/add-answer-1-6": {
+      "v": 1788377787,
+      "h": "bcc79b1de9"
+    },
+    "en/lines/add-ask-3-4": {
+      "v": 1788377788,
+      "h": "1fed8e9c4c"
+    },
+    "en/lines/add-answer-2-5": {
+      "v": 1788377789,
+      "h": "d5d691b6ff"
+    },
+    "en/lines/add-answer-3-4": {
+      "v": 1788377790,
+      "h": "b870cca84b"
+    },
+    "en/lines/add-ask-4-3": {
+      "v": 1788377790,
+      "h": "be4c719946"
+    },
+    "en/lines/add-ask-5-2": {
+      "v": 1788377791,
+      "h": "d8f3ce7331"
+    },
+    "en/lines/add-answer-4-3": {
+      "v": 1788377792,
+      "h": "2cc3ac13c1"
+    },
+    "en/lines/add-answer-5-2": {
+      "v": 1788377793,
+      "h": "1b35cbe93f"
+    },
+    "en/lines/add-ask-6-1": {
+      "v": 1788377793,
+      "h": "148263567c"
+    },
+    "en/lines/add-ask-1-7": {
+      "v": 1788377794,
+      "h": "fdf5c7cb7b"
+    },
+    "en/lines/add-answer-6-1": {
+      "v": 1788377794,
+      "h": "bb7ab9d0f3"
+    },
+    "en/lines/add-answer-1-7": {
+      "v": 1788377795,
+      "h": "b85a4c964f"
+    },
+    "en/lines/add-ask-2-6": {
+      "v": 1788377797,
+      "h": "41debc9361"
+    },
+    "en/lines/add-answer-2-6": {
+      "v": 1788377797,
+      "h": "a0a09e2cad"
+    },
+    "en/lines/add-ask-3-5": {
+      "v": 1788377798,
+      "h": "cc799e4b0b"
+    },
+    "en/lines/add-ask-4-4": {
+      "v": 1788377800,
+      "h": "4053b8112e"
+    },
+    "en/lines/add-answer-3-5": {
+      "v": 1788377800,
+      "h": "e8e6967306"
+    },
+    "en/lines/add-ask-5-3": {
+      "v": 1788377801,
+      "h": "0a0887cf67"
+    },
+    "en/lines/add-answer-4-4": {
+      "v": 1788377802,
+      "h": "75d24c9b89"
+    },
+    "en/lines/add-answer-5-3": {
+      "v": 1788377803,
+      "h": "a5d462091a"
+    },
+    "en/lines/add-ask-6-2": {
+      "v": 1788377803,
+      "h": "297d2bf8d6"
+    },
+    "en/lines/add-answer-6-2": {
+      "v": 1788377805,
+      "h": "1ae642c9c1"
+    },
+    "en/lines/add-ask-7-1": {
+      "v": 1788377805,
+      "h": "13cea73e1f"
+    },
+    "en/lines/add-ask-1-8": {
+      "v": 1788377807,
+      "h": "1451c28a51"
+    },
+    "en/lines/add-answer-7-1": {
+      "v": 1788377807,
+      "h": "8776524279"
+    },
+    "en/lines/add-answer-1-8": {
+      "v": 1788377808,
+      "h": "716a0dce4e"
+    },
+    "en/lines/add-ask-2-7": {
+      "v": 1788377809,
+      "h": "ec9e4e5b61"
+    },
+    "en/lines/add-ask-3-6": {
+      "v": 1788377810,
+      "h": "b90838de49"
+    },
+    "en/lines/add-answer-3-6": {
+      "v": 1788377812,
+      "h": "7aca1b7973"
+    },
+    "en/lines/add-answer-2-7": {
+      "v": 1788377812,
+      "h": "44b55862cf"
+    },
+    "en/lines/add-ask-4-5": {
+      "v": 1788377815,
+      "h": "9156164fb0"
+    },
+    "en/lines/add-answer-4-5": {
+      "v": 1788377815,
+      "h": "15e4de05fc"
+    },
+    "en/lines/add-ask-5-4": {
+      "v": 1788377816,
+      "h": "1c23464ecb"
+    },
+    "en/lines/add-answer-5-4": {
+      "v": 1788377816,
+      "h": "3fbc761ebe"
+    },
+    "en/lines/add-ask-6-3": {
+      "v": 1788377817,
+      "h": "bbbfde5bc8"
+    },
+    "en/lines/add-answer-6-3": {
+      "v": 1788377819,
+      "h": "af2f07fb10"
+    },
+    "en/lines/add-ask-7-2": {
+      "v": 1788377820,
+      "h": "76c4416812"
+    },
+    "en/lines/add-answer-7-2": {
+      "v": 1788377820,
+      "h": "716aa0c6f7"
+    },
+    "en/lines/add-ask-8-1": {
+      "v": 1788377821,
+      "h": "8fc21828b6"
+    },
+    "en/lines/add-ask-1-9": {
+      "v": 1788377822,
+      "h": "653195a46e"
+    },
+    "en/lines/add-answer-8-1": {
+      "v": 1788377825,
+      "h": "12869fa4d9"
+    },
+    "en/lines/add-answer-1-9": {
+      "v": 1788377826,
+      "h": "0a12011587"
+    },
+    "en/lines/add-ask-2-8": {
+      "v": 1788377827,
+      "h": "84b493c1b2"
+    },
+    "en/lines/add-answer-2-8": {
+      "v": 1788377828,
+      "h": "637aaf76c6"
+    },
+    "en/lines/add-ask-3-7": {
+      "v": 1788377828,
+      "h": "309d0507ae"
+    },
+    "en/lines/add-ask-4-6": {
+      "v": 1788377830,
+      "h": "3b51d17ccf"
+    },
+    "en/lines/add-answer-3-7": {
+      "v": 1788377830,
+      "h": "9549376a7b"
+    },
+    "en/lines/add-ask-5-5": {
+      "v": 1788377834,
+      "h": "fc6ce55909"
+    },
+    "en/lines/add-answer-4-6": {
+      "v": 1788377834,
+      "h": "fdb92407f7"
+    },
+    "en/lines/add-answer-5-5": {
+      "v": 1788377835,
+      "h": "a78635f9d2"
+    },
+    "en/lines/add-ask-6-4": {
+      "v": 1788377835,
+      "h": "e50ade028b"
+    },
+    "en/lines/add-ask-7-3": {
+      "v": 1788377837,
+      "h": "e5f0b1ae0a"
+    },
+    "en/lines/add-answer-6-4": {
+      "v": 1788377837,
+      "h": "b2a894f197"
+    },
+    "en/lines/add-answer-7-3": {
+      "v": 1788377838,
+      "h": "0357c8fec9"
+    },
+    "en/lines/add-ask-8-2": {
+      "v": 1788377840,
+      "h": "6935e93010"
+    },
+    "en/lines/add-answer-8-2": {
+      "v": 1788377840,
+      "h": "275f861c35"
+    },
+    "en/lines/add-ask-9-1": {
+      "v": 1788377841,
+      "h": "8fb36bfec0"
+    },
+    "en/lines/add-answer-9-1": {
+      "v": 1788377842,
+      "h": "c229bf385a"
     }
   }
 }

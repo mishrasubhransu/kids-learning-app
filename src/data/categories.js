@@ -1,4 +1,4 @@
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2, Users } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2, Users, Plus } from 'lucide-react';
 
 // Top-level lesson cards on the Home screen. Light backgrounds
 // (yellow/amber/green/cyan/orange) need dark text to stay readable; the
@@ -38,6 +38,18 @@ export const homeCategories = [
     hoverColor: 'group-hover:bg-green-600',
     textColor: 'text-gray-900',
     preview: '123',
+  },
+  // Sums to 10 with crates of objects — for children who can already count
+  // to 10. The card's pills pick the biggest sum (5/10) and the object.
+  {
+    id: 'addition',
+    name: 'Addition',
+    description: 'Count them all together',
+    icon: Plus,
+    color: 'bg-teal-500',
+    hoverColor: 'group-hover:bg-teal-600',
+    textColor: 'text-gray-900',
+    preview: '2+3',
   },
   {
     id: 'colors',

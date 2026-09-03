@@ -4,6 +4,12 @@ import StickerShelf from './ui/StickerShelf';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
 import { objectIcons } from '../data/numbers';
+import {
+  additionObjects,
+  ADDITION_MAXES,
+  DEFAULT_ADDITION_MAX,
+  DEFAULT_ADDITION_OBJECT,
+} from '../data/addition';
 import { homeCategories } from '../data/categories';
 import { isLessonVisible, isLessonAvailable, newLessonKeys } from '../data/lessons';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../context/ChildProfileContext';
@@ -31,6 +37,23 @@ const Home = () => {
   const toggleNumberMax = () => {
     const idx = NUMBER_RANGES.indexOf(numberMax);
     setNumberMax(NUMBER_RANGES[(idx + 1) % NUMBER_RANGES.length]);
+  };
+
+  // Addition card: biggest sum (5/10) and what fills the crates
+  const [additionMax, setAdditionMax] = useChildSetting('additionMax', DEFAULT_ADDITION_MAX);
+  const toggleAdditionMax = () => {
+    const idx = ADDITION_MAXES.indexOf(additionMax);
+    setAdditionMax(ADDITION_MAXES[(idx + 1) % ADDITION_MAXES.length]);
+  };
+  const additionKeys = Object.keys(additionObjects);
+  const [savedAdditionObject, setAdditionObject] = useChildSetting('additionObject', DEFAULT_ADDITION_OBJECT);
+  const additionObject = additionObjects[savedAdditionObject]
+    ? savedAdditionObject
+    : DEFAULT_ADDITION_OBJECT;
+  const cycleAdditionObject = () => {
+    setAdditionObject(
+      additionKeys[(additionKeys.indexOf(additionObject) + 1) % additionKeys.length]
+    );
   };
 
   // ABC/Aa on the Letter Sounds card — the same setting the lesson reads
@@ -73,6 +96,7 @@ const Home = () => {
           const darkText = category.textColor === 'text-gray-900';
           const hasPill =
             category.id === 'numbers' ||
+            category.id === 'addition' ||
             category.id === 'letter-sounds' ||
             Boolean(stylesForCategory(category.id));
           // Pills are siblings positioned over the card, not children of the
@@ -124,6 +148,20 @@ const Home = () => {
                     className={`${pillBase} px-3`}
                   >
                     {objectIcons[objectType]}
+                  </button>
+                </div>
+              ) : category.id === 'addition' ? (
+                <div className={`${pillPos} flex items-center gap-2`}>
+                  <button onClick={toggleAdditionMax} className={pillBase}>
+                    {t('addition.upTo', { n: additionMax })}
+                  </button>
+                  <button
+                    onClick={cycleAdditionObject}
+                    aria-label={`Adding object: ${additionObject}. Tap for the next one.`}
+                    title="Change the objects in the crates"
+                    className={`${pillBase} px-3`}
+                  >
+                    {additionObjects[additionObject].emoji}
                   </button>
                 </div>
               ) : category.id === 'letter-sounds' ? (

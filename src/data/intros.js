@@ -133,6 +133,11 @@ export const intros = {
     '[gasps] Something smells yummy! What are we eating today?',
     "Dosa, roti, idli — let's eat!",
   ],
+  addition: [
+    "Let's add things up!",
+    '[gasps] How many are there all together? Let\'s count!',
+    "One plus one — let's learn to add!",
+  ],
   opposites: [
     "Let's learn about opposites!",
     "Big and small, up and down — let's play with opposites!",

@@ -12,6 +12,8 @@ export default {
   'cat.alphabets': 'Abecedario',
   'cat.alphabets.desc': 'De la A a la Z',
   'cat.numbers': 'Números',
+  'cat.addition': 'Sumas',
+  'cat.addition.desc': 'Cuenta todo junto',
   'cat.colors': 'Colores',
   'cat.colors.desc': 'Aprende los colores',
   'cat.shapes': 'Figuras',
@@ -62,6 +64,12 @@ export default {
   'scroll.autoplay': 'Automático',
   'tile.hint': 'Toca cualquier cosa para escuchar su nombre',
   'pair.hint': 'Presiona la flecha derecha para seguir',
+
+  // Addition
+  'addition.upTo': 'Hasta {n}',
+  'addition.hintAsk': 'Presiona la flecha derecha para contar',
+  'addition.hintCounting': 'Contando…',
+  'addition.hintDone': 'Presiona la flecha derecha para la siguiente',
 
   // Test mode
   'test.ready': '¿Empezamos la prueba?',

@@ -15,6 +15,8 @@ export default {
   'cat.letter-sounds': 'Letter Sounds',
   'cat.letter-sounds.desc': 'A is for Apple',
   'cat.numbers': 'Numbers',
+  'cat.addition': 'Addition',
+  'cat.addition.desc': 'Count them all together',
   'cat.colors': 'Colors',
   'cat.colors.desc': 'Learn colors',
   'cat.shapes': 'Shapes',
@@ -68,6 +70,12 @@ export default {
   'scroll.autoplay': 'Autoplay',
   'tile.hint': 'Click any item to hear its name',
   'pair.hint': 'Press the right arrow to keep going',
+
+  // Addition
+  'addition.upTo': 'Up to {n}',
+  'addition.hintAsk': 'Press the right arrow to count',
+  'addition.hintCounting': 'Counting…',
+  'addition.hintDone': 'Press the right arrow for the next one',
 
   // Test mode
   'test.ready': 'Ready to Test?',

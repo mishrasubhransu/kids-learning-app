@@ -10,6 +10,8 @@ export default {
 
   // Lesson card names
   'cat.numbers': 'ସଂଖ୍ୟା',
+  'cat.addition': 'ଯୋଗ',
+  'cat.addition.desc': 'ସବୁ ମିଶାଇ ଗଣ',
   'cat.colors': 'ରଙ୍ଗ',
   'cat.colors.desc': 'ରଙ୍ଗ ଚିହ୍ନିବା ଶିଖ',
   'cat.shapes': 'ଆକୃତି',
@@ -59,6 +61,12 @@ export default {
   'scroll.autoplay': 'ଆପେ ଆପେ ଚାଲିବ',
   'tile.hint': 'ଟିପି ଦିଅ, ନାଁ ଶୁଣ',
   'pair.hint': 'ଆଗକୁ ଯିବାକୁ → ଦବାଅ',
+
+  // Addition
+  'addition.upTo': '{n} ପର୍ଯ୍ୟନ୍ତ',
+  'addition.hintAsk': 'ଗଣିବାକୁ → ଦବାଅ',
+  'addition.hintCounting': 'ଗଣୁଛୁ…',
+  'addition.hintDone': 'ପରବର୍ତ୍ତୀ ପାଇଁ → ଦବାଅ',
 
   // Test mode
   'test.ready': 'ପରୀକ୍ଷା ପାଇଁ ପ୍ରସ୍ତୁତ?',
