@@ -111,9 +111,6 @@ export default {
   snow: { name: 'Nieve', ref: 'la nieve' },
   lightning: { name: 'Relámpago', ref: 'el relámpago' },
   glacier: { name: 'Glaciar', ref: 'el glaciar' },
-  ice: { name: 'Hielo', ref: 'el hielo' },
-  water: { name: 'Agua', ref: 'el agua' },
-  steam: { name: 'Vapor', ref: 'el vapor' },
   stone: { name: 'Piedra', ref: 'la piedra' },
   pebbles: { name: 'Piedritas', ref: 'las piedritas', plural: true },
 

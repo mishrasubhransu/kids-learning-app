@@ -94,9 +94,6 @@ export default {
   snow: { name: '雪' },
   lightning: { name: '闪电' },
   glacier: { name: '冰川' },
-  ice: { name: '冰' },
-  water: { name: '水' },
-  steam: { name: '蒸汽' },
   stone: { name: '石头' },
   pebbles: { name: '鹅卵石' },
 

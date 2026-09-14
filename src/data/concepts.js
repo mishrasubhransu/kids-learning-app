@@ -72,11 +72,8 @@ export const conceptItems = {
     { id: 17, name: 'Snow', images: ['/concepts/nature/snow-1.webp', '/concepts/nature/snow-2.webp'] },
     { id: 18, name: 'Lightning', images: ['/concepts/nature/lightning-1.webp', '/concepts/nature/lightning-2.webp'] },
     { id: 19, name: 'Glacier', images: ['/concepts/nature/glacier-1.webp', '/concepts/nature/glacier-2.webp'] },
-    { id: 20, name: 'Ice', images: ['/concepts/nature/ice-1.webp', '/concepts/nature/ice-2.webp'] },
-    { id: 21, name: 'Water', images: ['/concepts/nature/water-1.webp', '/concepts/nature/water-2.webp'] },
-    { id: 22, name: 'Steam', images: ['/concepts/nature/steam-1.webp', '/concepts/nature/steam-2.webp'] },
-    { id: 23, name: 'Stone', images: ['/concepts/nature/stone-1.webp', '/concepts/nature/stone-2.webp'] },
-    { id: 24, name: 'Pebbles', images: ['/concepts/nature/pebbles-1.webp', '/concepts/nature/pebbles-2.webp'] },
+    { id: 20, name: 'Stone', images: ['/concepts/nature/stone-1.webp', '/concepts/nature/stone-2.webp'] },
+    { id: 21, name: 'Pebbles', images: ['/concepts/nature/pebbles-1.webp', '/concepts/nature/pebbles-2.webp'] },
   ],
   // Verbs are shown as short silent looping video clips (Veo-generated);
   // ItemMedia renders `video` items where the other lessons show `image`.

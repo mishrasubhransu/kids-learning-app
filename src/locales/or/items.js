@@ -102,11 +102,6 @@ export default {
   snow: { name: 'ବରଫ' },
   lightning: { name: 'ବିଜୁଳି' },
   glacier: { name: 'ହିମବାହ' },
-  // ice shares ବରଫ with snow — Odia genuinely uses one word for both;
-  // ଖଣ୍ଡ (chunk) distinguishes the frozen-cube sense. Flag for family review.
-  ice: { name: 'ବରଫ ଖଣ୍ଡ' },
-  water: { name: 'ପାଣି' },
-  steam: { name: 'ବାମ୍ଫ' },
   stone: { name: 'ପଥର' },
   pebbles: { name: 'ଗୋଡ଼ି' },
 
