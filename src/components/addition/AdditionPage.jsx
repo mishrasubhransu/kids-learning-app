@@ -12,7 +12,6 @@ import { itemPart } from '../../lib/voiceKeys';
 import { preloadVoiceClips } from '../../lib/voice';
 import { setScreenContext, track } from '../../lib/analytics';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
-import shuffle from '../../utils/shuffle';
 import {
   additionObjects,
   additionSums,
@@ -31,8 +30,9 @@ import {
 // aloud as it lifts off and leaving a faded ghost behind so the child can
 // still see the 2 and the 3 inside the 5. The "?" ticks up as they land,
 // the answer line and praise close it out, and the next press brings the
-// next sum (wrapping around after the last). Left mirrors right step for
-// step (done → ask → previous done).
+// next sum — a random one, under a ceiling that climbs with exposure (see
+// ceilingFor). Left mirrors right step for step (done → ask → previous
+// done) through this visit's history.
 //
 // Phases: ask → counting → done. `flight` tracks the count: how many
 // objects have landed and which one is in the air right now.
@@ -65,15 +65,29 @@ const subscribeLandscape = (cb) => {
 const useLandscape = () =>
   useSyncExternalStore(subscribeLandscape, () => window.matchMedia(LANDSCAPE).matches, () => false);
 
-// Easy first: sums climb by total, the order within a total shuffled so a
-// second session doesn't replay the exact same sequence
-const orderedSums = (max) => {
-  const byTotal = new Map();
-  additionSums(max).forEach((s) => {
-    if (!byTotal.has(s.sum)) byTotal.set(s.sum, []);
-    byTotal.get(s.sum).push(s);
-  });
-  return [...byTotal.values()].flatMap((group) => shuffle(group));
+// Sums are drawn at random, under a ceiling on the total that climbs with
+// exposure: 3 for a brand-new child (1+1, 1+2, 2+1 only), one step for
+// every VIEWS_TO_MAX / 7 questions seen, the full 10 from VIEWS_TO_MAX
+// views on. Views are counted per child (settings.additionViews) whenever
+// a NEW question is shown — revisiting one with the back arrow doesn't
+// count. The Home pill (up to 5 / 10) still caps the ceiling.
+const CEILING_START = 3;
+const CEILING_MAX = 10;
+const VIEWS_TO_MAX = 50;
+const ceilingFor = (views) =>
+  Math.min(
+    CEILING_MAX,
+    CEILING_START + Math.floor((views * (CEILING_MAX - CEILING_START)) / VIEWS_TO_MAX)
+  );
+
+// Never the same sum as any of the last few — unless the ceiling leaves no
+// other choice (a ceiling of 3 has only three sums)
+const RECENT = 3;
+const pickSum = (pool, maxTotal, recentIds) => {
+  const fits = pool.filter((s) => s.sum <= maxTotal);
+  const fresh = fits.filter((s) => !recentIds.includes(s.id));
+  const from = fresh.length ? fresh : fits;
+  return from[Math.floor(Math.random() * from.length)];
 };
 
 // Where an object sits: crate 'A' cells 0..a-1 hold objects 1..a, crate 'B'
@@ -89,8 +103,14 @@ const AdditionPage = () => {
   const [objectKey] = useChildSetting('additionObject', DEFAULT_ADDITION_OBJECT);
   const object = additionObjects[objectKey] ?? additionObjects[DEFAULT_ADDITION_OBJECT];
   const max = Number(maxSetting) || Number(DEFAULT_ADDITION_MAX);
-  const sums = useMemo(() => orderedSums(max), [max]);
+  const [viewsRaw, setViews] = useChildSetting('additionViews', 0);
+  const views = Number(viewsRaw) || 0;
+  const effectiveMax = Math.min(max, ceilingFor(views));
+  const pool = useMemo(() => additionSums(CEILING_MAX), []);
 
+  // What this visit has shown so far, in order: back walks it, forward
+  // past its end draws a new random sum
+  const [history, setHistory] = useState(() => [pickSum(pool, effectiveMax, [])]);
   const [index, setIndex] = useState(0);
   const [phase, setPhase] = useState('ask');
   const [flight, setFlight] = useState({ landed: 0, flying: null });
@@ -103,7 +123,7 @@ const AdditionPage = () => {
   const busyRef = useRef(false);
   const [introState, setIntroState] = useState('intro');
 
-  const problem = sums[Math.min(index, sums.length - 1)];
+  const problem = history[Math.min(index, history.length - 1)];
   const { a, b, sum } = problem;
 
   // Every in-flight sequence checks this token; any navigation bumps it
@@ -132,10 +152,12 @@ const AdditionPage = () => {
     const parts = [
       fixedLinePart(LETS_COUNT_SLUG),
       ...Array.from({ length: max }, (_, i) => itemPart(String(i + 1))),
-      ...sums.flatMap((s) => [
-        fixedLinePart(askSlug(s.a, s.b)),
-        fixedLinePart(answerSlug(s.a, s.b)),
-      ]),
+      ...pool
+        .filter((s) => s.sum <= max)
+        .flatMap((s) => [
+          fixedLinePart(askSlug(s.a, s.b)),
+          fixedLinePart(answerSlug(s.a, s.b)),
+        ]),
     ];
     (async () => {
       for (let i = 0; i < parts.length && !cancelled; i += 8) {
@@ -145,12 +167,23 @@ const AdditionPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [sums, max, locale]);
+  }, [pool, max, locale]);
 
-  const beginReveal = () => setIntroState(reduceMotion ? 'done' : 'revealing');
+  // The first question lands as the intro's window opens — fired from the
+  // reveal's own callbacks (not an effect), through a ref so the reveal
+  // timer never restarts when the callback's deps move
+  const startRef = useRef(() => {});
+  const startedRef = useRef(false);
+  const finishReveal = () => {
+    setIntroState('done');
+    if (startedRef.current) return;
+    startedRef.current = true;
+    startRef.current();
+  };
+  const beginReveal = () => (reduceMotion ? finishReveal() : setIntroState('revealing'));
   useEffect(() => {
     if (introState !== 'revealing') return;
-    const timer = setTimeout(() => setIntroState('done'), 750);
+    const timer = setTimeout(finishReveal, 750);
     return () => clearTimeout(timer);
   }, [introState]);
 
@@ -177,22 +210,23 @@ const AdditionPage = () => {
 
   // ---- arriving at a state (and saying its line) ---------------------
 
+  // countView: a question shown for the first time this visit advances the
+  // child's exposure count (and so, eventually, the ceiling)
   const arriveAsk = useCallback(
-    (i) => {
+    (p, i, { countView }) => {
       stop();
-      const p = sums[i];
       setIndex(i);
       setPhase('ask');
       setFlight({ landed: 0, flying: null });
+      if (countView) setViews(views + 1);
       hold(speak(fixedLinePart(askSlug(p.a, p.b))));
     },
-    [sums, speak, stop, hold]
+    [speak, stop, hold, views, setViews]
   );
 
   const arriveDone = useCallback(
-    (i, { celebrate }) => {
+    (p, i, { celebrate }) => {
       stop();
-      const p = sums[i];
       const token = runTokenRef.current;
       setIndex(i);
       setPhase('done');
@@ -208,23 +242,21 @@ const AdditionPage = () => {
         })()
       );
     },
-    [sums, speak, stop, hold, playPositive]
+    [speak, stop, hold, playPositive]
   );
 
-  // The first question lands as the intro's window opens
-  const startedRef = useRef(false);
-  useEffect(() => {
-    if (introState !== 'done' || startedRef.current) return;
-    startedRef.current = true;
-    arriveAsk(0);
-  }, [introState, arriveAsk]);
+  // Draw a fresh sum under the current ceiling and move to it
+  const nextSum = useCallback(() => {
+    const recent = history.slice(-RECENT).map((s) => s.id);
+    const s = pickSum(pool, effectiveMax, recent);
+    const nextHistory = [...history, s];
+    setHistory(nextHistory);
+    arriveAsk(s, nextHistory.length - 1, { countView: true });
+  }, [history, pool, effectiveMax, arriveAsk]);
 
-  // A range change under our feet (Home pill) restarts at the first sum
   useEffect(() => {
-    if (!startedRef.current) return;
-    arriveAsk(0);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [sums]);
+    startRef.current = () => arriveAsk(history[0], 0, { countView: true });
+  }, [arriveAsk, history]);
 
   // ---- the count ------------------------------------------------------
 
@@ -264,9 +296,9 @@ const AdditionPage = () => {
       await wait(Math.max(0, MIN_STEP_MS - (Date.now() - stepStarted)));
       if (!alive()) return;
     }
-    track('addition_solved', { item: problem.id, meta: { max } });
-    arriveDone(index, { celebrate: true });
-  }, [a, b, speak, stop, reduceMotion, arriveDone, index, problem.id, max]);
+    track('addition_solved', { item: problem.id, meta: { max: effectiveMax, views } });
+    arriveDone(problem, index, { celebrate: true });
+  }, [a, b, speak, stop, reduceMotion, arriveDone, index, problem, effectiveMax, views]);
 
   // ---- navigation -----------------------------------------------------
 
@@ -285,23 +317,24 @@ const AdditionPage = () => {
     startCooldown();
     if (phase === 'ask') {
       runCount();
+    } else if (index + 1 < history.length) {
+      // walked back earlier — forward retraces before drawing anew
+      arriveAsk(history[index + 1], index + 1, { countView: false });
     } else {
-      // After the last sum, back around to the first — no sticker here:
-      // stickers are for tests, and this lesson has none yet
-      arriveAsk((index + 1) % sums.length);
+      // no sticker here: stickers are for tests, and this lesson has none
+      nextSum();
     }
-  }, [phase, index, sums.length, runCount, arriveAsk, startCooldown]);
+  }, [phase, index, history, runCount, arriveAsk, nextSum, startCooldown]);
 
   // Back is a correction, so it skips the cooldown (same rule as the other
   // learn views). Mid-count it puts everything back and asks again.
   const goPrev = useCallback(() => {
     if (phase === 'counting' || phase === 'done') {
-      arriveAsk(index);
-    } else {
-      const prev = (index - 1 + sums.length) % sums.length;
-      arriveDone(prev, { celebrate: false });
+      arriveAsk(history[index], index, { countView: false });
+    } else if (index > 0) {
+      arriveDone(history[index - 1], index - 1, { celebrate: false });
     }
-  }, [phase, index, sums.length, arriveAsk, arriveDone]);
+  }, [phase, index, history, arriveAsk, arriveDone]);
 
   const repeat = useCallback(() => {
     if (phase === 'ask') speak(fixedLinePart(askSlug(a, b)));
@@ -494,9 +527,6 @@ const AdditionPage = () => {
             </button>
           </div>
 
-          <div className="absolute bottom-9 text-sm font-medium text-gray-400 tabular-nums">
-            {index + 1} / {sums.length}
-          </div>
           <div className="absolute bottom-3 text-xs md:text-sm text-gray-400">{hint}</div>
         </div>
       </div>
