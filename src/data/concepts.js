@@ -1,14 +1,17 @@
 import emotions from './emotions';
+import { pickFreshIndex, withVariant } from '../lib/variantHistory';
 
-// Some items list several interchangeable photos in `images` (e.g. nature)
-// or clips in `videos` (e.g. actions' squeezing); resolve each to a single
-// random `image`/`video` for this visit.
+// Some items list several interchangeable photos in `images` (e.g. nature,
+// transportation) or clips in `videos` (e.g. actions' squeezing); resolve
+// each to a single `image`/`video` for this visit — random, but not a
+// recently shown one (lib/variantHistory). The learn view re-picks on every
+// arrival at the item. A `playlist` is different: every
+// clip belongs to the lesson, so ItemMedia plays them all back to back —
+// `video` is just its first clip for views that show a single frame.
 export const pickItemVariants = (items) =>
   items.map((item) => {
-    if (item.images)
-      return { ...item, image: item.images[Math.floor(Math.random() * item.images.length)] };
-    if (item.videos)
-      return { ...item, video: item.videos[Math.floor(Math.random() * item.videos.length)] };
+    if (item.playlist) return { ...item, video: item.playlist[0] };
+    if (item.images || item.videos) return withVariant(item, pickFreshIndex(item));
     return item;
   });
 

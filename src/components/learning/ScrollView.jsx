@@ -10,6 +10,7 @@ import CountingFrames from '../ui/CountingFrames';
 import useShortViewport from '../../hooks/useShortViewport';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
+import { pickForArrival, recordShown } from '../../lib/variantHistory';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const bgColors = [
@@ -36,6 +37,10 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     [items, category]
   );
   const [currentIndex, setCurrentIndex] = useState(0);
+  // Counts arrivals (every index change) so multi-example items re-pick each
+  // time they come round; the first arrival keeps CategoryPage's pick
+  const [arrival, setArrival] = useState(0);
+  const [mountId] = useState(() => Math.random().toString(36).slice(2));
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const [isAutoplay, setIsAutoplay] = useState(false);
@@ -54,6 +59,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   const cooldownTimerRef = useRef(null);
 
   const currentItem = displayItems[currentIndex];
+  // currentItem with this arrival's example resolved — media only; names
+  // and speech don't depend on the pick
+  const shownItem = useMemo(
+    () => (arrival === 0 ? currentItem : pickForArrival(currentItem, `${mountId}:${arrival}`)),
+    [currentItem, arrival, mountId]
+  );
+  useEffect(() => {
+    if (shownItem) recordShown(shownItem);
+  }, [shownItem]);
 
   // Warm the next item's image so a reveal never shows an empty slot
   useEffect(() => {
@@ -77,6 +91,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
 
   const startAutoplay = useCallback(() => {
     setCurrentIndex(0);
+    setArrival((a) => a + 1);
     setIsAutoplay(true);
     hasInteracted.current = true;
   }, []);
@@ -134,6 +149,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         onAutoplayComplete?.();
       } else {
         setCurrentIndex(prev => prev + 1);
+        setArrival((a) => a + 1);
       }
     };
 
@@ -175,6 +191,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     } else {
       setRevealed(false);
       setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
+      setArrival((a) => a + 1);
     }
     startCooldown();
   }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed, speakCurrent]);
@@ -189,6 +206,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     } else {
       setRevealed(false);
       setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
+      setArrival((a) => a + 1);
     }
   }, [displayItems.length, stopAutoplay, isRevealCategory, revealed]);
 
@@ -325,7 +343,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
                 <div className="w-[var(--img-hero)] h-[var(--img-hero)] flex-shrink-0">
                   {revealed && (
                     <ItemMedia
-                      item={currentItem}
+                      item={shownItem}
                       alt={currentItem.name}
                       className="w-full h-full object-contain rounded-2xl shadow-lg bg-white"
                     />
@@ -339,7 +357,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
           return (
             <div className="flex flex-col items-center gap-6">
               <ItemMedia
-                item={currentItem}
+                item={shownItem}
                 alt={currentItem.name}
                 className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
               />
