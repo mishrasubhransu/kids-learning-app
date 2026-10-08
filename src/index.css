@@ -9,7 +9,7 @@
 html, body, #root {
   height: 100%;
   overflow: hidden;
-  touch-action: manipulation;
+  touch-action: pan-x pan-y; /* no pinch or double-tap zoom — see lib/blockPageZoom */
   overscroll-behavior: none;
   -webkit-text-size-adjust: 100%;
   -ms-text-size-adjust: 100%;

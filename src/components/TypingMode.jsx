@@ -7,6 +7,7 @@ import { useLocale } from '../context/LocaleContext';
 import { itemPart, thatWasPart, tryToFindPart, typeLetterPart } from '../lib/voiceKeys';
 import useAudioFeedback from '../hooks/useAudioFeedback';
 import useAudioLock from '../hooks/useAudioLock';
+import usePhysicalKeyboard from '../hooks/usePhysicalKeyboard';
 import ownedByFocusedControl from '../utils/ownedByFocusedControl';
 import shuffle from '../utils/shuffle';
 
@@ -66,6 +67,7 @@ const TypingMode = () => {
   const [mode, setMode] = useState('read'); // 'read' | 'music' | 'test'
   const { speak, cancel } = useVoice();
   const { t } = useLocale();
+  const hasKeyboard = usePhysicalKeyboard();
   const { playPositive, playEncouragement } = useAudioFeedback();
   const { locked, withLock } = useAudioLock();
   const audioCtxRef = useRef(null);
@@ -401,18 +403,20 @@ const TypingMode = () => {
         )}
       </div>
 
-      {/* On-screen keyboard — tablets have no physical keys */}
-      <div className="w-full max-w-2xl lg:max-w-4xl mx-auto px-2 pb-3 md:pb-5 flex flex-wrap justify-center gap-1.5 md:gap-2">
-        {keyboardChars.map((ch) => (
-          <button
-            key={ch}
-            onClick={() => handleChar(ch)}
-            className="w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/40 motion-safe:active:scale-90 text-white text-2xl md:text-3xl font-bold transition-all focus-visible:outline-white/70"
-          >
-            {ch}
-          </button>
-        ))}
-      </div>
+      {/* On-screen keyboard — only when there are no physical keys */}
+      {!hasKeyboard && (
+        <div className="w-full max-w-2xl lg:max-w-4xl mx-auto px-2 pb-3 md:pb-5 flex flex-wrap justify-center gap-1.5 md:gap-2">
+          {keyboardChars.map((ch) => (
+            <button
+              key={ch}
+              onClick={() => handleChar(ch)}
+              className="w-11 h-11 md:w-14 md:h-14 rounded-lg md:rounded-xl bg-white/15 hover:bg-white/25 active:bg-white/40 motion-safe:active:scale-90 text-white text-2xl md:text-3xl font-bold transition-all focus-visible:outline-white/70"
+            >
+              {ch}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

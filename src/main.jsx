@@ -7,6 +7,9 @@ import { ChildProfileProvider } from './context/ChildProfileContext'
 import { LocaleProvider } from './context/LocaleContext'
 import './index.css'
 import App from './App.jsx'
+import blockPageZoom from './lib/blockPageZoom'
+
+blockPageZoom()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
