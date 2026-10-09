@@ -24,4 +24,6 @@ export default {
   'which-one-is-near': '¿Cuál está cerca?',
   'which-one-is-floating': '¿Cuál está flotando?',
   'which-one-is-easy': '¿Cuál es fácil?',
+  'which-one-is-young': '¿Cuál es el joven?',
+  'which-one-is-smooth': '¿Cuál es liso?',
 };

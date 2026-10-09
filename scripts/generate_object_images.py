@@ -276,6 +276,26 @@ STYLE_PROMPTS = {
         "One single clear idea, centered, on a simple pastel backdrop with no clutter. "
         "No text, no letters, no numbers, no watermarks. Square 1:1 composition."
     ),
+    # Leisure: real kids doing the activity, the activity's gear and setting
+    # obvious at a glance; helmets/pads wherever the real sport calls for them.
+    "leisure": (
+        "A bright, joyful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid natural colors and cheerful natural daylight. "
+        "The activity is instantly recognizable at a single glance to a two-year-old: "
+        "the child's whole body and the activity's equipment are fully visible and "
+        "dominate the frame, with the setting clear but uncluttered. "
+        "Safe and happy mood, proper safety gear where the activity needs it. "
+        "Captured as if by a professional sports and family photographer. "
+        "No text, no labels, no logos, no watermarks. Square 1:1 composition."
+    ),
+    "buildings": (
+        "A beautiful, high-quality architectural photograph of {subject}. "
+        "Photorealistic with vivid colors and bright, cheerful natural daylight under a blue sky. "
+        "The whole building is visible from the outside, centered, and instantly "
+        "recognizable at a glance from its shape and the things around it. "
+        "Simple, uncluttered composition, captured as if by a professional architecture photographer. "
+        "No readable words, no signs with lettering, no logos, no watermarks. Square 1:1 composition."
+    ),
     # My Day / daily routine (concepts/routine): ONE recurring family — the
     # same toddler boy and the same dad — so the only thing changing between
     # pictures is the moment of the day (same-subject storytelling, like the
@@ -399,6 +419,33 @@ ITEMS = {
         "aeroplane": "a commercial passenger airplane in flight against a blue sky",
         "rocket": "a space rocket on a launch pad ready for takeoff",
         "van": "a typical white Mercedes Sprinter panel van parked on a quiet street, side view, tall boxy body and sliding side door clearly visible",
+        # Extra looks per vehicle (-2, -3) so the word generalizes beyond one
+        # picture; concepts.js lists them in `images` arrays.
+        "bicycle-2": "a small colorful children's bicycle with training wheels and a little basket, side view",
+        "bicycle-3": "a rugged green mountain bike with thick knobbly tires on a dirt trail, side view",
+        "electric-scooter-2": "a bright green shared rental electric kick scooter parked on a city sidewalk, side view",
+        "electric-scooter-3": "a sleek matte black electric kick scooter standing ready to ride on its kickstand, the tall handlebar stem fully UNFOLDED and upright with the T-shaped handlebar at the top at full riding height, glowing headlight on the stem, three-quarter view",
+        "moped-2": "a red delivery moped with a big square delivery box on the back rack, side view",
+        "moped-3": "a mint green retro moped scooter with a round chrome headlight parked on a cobblestone street, three-quarter view",
+        "motorcycle-2": "a big black cruiser motorcycle with shiny chrome and wide handlebars, side view",
+        "motorcycle-3": "an orange off-road dirt bike with knobbly tires on a dirt track, side view",
+        "car-2": "a family SUV in metallic blue parked in a driveway, three-quarter front view",
+        "car-3": "a small round yellow hatchback car on a sunny city street, three-quarter front view",
+        "truck-2": "a big red semi truck pulling a long silver trailer on a highway, side view",
+        "truck-3": "a blue pickup truck with an open cargo bed parked on a country road, three-quarter view",
+        "bus-2": "a bright yellow school bus on a suburban street, side view",
+        "bus-3": "a red double-decker bus driving on a city street, three-quarter front view",
+        "train-2": "a sleek white high-speed bullet train speeding through green countryside, three-quarter front view",
+        "train-3": "a classic black steam locomotive puffing white steam, pulling red carriages through hills, side view",
+        "aeroplane-2": "a small single-propeller airplane, white with a red stripe, parked on a grassy airfield, three-quarter view",
+        "aeroplane-3": "a giant passenger jumbo jet taxiing on an airport runway, three-quarter front view",
+        "rocket-2": "a space rocket blasting off into a blue sky with bright orange flames and big billowing white smoke clouds",
+        "rocket-3": "a tall white space rocket standing on a launch pad at sunset with its tower beside it",
+        "van-2": "a cheerful pastel pink ice cream van with a big serving window parked by a park, side view, no lettering",
+        "van-3": "a classic cream and turquoise camper van parked by a beach, side view",
+        # Tanker: two looks, same word — milk and fuel
+        "tanker-milk": "a gleaming stainless-steel milk tanker truck with a long round polished silver tank, painted with a simple black-and-white cow-spot pattern band, driving on a country road past green dairy fields, side view, no lettering",
+        "tanker-fuel": "a petroleum fuel tanker truck with a long round white tank, red and white hazard stripes and a small orange hazard panel, parked at a fuel depot, side view, no lettering",
     },
     "profession": {
         "doctor": "a doctor in a white coat examining a patient with a stethoscope in a bright medical office",
@@ -684,6 +731,28 @@ ITEMS = {
         "difficult-3": "the same little girl with the same brown bob haircut and the same rainbow striped t-shirt, no glasses, at the same wooden table overwhelmed by a huge jigsaw puzzle of hundreds of tiny scattered pieces covering the whole tabletop, hands on her head, puzzled frowning face",
         "easy-4": "a smiling girl walking along easily carrying one small picture book under her arm, light springy steps",
         "difficult-4": "the same girl staggering under a giant wobbly stack of heavy books piled way over her head, knees bending, arms wrapped around the pile, strained face peeking out from the side",
+        # Up/down second slot: a plain arrow, the most direct sign of the word
+        "up-arrow": "one big chunky glossy bright green 3D arrow pointing straight UP toward the top of the picture, standing alone in the center",
+        "down-arrow": "the same big chunky glossy bright green 3D arrow pointing straight DOWN toward the bottom of the picture, standing alone in the center",
+        # Young/old: the same character at two ages (slot 1 a boy and the
+        # grandpa he becomes, slot 2 a woman's face at ~25 and ~70) — always warm and dignified, never a joke about age. Old already
+        # names the rusty bicycle (Old/New), hence old-grandpa / old-woman
+        "young": "a cheerful little boy about four years old with brown hair and a red knitted sweater, standing in a sunny garden, waving with a big smile",
+        "old-grandpa": "the same character grown into a kind old grandpa with white hair, a white mustache and gentle wrinkles, wearing the same red knitted sweater, standing in the same sunny garden leaning on a wooden walking stick, waving with a warm smile",
+        # Slot 2 is a face portrait: the same woman at ~25 and ~70. The
+        # shipped old-woman.webp is a Gemini age-edit of young-2.webp so it
+        # is unmistakably the same person.
+        "young-2": "a close-up head-and-shoulders portrait of a cheerful young woman about 25 years old with long dark brown hair, warm brown eyes and a gentle smile, wearing a teal top, facing the viewer",
+        "old-woman": "the same woman aged to about 70: silver-white hair in the same style, soft wrinkles around her eyes and mouth, the same warm brown eyes, gentle smile and teal top, facing the viewer",
+        # Smooth/bumpy: the same road with no vehicles (bumpy is a Gemini
+        # image-edit of smooth — identical surroundings, potholes added), then
+        # a ball (bumpy-2 restyled from a user-supplied photo of a nubby
+        # sensory ball; smooth-2 is an edit of it with the nubs removed).
+        # Text regens from these prompts lose the same-scene match.
+        "smooth": "an empty country road stretching straight ahead to the horizon through golden grass fields under a bright blue sky with fluffy white clouds, perfectly smooth even dark asphalt with white center dashes, no cars, no vehicles, no people, viewed from the middle of the road at a low angle",
+        "bumpy": "the same empty country road through the same golden fields, its surface broken and bumpy with many potholes, cracks, lumps and little puddles, no cars, no vehicles, no people",
+        "smooth-2": "a perfectly smooth round shiny yellow rubber ball with no bumps at all",
+        "bumpy-2": "a round yellow rubber sensory ball covered all over in little rounded nubs",
     },
     "opposites-scenes": {
         "big-small-scene": "a great big dog and a tiny kitten sitting side by side on the same rug, the size difference dramatic and clear",
@@ -707,6 +776,8 @@ ITEMS = {
         "here-there-scene": "a child in a park with one red ball sitting right at the child's feet in the near foreground, and an identical red ball sitting tiny far away in the distance on the same lawn",
         "near-far-scene": "two identical striped hot air balloons in one sky: one very close and huge on one side, the other tiny and far away near the horizon on the other side",
         "float-sink-scene": "a sunny pond seen from the side in cross-section: a bright green leaf floating on top of the water surface on one side while a small grey pebble lies sunk on the sandy bottom deep below on the other side, the water surface line clearly visible",
+        "young-old-scene": "a cheerful little boy in a red knitted sweater and a kind old grandpa with white hair in the same red sweater standing side by side in a sunny garden, holding hands and smiling",
+        "smooth-bumpy-scene": "two yellow rubber balls side by side on a soft pastel floor: one perfectly smooth and shiny, the other covered all over in little rounded nubs",
         "easy-difficult-scene": "the same cheerful man in a red t-shirt twice side by side: on one side lifting a tiny pink dumbbell overhead with one hand and an easy relaxed smile, on the other side straining red-faced with puffed cheeks under a huge heavy black barbell he can barely lift to his knees",
     },
     # Nature concepts support several photo variants per item; filenames are
@@ -928,6 +999,54 @@ ITEMS = {
         "map": "a colorful treasure map with a dotted path and a big X",
         "nap": "a cute toddler napping peacefully under a cozy blanket",
         "tap": "a shiny silver water tap with water flowing into a sink",
+    },
+    "leisure": {
+        "snowboarding": "a smiling child in a bright orange snow jacket and helmet riding a snowboard down a sunny snowy slope, both feet strapped to the board, snow spraying",
+        "ice-skating": "a happy child in a cozy sweater, mittens and helmet gliding on ice skates across a frozen outdoor rink, arms out for balance",
+        "roller-blading": "a cheerful child wearing inline roller blades, a helmet, knee pads and wrist guards, skating along a sunny park path",
+        "cycling": "a happy child wearing a helmet riding a bicycle along a sunny park path, pedaling",
+        "skiing": "a smiling child in a blue ski suit, goggles and helmet skiing down a gentle snowy slope with two skis and ski poles",
+        "sledding": "a laughing child in a puffy snowsuit sliding down a snowy hill on a red sled",
+        "skateboarding": "a cheerful child wearing a helmet and knee pads riding a skateboard in a sunny skate park",
+        "riding-a-scooter": "a happy little child wearing a helmet riding a three-wheel kick scooter on a sunny sidewalk, one foot pushing off",
+        "swimming": "a happy child wearing swim goggles swimming in a bright blue outdoor pool, arms mid-stroke",
+        "surfing": "a smiling child in a rash vest riding a small gentle wave standing on a surfboard, arms out, sunny beach behind",
+        "kayaking": "a happy child in a life jacket paddling a bright yellow kayak on a calm sunny lake",
+        "fishing": "a happy excited child standing on a wooden dock by a calm lake, holding up a fishing rod with a small silver fish caught and dangling clearly at the end of the line, the fish wriggling in the air just above the water, a parent beside them smiling",
+        "kite-flying": "a joyful child running across a grassy hill holding the string of a colorful diamond kite flying high in a blue sky",
+        "building-sandcastle": "a happy child kneeling on a sunny beach building a big sandcastle with towers, a bucket and spade beside them",
+        "camping": "a happy family's small orange tent pitched in a green forest clearing, a child sitting at the tent door by a little campfire with a lantern",
+        "hiking": "a cheerful child with a small backpack walking on a mountain trail holding a parent's hand, green hills and a valley behind",
+        "picnic": "a happy family sitting on a red-checkered picnic blanket in a sunny park with a wicker basket, sandwiches and fruit",
+        "jumping-on-trampoline": "a laughing child jumping high in the air on a round backyard trampoline with a safety net",
+        "horse-riding": "a smiling child wearing a riding helmet sitting on a gentle brown pony, a grown-up leading the pony by the reins on a sunny farm",
+        # seen from BEHIND — a front view had the boy facing the camera and
+        # rolling the ball back toward us instead of down the lane
+        "bowling": "seen from directly behind, a happy child at a bowling alley with their back to the camera, having just released a bright colorful bowling ball that rolls away from us down the shiny lane toward the white pins standing at the far end",
+    },
+    "buildings": {
+        "house": "a cozy two-story family house with a red roof, a front door, windows, a little garden and a path",
+        "apartment-building": "an ordinary, realistic mid-rise residential apartment building of about six floors in warm beige and red brick, rows of matching windows and small balconies with a few potted plants, a front entrance with a short path, trees along the sidewalk and a few parked cars, like a typical city neighborhood",
+        "skyscraper": "a very tall glass skyscraper reaching up into the blue sky, seen from the street looking up",
+        "school": "a cheerful red-brick school building with big windows, a playground and a yellow school bus out front",
+        "hospital": "a large clean white hospital building with an ambulance parked at the entrance and a big red cross symbol on the wall",
+        "fire-station": "a red-brick fire station with big open garage doors and a shiny red fire truck parked inside",
+        "police-station": "a police station building with blue trim and two police cars parked out front",
+        "airport": "an airport terminal building with big glass windows, a control tower and passenger airplanes parked at the gates",
+        "train-station": "a busy train station with a long platform, a big arched roof and a train waiting at the platform",
+        "gas-station": "a gas station with a canopy roof, fuel pumps and a car filling up",
+        "post-office": "a small post office building with a red mailbox out front and a mail van parked beside it",
+        "library": "a grand library building with columns and wide front steps, a big window showing shelves full of books",
+        # big-box look in familiar Walmart-style blue and yellow, but no logo
+        "supermarket": "a big-box supermarket with a wide blue facade and bright yellow accent stripes over the entrance, shoppers walking out pushing shopping carts full of grocery bags, one family loading bags from their cart into the trunk of their car in the parking lot, rows of parked cars and cart corrals",
+        "restaurant": "a cozy restaurant with outdoor tables under umbrellas and big windows, warm lights inside",
+        "museum": "a grand museum building with tall columns and a huge dinosaur skeleton visible through the big front windows",
+        "stadium": "a big round sports stadium with tiers of seats around a green field, seen from above",
+        "factory": "a factory building with tall smokestacks puffing white steam, big sheds and trucks at the loading area",
+        "warehouse": "a huge warehouse building with many loading dock doors, delivery trucks backed up to them and stacked boxes visible inside",
+        "barn": "a classic big red barn with white trim on a green farm, a silo beside it",
+        "lighthouse": "a tall red-and-white striped lighthouse on rocks by the sea",
+        "castle": "a fairy-tale stone castle with tall round towers, pointed roofs, flags and a drawbridge",
     },
     # My Day — ordered morning-to-night. Pajamas before Get Dressed and after
     # Play Time; the yellow t-shirt for the whole day between.

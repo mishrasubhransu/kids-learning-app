@@ -41,6 +41,8 @@ export const conceptCategories = [
   // A day in the life, morning to night, told with ONE recurring boy and his
   // dad (see the routine style prompt in scripts/generate_object_images.py).
   // Order is the lesson: keep items in wake-to-sleep sequence.
+  { id: 'leisure', name: 'Leisure', emoji: '🏂', color: 'bg-teal-600', hoverColor: 'hover:bg-teal-700' },
+  { id: 'buildings', name: 'Buildings', emoji: '🏢', color: 'bg-stone-500', hoverColor: 'hover:bg-stone-600' },
   { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
@@ -127,6 +129,16 @@ export const conceptItems = {
     { id: 43, name: 'Writing', video: '/concepts/actions/writing.mp4' },
     { id: 44, name: 'Drawing', video: '/concepts/actions/drawing.mp4' },
     { id: 45, name: 'Painting', video: '/concepts/actions/painting.mp4' },
+    // Three ways to pay — cash, card, coins — played back to back
+    {
+      id: 46,
+      name: 'Paying',
+      playlist: [
+        '/concepts/actions/paying-cash.mp4',
+        '/concepts/actions/paying-card.mp4',
+        '/concepts/actions/paying-coins.mp4',
+      ],
+    },
   ],
   bugs: [
     { id: 0, name: 'Butterfly', image: '/concepts/bugs/butterfly.webp' },
@@ -222,18 +234,21 @@ export const conceptItems = {
     { id: 19, name: 'Donut', image: '/concepts/food/donut.webp' },
     { id: 20, name: 'Popcorn', image: '/concepts/food/popcorn.webp' },
   ],
+  // Several looks per vehicle (school bus, double-decker…) so the word
+  // means the kind, not one picture; one is picked per visit.
   transportation: [
-    { id: 0, name: 'Bicycle', image: '/concepts/transportation/bicycle.webp' },
-    { id: 1, name: 'Electric Scooter', image: '/concepts/transportation/electric-scooter.webp' },
-    { id: 2, name: 'Moped', image: '/concepts/transportation/moped.webp' },
-    { id: 3, name: 'Motorcycle', image: '/concepts/transportation/motorcycle.webp' },
-    { id: 4, name: 'Car', image: '/concepts/transportation/car.webp' },
-    { id: 5, name: 'Truck', image: '/concepts/transportation/truck.webp' },
-    { id: 6, name: 'Bus', image: '/concepts/transportation/bus.webp' },
-    { id: 7, name: 'Train', image: '/concepts/transportation/train.webp' },
-    { id: 8, name: 'Aeroplane', image: '/concepts/transportation/aeroplane.webp' },
-    { id: 9, name: 'Rocket', image: '/concepts/transportation/rocket.webp' },
-    { id: 10, name: 'Van', image: '/concepts/transportation/van.webp' },
+    { id: 0, name: 'Bicycle', images: ['/concepts/transportation/bicycle.webp', '/concepts/transportation/bicycle-2.webp', '/concepts/transportation/bicycle-3.webp'] },
+    { id: 1, name: 'Electric Scooter', images: ['/concepts/transportation/electric-scooter.webp', '/concepts/transportation/electric-scooter-2.webp', '/concepts/transportation/electric-scooter-3.webp'] },
+    { id: 2, name: 'Moped', images: ['/concepts/transportation/moped.webp', '/concepts/transportation/moped-2.webp', '/concepts/transportation/moped-3.webp'] },
+    { id: 3, name: 'Motorcycle', images: ['/concepts/transportation/motorcycle.webp', '/concepts/transportation/motorcycle-2.webp', '/concepts/transportation/motorcycle-3.webp'] },
+    { id: 4, name: 'Car', images: ['/concepts/transportation/car.webp', '/concepts/transportation/car-2.webp', '/concepts/transportation/car-3.webp'] },
+    { id: 5, name: 'Truck', images: ['/concepts/transportation/truck.webp', '/concepts/transportation/truck-2.webp', '/concepts/transportation/truck-3.webp'] },
+    { id: 6, name: 'Bus', images: ['/concepts/transportation/bus.webp', '/concepts/transportation/bus-2.webp', '/concepts/transportation/bus-3.webp'] },
+    { id: 7, name: 'Train', images: ['/concepts/transportation/train.webp', '/concepts/transportation/train-2.webp', '/concepts/transportation/train-3.webp'] },
+    { id: 8, name: 'Aeroplane', images: ['/concepts/transportation/aeroplane.webp', '/concepts/transportation/aeroplane-2.webp', '/concepts/transportation/aeroplane-3.webp'] },
+    { id: 9, name: 'Rocket', images: ['/concepts/transportation/rocket.webp', '/concepts/transportation/rocket-2.webp', '/concepts/transportation/rocket-3.webp'] },
+    { id: 10, name: 'Van', images: ['/concepts/transportation/van.webp', '/concepts/transportation/van-2.webp', '/concepts/transportation/van-3.webp'] },
+    { id: 11, name: 'Tanker', images: ['/concepts/transportation/tanker-milk.webp', '/concepts/transportation/tanker-fuel.webp'] },
   ],
   profession: [
     { id: 0, name: 'Doctor', image: '/concepts/profession/doctor.webp' },
@@ -467,6 +482,53 @@ export const conceptItems = {
     { id: 8, name: 'Next To', image: '/concepts/prepositions/next-to.webp' },
     { id: 9, name: 'Around', image: '/concepts/prepositions/around.webp' },
     { id: 10, name: 'Through', image: '/concepts/prepositions/through.webp' },
+  ],
+  // Things kids do for fun — real photos of children mid-activity. Cycling and
+  // swimming share their slugs (and clips) with the actions verbs.
+  leisure: [
+    { id: 0, name: 'Snowboarding', image: '/concepts/leisure/snowboarding.webp' },
+    { id: 1, name: 'Ice Skating', image: '/concepts/leisure/ice-skating.webp' },
+    { id: 2, name: 'Roller Blading', image: '/concepts/leisure/roller-blading.webp' },
+    { id: 3, name: 'Cycling', image: '/concepts/leisure/cycling.webp' },
+    { id: 4, name: 'Skiing', image: '/concepts/leisure/skiing.webp' },
+    { id: 5, name: 'Sledding', image: '/concepts/leisure/sledding.webp' },
+    { id: 6, name: 'Skateboarding', image: '/concepts/leisure/skateboarding.webp' },
+    { id: 7, name: 'Riding a Scooter', image: '/concepts/leisure/riding-a-scooter.webp' },
+    { id: 8, name: 'Swimming', image: '/concepts/leisure/swimming.webp' },
+    { id: 9, name: 'Surfing', image: '/concepts/leisure/surfing.webp' },
+    { id: 10, name: 'Kayaking', image: '/concepts/leisure/kayaking.webp' },
+    { id: 11, name: 'Fishing', image: '/concepts/leisure/fishing.webp' },
+    { id: 12, name: 'Kite Flying', image: '/concepts/leisure/kite-flying.webp' },
+    { id: 13, name: 'Building Sandcastle', image: '/concepts/leisure/building-sandcastle.webp' },
+    { id: 14, name: 'Camping', image: '/concepts/leisure/camping.webp' },
+    { id: 15, name: 'Hiking', image: '/concepts/leisure/hiking.webp' },
+    { id: 16, name: 'Picnic', image: '/concepts/leisure/picnic.webp' },
+    { id: 17, name: 'Jumping on Trampoline', image: '/concepts/leisure/jumping-on-trampoline.webp' },
+    { id: 18, name: 'Horse Riding', image: '/concepts/leisure/horse-riding.webp' },
+    { id: 19, name: 'Bowling', image: '/concepts/leisure/bowling.webp' },
+  ],
+  buildings: [
+    { id: 0, name: 'House', image: '/concepts/buildings/house.webp' },
+    { id: 1, name: 'Apartment Building', image: '/concepts/buildings/apartment-building.webp' },
+    { id: 2, name: 'Skyscraper', image: '/concepts/buildings/skyscraper.webp' },
+    { id: 3, name: 'School', image: '/concepts/buildings/school.webp' },
+    { id: 4, name: 'Hospital', image: '/concepts/buildings/hospital.webp' },
+    { id: 5, name: 'Fire Station', image: '/concepts/buildings/fire-station.webp' },
+    { id: 6, name: 'Police Station', image: '/concepts/buildings/police-station.webp' },
+    { id: 7, name: 'Airport', image: '/concepts/buildings/airport.webp' },
+    { id: 8, name: 'Train Station', image: '/concepts/buildings/train-station.webp' },
+    { id: 9, name: 'Gas Station', image: '/concepts/buildings/gas-station.webp' },
+    { id: 10, name: 'Post Office', image: '/concepts/buildings/post-office.webp' },
+    { id: 11, name: 'Library', image: '/concepts/buildings/library.webp' },
+    { id: 12, name: 'Supermarket', image: '/concepts/buildings/supermarket.webp' },
+    { id: 13, name: 'Restaurant', image: '/concepts/buildings/restaurant.webp' },
+    { id: 14, name: 'Museum', image: '/concepts/buildings/museum.webp' },
+    { id: 15, name: 'Stadium', image: '/concepts/buildings/stadium.webp' },
+    { id: 16, name: 'Factory', image: '/concepts/buildings/factory.webp' },
+    { id: 17, name: 'Warehouse', image: '/concepts/buildings/warehouse.webp' },
+    { id: 18, name: 'Barn', image: '/concepts/buildings/barn.webp' },
+    { id: 19, name: 'Lighthouse', image: '/concepts/buildings/lighthouse.webp' },
+    { id: 20, name: 'Castle', image: '/concepts/buildings/castle.webp' },
   ],
   routine: [
     { id: 0, name: 'Wake Up', image: '/concepts/routine/wake-up.webp' },

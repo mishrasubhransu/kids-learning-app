@@ -24,4 +24,6 @@ export default {
   'which-one-is-near': 'କେଉଁଟି ପାଖରେ?',
   'which-one-is-floating': 'କେଉଁଟି ଭାସୁଛି?',
   'which-one-is-easy': 'କେଉଁଟି ସହଜ?',
+  'which-one-is-young': 'କେଉଁଟି ଛୁଆ?',
+  'which-one-is-smooth': 'କେଉଁଟି ଚିକ୍କଣ?',
 };

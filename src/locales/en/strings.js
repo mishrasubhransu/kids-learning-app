@@ -53,6 +53,8 @@ export default {
   'cat.concepts.outside': 'Outside',
   'cat.concepts.prepositions': 'Prepositions',
   'cat.concepts.routine': 'Routine',
+  'cat.concepts.leisure': 'Leisure',
+  'cat.concepts.buildings': 'Buildings',
   'cat.concepts.indian-food': 'Indian Food',
 
   // Category page chrome

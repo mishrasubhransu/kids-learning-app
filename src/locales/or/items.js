@@ -566,4 +566,62 @@ export default {
   'play-time': { name: 'ଖେଳିବା', ref: 'ଖେଳିବା ବେଳ' },
   'story-time': { name: 'ଗପ ଶୁଣିବା', ref: 'ଗପ ଶୁଣିବା ବେଳ' },
   sleep: { name: 'ଶୋଇବା', ref: 'ଶୋଇବା ବେଳ' },
+
+  // Oct 2026 additions — AI-drafted, ALL pending family review. old-age is
+  // the Young/Old pair's "old": ବୁଢ଼ା for people, while old (Old/New, the
+  // rusty bike) stays ପୁରୁଣା. young "ଜୁଆନ" (youthful) has to cover a little
+  // boy AND a 25-year-old woman — check it against ଛୁଆ / ଯୁବା. smooth
+  // "ଚିକ୍କଣ" (sleek) and bumpy "ଖଦଡ଼ା" (rough) are the everyday texture
+  // pair, covering road and ball. hiking "ପାହାଡ଼ ବୁଲା" and barn "ଗୁହାଳ"
+  // are low-confidence.
+  young: { name: 'ଜୁଆନ' },
+  'old-age': { name: 'ବୁଢ଼ା' },
+  smooth: { name: 'ଚିକ୍କଣ' },
+  bumpy: { name: 'ଖଦଡ଼ା' },
+  paying: { name: 'ପଇସା ଦେବା', ref: 'ପଇସା ଦେଉଛି' },
+  tanker: { name: 'ଟ୍ୟାଙ୍କର' },
+
+  // Leisure (cycling/swimming shared with actions above)
+  snowboarding: { name: 'ସ୍ନୋବୋର୍ଡିଂ' },
+  'ice-skating': { name: 'ଆଇସ୍ ସ୍କେଟିଂ' },
+  'roller-blading': { name: 'ରୋଲର ସ୍କେଟିଂ' },
+  skiing: { name: 'ସ୍କିଇଂ' },
+  sledding: { name: 'ସ୍ଲେଜ୍ ଗାଡ଼ି' },
+  skateboarding: { name: 'ସ୍କେଟବୋର୍ଡ' },
+  'riding-a-scooter': { name: 'ସ୍କୁଟର ଚଲାଇବା', ref: 'ସ୍କୁଟର ଚଲାଉଛି' },
+  surfing: { name: 'ସର୍ଫିଂ' },
+  kayaking: { name: 'କାୟାକିଂ' },
+  fishing: { name: 'ମାଛ ଧରିବା' },
+  'kite-flying': { name: 'ଗୁଡ଼ି ଉଡ଼ାଇବା' },
+  'building-sandcastle': { name: 'ବାଲିଘର ତିଆରି', ref: 'ବାଲିଘର ତିଆରି କରୁଛି' },
+  camping: { name: 'କ୍ୟାମ୍ପିଂ' },
+  hiking: { name: 'ପାହାଡ଼ ବୁଲା' },
+  picnic: { name: 'ପିକନିକ୍' },
+  'jumping-on-trampoline': { name: 'ଟ୍ରାମ୍ପୋଲିନରେ ଡିଆଁ ମାରିବା', ref: 'ଟ୍ରାମ୍ପୋଲିନରେ ଡିଆଁ ମାରୁଛି' },
+  'horse-riding': { name: 'ଘୋଡ଼ା ଚଢ଼ିବା' },
+  bowling: { name: 'ବୋଲିଂ' },
+
+  // Buildings
+  house: { name: 'ଘର' },
+  'apartment-building': { name: 'ଆପାର୍ଟମେଣ୍ଟ' },
+  skyscraper: { name: 'ଉଚ୍ଚ ଅଟ୍ଟାଳିକା' },
+  school: { name: 'ସ୍କୁଲ' },
+  hospital: { name: 'ଡାକ୍ତରଖାନା' },
+  'fire-station': { name: 'ଦମକଳ ଷ୍ଟେସନ' },
+  'police-station': { name: 'ଥାନା' },
+  airport: { name: 'ବିମାନବନ୍ଦର' },
+  'train-station': { name: 'ରେଳ ଷ୍ଟେସନ' },
+  'gas-station': { name: 'ପେଟ୍ରୋଲ ପମ୍ପ' },
+  'post-office': { name: 'ଡାକଘର' },
+  library: { name: 'ପାଠାଗାର' },
+  supermarket: { name: 'ସୁପରମାର୍କେଟ' },
+  restaurant: { name: 'ରେଷ୍ଟୁରାଣ୍ଟ' },
+  museum: { name: 'ସଂଗ୍ରହାଳୟ' },
+  stadium: { name: 'ଷ୍ଟାଡିୟମ' },
+  factory: { name: 'କାରଖାନା' },
+  warehouse: { name: 'ଗୋଦାମ' },
+  barn: { name: 'ଗୁହାଳ' },
+  lighthouse: { name: 'ଆଲୋକସ୍ତମ୍ଭ' },
+  castle: { name: 'ଦୁର୍ଗ' },
+
 };

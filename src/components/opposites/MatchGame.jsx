@@ -11,7 +11,7 @@ import { track } from '../../lib/analytics';
 import SessionRecap from '../ui/SessionRecap';
 import { localizedName } from '../../lib/locale';
 import { useLocale } from '../../context/LocaleContext';
-import { wordImages, pickRandom } from '../../data/opposites';
+import { wordImages, pickRandom, wordSubject } from '../../data/opposites';
 
 function shuffle(arr) {
   const a = [...arr];
@@ -47,19 +47,32 @@ function buildRounds(items, difficulty, allItems) {
     const promptWord = pair.pair[promptSide];
     const answerWord = pair.pair[1 - promptSide];
 
-    const distractors = shuffle(allItems.filter((p) => p.id !== pair.id))
+    // Pairs sharing a word are out (Old is in Young/Old AND Old/New — New
+    // would be a second right answer to "the opposite of old")
+    const distractors = shuffle(
+      allItems.filter((p) => p.id !== pair.id && !p.pair.some((w) => pair.pair.includes(w)))
+    )
       .slice(0, choiceCount - 1)
       .map((p) => {
         const side = Math.floor(Math.random() * 2);
-        return { word: p.pair[side], image: pickRandom(wordImages(p, p.pair[side])) };
+        return {
+          word: p.pair[side],
+          subject: wordSubject(p, p.pair[side]),
+          image: pickRandom(wordImages(p, p.pair[side])),
+        };
       });
 
     return {
       promptWord,
+      promptSubject: wordSubject(pair, promptWord),
       promptImage: pickRandom(wordImages(pair, promptWord)),
       answerWord,
       choices: shuffle([
-        { word: answerWord, image: pickRandom(wordImages(pair, answerWord)) },
+        {
+          word: answerWord,
+          subject: wordSubject(pair, answerWord),
+          image: pickRandom(wordImages(pair, answerWord)),
+        },
         ...distractors,
       ]),
     };
@@ -117,7 +130,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
   }, [rounds, currentIdx]);
 
   const askRound = useCallback((round) => {
-    if (round && !locked()) speak(oppositeOfPart(round.promptWord));
+    if (round && !locked()) speak(oppositeOfPart(round.promptSubject));
   }, [speak, locked]);
 
   const handleStart = () => {
@@ -188,7 +201,10 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
       // clip groups instead of a clip per (picked, prompt) pairing
       withLock(() =>
         playEncouragement().then(() =>
-          speak([thatWasPart(word), oppositeOfPart(current.promptWord)])
+          speak([
+            thatWasPart(current.choices.find((c) => c.word === word)?.subject ?? word),
+            oppositeOfPart(current.promptSubject),
+          ])
         )
       ).then(() => {
         // Reset only after the spoken correction ends, so the moment taps
@@ -312,12 +328,12 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
         <div className="rounded-3xl bg-white shadow-xl border-8 border-orange-300 p-3 md:p-4 flex flex-col items-center gap-1">
           <img
             src={current.promptImage}
-            alt={localizedName(current.promptWord)}
+            alt={localizedName(current.promptSubject)}
             className="w-[var(--img-prompt)] h-[var(--img-prompt)] object-contain rounded-xl"
             draggable={false}
           />
           <span className={`text-2xl md:text-3xl font-black ${caseClass} text-orange-500`}>
-            {localizedName(current.promptWord)}
+            {localizedName(current.promptSubject)}
           </span>
         </div>
         <button
@@ -325,7 +341,7 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm md:text-base"
         >
           <Volume2 size={18} />
-          {t('opposites.oppositeOf', { name: localizedName(current.promptWord) })}
+          {t('opposites.oppositeOf', { name: localizedName(current.promptSubject) })}
         </button>
       </div>
 
@@ -340,12 +356,12 @@ const MatchGame = ({ items, difficulty, allItems = items }) => {
           >
             <img
               src={choice.image}
-              alt={localizedName(choice.word)}
+              alt={localizedName(choice.subject)}
               className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
             <span className="text-xl md:text-2xl font-bold text-gray-700">
-              {localizedName(choice.word)}
+              {localizedName(choice.subject)}
             </span>
           </button>
         ))}

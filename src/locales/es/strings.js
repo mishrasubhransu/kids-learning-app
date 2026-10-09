@@ -48,6 +48,8 @@ export default {
   'cat.concepts.outside': 'Afuera',
   'cat.concepts.prepositions': 'Posiciones',
   'cat.concepts.routine': 'Rutina',
+  'cat.concepts.leisure': 'Tiempo libre',
+  'cat.concepts.buildings': 'Edificios',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

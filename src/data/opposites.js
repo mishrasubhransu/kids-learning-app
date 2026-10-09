@@ -10,6 +10,14 @@ export const wordExamples = (item, word) => {
 export const wordImages = (item, word) =>
   wordExamples(item, word).filter((e) => typeof e === 'string');
 
+// A pair word as the subject the voice builders and localizedName take.
+// A word whose meaning shifts between pairs carries its own slug via the
+// pair's `slugs` map (Old: a rusty bike in Old/New, a grandpa in Young/Old —
+// zh/or need 旧/ପୁରୁଣା for one and 老/ବୁଢ଼ା for the other); otherwise
+// the plain English string, which keys by its own slug.
+export const wordSubject = (item, word) =>
+  item.slugs?.[word] ? { name: word, slug: item.slugs[word] } : word;
+
 export const pickRandom = (list) => list[Math.floor(Math.random() * list.length)];
 
 export const exampleSlotCount = (item, listFor = wordExamples) =>
@@ -62,9 +70,10 @@ const opposites = [
     id: 2,
     name: 'Up and Down',
     pair: ['Up', 'Down'],
+    // Second slot is a plain arrow — the symbol itself
     images: {
-      Up: '/opposites/up.webp',
-      Down: '/opposites/down.webp',
+      Up: ['/opposites/up.webp', '/opposites/up-arrow.webp'],
+      Down: ['/opposites/down.webp', '/opposites/down-arrow.webp'],
     },
     tests: [
       { question: 'Which one is up?', correctAnswer: 'Up', sceneImage: '/opposites/scenes/up-down-scene.webp' },
@@ -318,6 +327,36 @@ const opposites = [
     },
     tests: [
       { question: 'Which one is easy?', correctAnswer: 'Easy', sceneImage: '/opposites/scenes/easy-difficult-scene.webp' },
+    ],
+  },
+  // The same person at two ages: a boy and the grandpa he grows into, then
+  // a young woman's face and the same face at seventy (a Gemini age-edit). Old also pairs with New (id 12) — the
+  // match game keeps the two pairs out of each other's distractors.
+  {
+    id: 22,
+    name: 'Young and Old',
+    pair: ['Young', 'Old'],
+    slugs: { Old: 'old-age' },
+    images: {
+      Young: ['/opposites/young.webp', '/opposites/young-2.webp'],
+      Old: ['/opposites/old-grandpa.webp', '/opposites/old-woman.webp'],
+    },
+    tests: [
+      { question: 'Which one is young?', correctAnswer: 'Young', sceneImage: '/opposites/scenes/young-old-scene.webp' },
+    ],
+  },
+  // The same thing smooth vs bumpy: an empty road (potholes edited into
+  // the identical scene), then a ball with and without its nubs
+  {
+    id: 23,
+    name: 'Smooth and Bumpy',
+    pair: ['Smooth', 'Bumpy'],
+    images: {
+      Smooth: ['/opposites/smooth.webp', '/opposites/smooth-2.webp'],
+      Bumpy: ['/opposites/bumpy.webp', '/opposites/bumpy-2.webp'],
+    },
+    tests: [
+      { question: 'Which one is smooth?', correctAnswer: 'Smooth', sceneImage: '/opposites/scenes/smooth-bumpy-scene.webp' },
     ],
   },
 ];

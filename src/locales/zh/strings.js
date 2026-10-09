@@ -44,6 +44,8 @@ export default {
   'cat.concepts.outside': '户外',
   'cat.concepts.prepositions': '方位',
   'cat.concepts.routine': '日常',
+  'cat.concepts.leisure': '休闲',
+  'cat.concepts.buildings': '建筑',
 
   // Category page chrome
   'mode.scroll': '滑动',

@@ -35,7 +35,7 @@ import { shapes } from '../src/data/shapes.jsx';
 import { conceptItems } from '../src/data/concepts.js';
 import { phonicsWords } from '../src/data/phonics.js';
 import { letterSounds } from '../src/data/letterSounds.js';
-import opposites from '../src/data/opposites.js';
+import opposites, { wordSubject } from '../src/data/opposites.js';
 import { FIXED_LINES } from '../src/data/voiceLines.js';
 import { intros } from '../src/data/intros.js';
 
@@ -87,7 +87,7 @@ export function buildCatalog(locale = 'en') {
   }
 
   opposites.forEach((pair) => {
-    pair.pair.forEach((word) => {
+    pair.pair.map((w) => wordSubject(pair, w)).forEach((word) => {
       add(itemPart(word));
       add(thatWasPart(word));
       add(oppositeOfPart(word));

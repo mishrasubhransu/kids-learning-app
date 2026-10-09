@@ -547,4 +547,59 @@ export default {
   'play-time': { name: 'Hora de jugar', ref: 'la hora de jugar' },
   'story-time': { name: 'Cuento', ref: 'la hora del cuento' },
   sleep: { name: 'Dormir', ref: 'la hora de dormir' },
+
+  // Oct 2026 additions (AI-first; flag for native review). old-age is the
+  // Young/Old pair's "old" (people/animals) — Spanish says viejo for both.
+  young: { name: 'Joven', ref: 'el joven', bare: 'joven' },
+  'old-age': { name: 'Viejo', ref: 'el viejo', bare: 'viejo' },
+  // liso/rugoso is the standard texture pair — covers the potholed road
+  // and the nubby ball alike
+  smooth: { name: 'Liso', ref: 'el liso', bare: 'liso' },
+  bumpy: { name: 'Rugoso', ref: 'el rugoso', bare: 'rugoso' },
+  paying: { name: 'Pagando', ref: 'el que está pagando' },
+  tanker: { name: 'Camión cisterna', ref: 'el camión cisterna' },
+
+  // Leisure (cycling/swimming shared with actions above)
+  snowboarding: { name: 'Snowboard', ref: 'el snowboard' },
+  'ice-skating': { name: 'Patinaje sobre hielo', ref: 'el patinaje sobre hielo' },
+  'roller-blading': { name: 'Patines en línea', ref: 'los patines en línea', plural: true },
+  skiing: { name: 'Esquí', ref: 'el esquí' },
+  sledding: { name: 'Trineo', ref: 'el trineo' },
+  skateboarding: { name: 'Patineta', ref: 'la patineta' },
+  'riding-a-scooter': { name: 'Andando en scooter', ref: 'el que anda en scooter' },
+  surfing: { name: 'Surf', ref: 'el surf' },
+  kayaking: { name: 'Kayak', ref: 'el kayak' },
+  fishing: { name: 'Pesca', ref: 'la pesca' },
+  'kite-flying': { name: 'Cometa', ref: 'la cometa' },
+  'building-sandcastle': { name: 'Haciendo un castillo de arena', ref: 'el que hace un castillo de arena' },
+  camping: { name: 'Campamento', ref: 'el campamento' },
+  hiking: { name: 'Caminata', ref: 'la caminata' },
+  picnic: { name: 'Pícnic', ref: 'el pícnic' },
+  'jumping-on-trampoline': { name: 'Saltando en el trampolín', ref: 'el que salta en el trampolín' },
+  'horse-riding': { name: 'Montar a caballo', ref: 'el que monta a caballo' },
+  bowling: { name: 'Boliche', ref: 'el boliche' },
+
+  // Buildings
+  house: { name: 'Casa', ref: 'la casa' },
+  'apartment-building': { name: 'Edificio', ref: 'el edificio' },
+  skyscraper: { name: 'Rascacielos', ref: 'el rascacielos' },
+  school: { name: 'Escuela', ref: 'la escuela' },
+  hospital: { name: 'Hospital', ref: 'el hospital' },
+  'fire-station': { name: 'Estación de bomberos', ref: 'la estación de bomberos' },
+  'police-station': { name: 'Estación de policía', ref: 'la estación de policía' },
+  airport: { name: 'Aeropuerto', ref: 'el aeropuerto' },
+  'train-station': { name: 'Estación de tren', ref: 'la estación de tren' },
+  'gas-station': { name: 'Gasolinera', ref: 'la gasolinera' },
+  'post-office': { name: 'Correo', ref: 'el correo' },
+  library: { name: 'Biblioteca', ref: 'la biblioteca' },
+  supermarket: { name: 'Supermercado', ref: 'el supermercado' },
+  restaurant: { name: 'Restaurante', ref: 'el restaurante' },
+  museum: { name: 'Museo', ref: 'el museo' },
+  stadium: { name: 'Estadio', ref: 'el estadio' },
+  factory: { name: 'Fábrica', ref: 'la fábrica' },
+  warehouse: { name: 'Bodega', ref: 'la bodega' },
+  barn: { name: 'Granero', ref: 'el granero' },
+  lighthouse: { name: 'Faro', ref: 'el faro' },
+  castle: { name: 'Castillo', ref: 'el castillo' },
+
 };

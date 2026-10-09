@@ -9,7 +9,7 @@ import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import ItemMedia from '../ui/ItemMedia';
-import { pairExamplesAt, exampleSlotCount } from '../../data/opposites';
+import { pairExamplesAt, exampleSlotCount, wordSubject } from '../../data/opposites';
 
 // The two poles of every pair: warm for the first word, cool for its opposite.
 const POLES = [
@@ -74,6 +74,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const side = step % 2;
   const currentItem = displayItems[pairIndex];
   const activeWord = currentItem.pair[side];
+  const activeSubject = wordSubject(currentItem, activeWord);
   const pole = POLES[side];
 
   // Arrival at a pair: advance its rotation. Layout effect so the frame
@@ -101,7 +102,8 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   useEffect(() => {
     if (holdIntro) return;
     if (prevStepRef.current !== step) {
-      speak(itemPart(displayItems[Math.floor(step / 2)].pair[step % 2]));
+      const stepItem = displayItems[Math.floor(step / 2)];
+      speak(itemPart(wordSubject(stepItem, stepItem.pair[step % 2])));
       prevStepRef.current = step;
     }
   }, [step, displayItems, speak, holdIntro]);
@@ -147,7 +149,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
   const handleCardTap = (tappedSide) => {
     const tappedStep = pairIndex * 2 + tappedSide;
     if (tappedStep === step) {
-      speak(itemPart(activeWord)); // same card: just say it again
+      speak(itemPart(activeSubject)); // same card: just say it again
     } else {
       setStep(tappedStep);
     }
@@ -164,15 +166,16 @@ const PairLearnView = ({ items, holdIntro = false }) => {
         goPrev();
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        speak(itemPart(activeWord));
+        speak(itemPart(activeSubject));
       }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goNext, goPrev, speak, activeWord, holdIntro]);
+  }, [goNext, goPrev, speak, activeSubject, holdIntro]);
 
   const renderCard = (cardSide) => {
     const word = currentItem.pair[cardSide];
+    const label = localizedName(wordSubject(currentItem, word));
     const cardPole = POLES[cardSide];
     const isActive = cardSide === side;
 
@@ -189,7 +192,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
           borderColor: isActive ? cardPole.accent : 'transparent',
           '--spotlight-color': cardPole.accent,
         }}
-        aria-label={isActive ? `${localizedName(word)}, say it again` : `Show ${localizedName(word)}`}
+        aria-label={isActive ? `${label}, say it again` : `Show ${label}`}
       >
         <ItemMedia
           item={(() => {
@@ -197,14 +200,14 @@ const PairLearnView = ({ items, holdIntro = false }) => {
             return typeof media === 'string' ? { image: media } : media;
           })()}
           playing={isActive}
-          alt={localizedName(word)}
+          alt={label}
           className="w-[var(--img-card)] h-[var(--img-card)] object-contain rounded-2xl pointer-events-none"
         />
         <span
           className={`text-3xl md:text-5xl font-black tracking-wide ${caseClass} transition-colors duration-300`}
           style={{ color: isActive ? cardPole.accent : '#9CA3AF' }}
         >
-          {localizedName(word)}
+          {label}
         </span>
       </button>
     );
@@ -224,7 +227,7 @@ const PairLearnView = ({ items, holdIntro = false }) => {
       {/* Repeat word */}
       <div className="absolute top-4 right-4">
         <button
-          onClick={() => speak(itemPart(activeWord))}
+          onClick={() => speak(itemPart(activeSubject))}
           className="p-3 rounded-full bg-white/70 text-gray-600 hover:bg-white transition-colors shadow"
           aria-label={`Say ${activeWord} again`}
         >

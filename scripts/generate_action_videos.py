@@ -101,6 +101,13 @@ VERBS = {
     "pushing": "a young child pushing a big brown cardboard box across a living room floor with both hands, leaning forward with effort, the box clearly sliding forward",
     # second squeezing variant — concepts.js lists both under `videos`
     "squeezing-toothpaste": "a young child's hands squeezing a soft colorful toothpaste tube over a toothbrush, a thick ribbon of toothpaste clearly coming out of the tube onto the brush bristles",
+    # paying: three `videos` variants (cash, card, coins) — close-up
+    # hands-only at a shop counter, the money clearly changing hands
+    "paying-cash": "a close-up of a shop counter, a customer's hand holding out a few folded paper banknotes and placing them into the open hand of a shopkeeper on the other side of the counter, the shopkeeper's hand closing around the money, a paper bag of groceries on the counter, exactly two hands in frame",
+    # the first take's terminal came out smaller than the card — the size
+    # relationship is spelled out
+    "paying-card": "a close-up of a shop counter with a big full-size countertop card payment machine standing on it, the machine much larger than a credit card — as big as an adult's whole hand — with a wide glowing screen and a chunky keypad, a customer's hand holding a small plain blue credit card and tapping it flat against the top of the machine's screen, the screen lighting up green with a big check mark, then the hand pulling the card away, exactly one hand in frame",
+    "paying-coins": "a close-up of a market stall counter, a young child's hand dropping shiny round coins one by one into a shopkeeper's open palm, each coin clearly falling and landing, a basket of red apples beside them, exactly two hands in frame",
     # writing is NOT here — STYLE forbids on-screen text, so it runs with a
     # custom --prompt on the piapi script (words "cat bat mat" must be legible)
     # drawing/painting: start from PARTIAL artwork and add to it — a

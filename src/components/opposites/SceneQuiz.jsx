@@ -10,7 +10,7 @@ import { track } from '../../lib/analytics';
 import SessionRecap from '../ui/SessionRecap';
 import { localizedName, sceneQuestionText } from '../../lib/locale';
 import { useLocale } from '../../context/LocaleContext';
-import { wordImages, pickPairExamples } from '../../data/opposites';
+import { wordImages, pickPairExamples, wordSubject } from '../../data/opposites';
 
 const SceneQuiz = ({ items, difficulty }) => {
   const [questions, setQuestions] = useState([]);
@@ -42,6 +42,7 @@ const SceneQuiz = ({ items, difficulty }) => {
       pair.tests.map((t) => ({
         ...t,
         pair: pair.pair,
+        subjects: Object.fromEntries(pair.pair.map((w) => [w, wordSubject(pair, w)])),
         images: pickPairExamples(pair, wordImages),
       }))
     );
@@ -154,7 +155,7 @@ const SceneQuiz = ({ items, difficulty }) => {
       // Name what they picked but don't reveal the answer — the dashed
       // hint plus immediate retry lets them find it themselves.
       withLock(() =>
-        playEncouragement().then(() => speak(thatWasPart(word)))
+        playEncouragement().then(() => speak(thatWasPart(current.subjects[word])))
       ).then(() => {
         // Reset only after the spoken correction ends, so the moment taps
         // work again is also the moment the board looks ready for a retry.
@@ -300,11 +301,11 @@ const SceneQuiz = ({ items, difficulty }) => {
           >
             <img
               src={current.images[word]}
-              alt={localizedName(word)}
+              alt={localizedName(current.subjects[word])}
               className="w-[var(--img-choice)] h-[var(--img-choice)] object-contain rounded-xl pointer-events-none"
               draggable={false}
             />
-            <span className="text-xl md:text-3xl font-bold text-gray-700">{localizedName(word)}</span>
+            <span className="text-xl md:text-3xl font-bold text-gray-700">{localizedName(current.subjects[word])}</span>
           </button>
         ))}
       </div>

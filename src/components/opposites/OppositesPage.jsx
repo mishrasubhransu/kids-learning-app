@@ -7,7 +7,7 @@ import MatchGame from './MatchGame';
 import SceneQuiz from './SceneQuiz';
 import DifficultySelector from '../ui/DifficultySelector';
 import CategoryIntro from '../ui/CategoryIntro';
-import opposites, { wordImages } from '../../data/opposites';
+import opposites, { wordImages, wordSubject } from '../../data/opposites';
 import { preloadVoiceClips } from '../../lib/voice';
 import { itemPart, thatWasPart, oppositeOfPart, scenePart } from '../../lib/voiceKeys';
 import shuffle from '../../utils/shuffle';
@@ -76,7 +76,9 @@ const OppositesPage = ({ backTo = '/home' }) => {
   useEffect(() => {
     preloadVoiceClips(
       opposites.flatMap((pair) => [
-        ...pair.pair.flatMap((w) => [itemPart(w), thatWasPart(w), oppositeOfPart(w)]),
+        ...pair.pair
+          .map((w) => wordSubject(pair, w))
+          .flatMap((w) => [itemPart(w), thatWasPart(w), oppositeOfPart(w)]),
         ...pair.tests.map((test) => scenePart(test.question)),
       ])
     );

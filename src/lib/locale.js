@@ -90,9 +90,13 @@ export const localizeItems = (items) =>
   items ? items.map(localizeItem) : items;
 
 // Display name for a canonical English word that travels as a plain string
-// (opposites pair words, quiz words).
-export const localizedName = (word) =>
-  getPack()?.items?.[voiceSlug(word)]?.name ?? word;
+// (opposites pair words, quiz words) — or as { name, slug } when the word
+// needs a slug of its own (see wordSubject in data/opposites).
+export const localizedName = (word) => {
+  const name = typeof word === 'object' ? word.name : word;
+  const slug = (typeof word === 'object' && word.slug) || voiceSlug(name);
+  return getPack()?.items?.[slug]?.name ?? name;
+};
 
 // Hand-written opposites scene questions, keyed by the slug of the English
 // question (the clip key never changes with the language).

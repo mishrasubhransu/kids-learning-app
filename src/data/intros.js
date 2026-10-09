@@ -125,6 +125,16 @@ export const intros = {
     'Good morning! Rise and shine!',
     "[gasps] From wake up to sleep — what a busy day!",
   ],
+  'concepts-leisure': [
+    "Let's play! What do kids do for fun?",
+    "[gasps] Snow, sand and sunshine — let's have fun!",
+    "Skate, splash and ride — let's go!",
+  ],
+  'concepts-buildings': [
+    "Let's look at buildings!",
+    'Big ones, small ones — so many buildings!',
+    "[gasps] Who works in here? Let's find out!",
+  ],
   // Fixed-language lesson: the SCREEN text follows the app language (this
   // table / the or pack), but the CLIP plays in the child's chosen Indian
   // Food language — CategoryIntro resolves it via the speech locale.

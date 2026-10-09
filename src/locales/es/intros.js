@@ -119,6 +119,16 @@ export default {
     '¡Buenos días! ¡Arriba, arriba!',
     '[gasps] De despertarse hasta dormir — ¡qué día tan ocupado!',
   ],
+  'concepts-leisure': [
+    '¡A jugar! ¿Qué hacen los niños para divertirse?',
+    '[gasps] Nieve, arena y sol — ¡a divertirnos!',
+    '¡Patinar, chapotear y pasear — vamos!',
+  ],
+  'concepts-buildings': [
+    '¡Vamos a ver edificios!',
+    'Grandes y pequeños — ¡cuántos edificios!',
+    '[gasps] ¿Quién trabaja aquí? ¡Vamos a ver!',
+  ],
   addition: [
     '¡Vamos a sumar!',
     '[gasps] ¿Cuántos hay en total? ¡Vamos a contar!',
