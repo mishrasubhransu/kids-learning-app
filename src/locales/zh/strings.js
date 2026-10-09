@@ -46,6 +46,7 @@ export default {
   'cat.concepts.routine': '日常',
   'cat.concepts.leisure': '休闲',
   'cat.concepts.buildings': '建筑',
+  'cat.concepts.garden': '花园',
 
   // Category page chrome
   'mode.scroll': '滑动',

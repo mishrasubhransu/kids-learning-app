@@ -586,4 +586,19 @@ export default {
   lighthouse: { name: '灯塔' },
   castle: { name: '城堡' },
 
+  // Garden
+  'lawn-mower': { name: '割草机' },
+  'leaf-blower': { name: '吹叶机' },
+  rake: { name: '耙子' },
+  wheelbarrow: { name: '独轮车' },
+  'watering-can': { name: '洒水壶' },
+  'garden-hose': { name: '水管' },
+  sprinkler: { name: '洒水器' },
+  shovel: { name: '铁锹' },
+  'hedge-trimmer': { name: '绿篱机' },
+  'grass-trimmer': { name: '打草机' },
+  'pruning-shears': { name: '修枝剪' },
+  trowel: { name: '小铲子' },
+  'snow-blower': { name: '扫雪机' },
+  'pressure-washer': { name: '高压水枪' },
 };

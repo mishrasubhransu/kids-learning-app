@@ -572,8 +572,8 @@ export default {
   // rusty bike) stays ପୁରୁଣା. young "ଜୁଆନ" (youthful) has to cover a little
   // boy AND a 25-year-old woman — check it against ଛୁଆ / ଯୁବା. smooth
   // "ଚିକ୍କଣ" (sleek) and bumpy "ଖଦଡ଼ା" (rough) are the everyday texture
-  // pair, covering road and ball. hiking "ପାହାଡ଼ ବୁଲା" and barn "ଗୁହାଳ"
-  // are low-confidence.
+  // pair, covering road and ball. rake "ରେକ୍", hiking "ପାହାଡ଼ ବୁଲା" and barn
+  // "ଗୁହାଳ" are low-confidence.
   young: { name: 'ଜୁଆନ' },
   'old-age': { name: 'ବୁଢ଼ା' },
   smooth: { name: 'ଚିକ୍କଣ' },
@@ -624,4 +624,19 @@ export default {
   lighthouse: { name: 'ଆଲୋକସ୍ତମ୍ଭ' },
   castle: { name: 'ଦୁର୍ଗ' },
 
+  // Garden
+  'lawn-mower': { name: 'ଘାସ କଟା ମେସିନ' },
+  'leaf-blower': { name: 'ପତ୍ର ଉଡ଼ା ମେସିନ' },
+  rake: { name: 'ରେକ୍' },
+  wheelbarrow: { name: 'ଠେଲାଗାଡ଼ି' },
+  'watering-can': { name: 'ଝାରି' },
+  'garden-hose': { name: 'ପାଇପ' },
+  sprinkler: { name: 'ସ୍ପ୍ରିଙ୍କଲର' },
+  shovel: { name: 'ଫାଉଡ଼ା' },
+  'hedge-trimmer': { name: 'ହେଜ୍ ଟ୍ରିମର' },
+  'grass-trimmer': { name: 'ଘାସ ଟ୍ରିମର' },
+  'pruning-shears': { name: 'ବଗିଚା କଇଁଚି' },
+  trowel: { name: 'ଖୁରପି' },
+  'snow-blower': { name: 'ବରଫ ହଟା ମେସିନ' },
+  'pressure-washer': { name: 'ପ୍ରେସର ୱାସର' },
 };

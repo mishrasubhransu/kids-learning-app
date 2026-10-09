@@ -43,6 +43,7 @@ export const conceptCategories = [
   // Order is the lesson: keep items in wake-to-sleep sequence.
   { id: 'leisure', name: 'Leisure', emoji: '🏂', color: 'bg-teal-600', hoverColor: 'hover:bg-teal-700' },
   { id: 'buildings', name: 'Buildings', emoji: '🏢', color: 'bg-stone-500', hoverColor: 'hover:bg-stone-600' },
+  { id: 'garden', name: 'Garden', emoji: '🌱', color: 'bg-lime-600', hoverColor: 'hover:bg-lime-700' },
   { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
@@ -529,6 +530,24 @@ export const conceptItems = {
     { id: 18, name: 'Barn', image: '/concepts/buildings/barn.webp' },
     { id: 19, name: 'Lighthouse', image: '/concepts/buildings/lighthouse.webp' },
     { id: 20, name: 'Castle', image: '/concepts/buildings/castle.webp' },
+  ],
+  // Yard and garden tools, from the loud machines kids watch from the window
+  // (mower, leaf blower, snow blower) to the hand tools.
+  garden: [
+    { id: 0, name: 'Lawn Mower', image: '/concepts/garden/lawn-mower.webp' },
+    { id: 1, name: 'Leaf Blower', image: '/concepts/garden/leaf-blower.webp' },
+    { id: 2, name: 'Rake', image: '/concepts/garden/rake.webp' },
+    { id: 3, name: 'Wheelbarrow', image: '/concepts/garden/wheelbarrow.webp' },
+    { id: 4, name: 'Watering Can', image: '/concepts/garden/watering-can.webp' },
+    { id: 5, name: 'Garden Hose', image: '/concepts/garden/garden-hose.webp' },
+    { id: 6, name: 'Sprinkler', image: '/concepts/garden/sprinkler.webp' },
+    { id: 7, name: 'Shovel', image: '/concepts/garden/shovel.webp' },
+    { id: 8, name: 'Hedge Trimmer', image: '/concepts/garden/hedge-trimmer.webp' },
+    { id: 9, name: 'Grass Trimmer', image: '/concepts/garden/grass-trimmer.webp' },
+    { id: 10, name: 'Pruning Shears', image: '/concepts/garden/pruning-shears.webp' },
+    { id: 11, name: 'Trowel', image: '/concepts/garden/trowel.webp' },
+    { id: 12, name: 'Snow Blower', image: '/concepts/garden/snow-blower.webp' },
+    { id: 13, name: 'Pressure Washer', image: '/concepts/garden/pressure-washer.webp' },
   ],
   routine: [
     { id: 0, name: 'Wake Up', image: '/concepts/routine/wake-up.webp' },

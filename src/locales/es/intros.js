@@ -129,6 +129,11 @@ export default {
     'Grandes y pequeños — ¡cuántos edificios!',
     '[gasps] ¿Quién trabaja aquí? ¡Vamos a ver!',
   ],
+  'concepts-garden': [
+    '¡Vamos al jardín!',
+    '¡Brrrum! ¡Las máquinas del jardín están trabajando!',
+    '[gasps] Rastrillos, mangueras y podadoras — ¡vamos a ver!',
+  ],
   addition: [
     '¡Vamos a sumar!',
     '[gasps] ¿Cuántos hay en total? ¡Vamos a contar!',

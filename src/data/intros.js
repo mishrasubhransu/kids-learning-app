@@ -135,6 +135,11 @@ export const intros = {
     'Big ones, small ones — so many buildings!',
     "[gasps] Who works in here? Let's find out!",
   ],
+  'concepts-garden': [
+    "Let's go to the garden!",
+    'Vroom! The garden machines are working!',
+    "[gasps] Rakes, hoses and mowers — let's take a look!",
+  ],
   // Fixed-language lesson: the SCREEN text follows the app language (this
   // table / the or pack), but the CLIP plays in the child's chosen Indian
   // Food language — CategoryIntro resolves it via the speech locale.

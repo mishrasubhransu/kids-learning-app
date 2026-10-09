@@ -50,6 +50,7 @@ export default {
   'cat.concepts.routine': 'Rutina',
   'cat.concepts.leisure': 'Tiempo libre',
   'cat.concepts.buildings': 'Edificios',
+  'cat.concepts.garden': 'Jardín',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

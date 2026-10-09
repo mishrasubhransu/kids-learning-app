@@ -46,6 +46,7 @@ export default {
   'cat.concepts.routine': 'ଦିନଚର୍ଯ୍ୟା',
   'cat.concepts.leisure': 'ଖେଳ ଓ ମଜା',
   'cat.concepts.buildings': 'କୋଠା',
+  'cat.concepts.garden': 'ବଗିଚା',
   'cat.concepts.indian-food': 'ଆମ ଖାଦ୍ୟ',
 
   // Category page chrome

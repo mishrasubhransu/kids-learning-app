@@ -602,4 +602,19 @@ export default {
   lighthouse: { name: 'Faro', ref: 'el faro' },
   castle: { name: 'Castillo', ref: 'el castillo' },
 
+  // Garden
+  'lawn-mower': { name: 'Podadora', ref: 'la podadora' },
+  'leaf-blower': { name: 'Sopladora', ref: 'la sopladora' },
+  rake: { name: 'Rastrillo', ref: 'el rastrillo' },
+  wheelbarrow: { name: 'Carretilla', ref: 'la carretilla' },
+  'watering-can': { name: 'Regadera', ref: 'la regadera' },
+  'garden-hose': { name: 'Manguera', ref: 'la manguera' },
+  sprinkler: { name: 'Aspersor', ref: 'el aspersor' },
+  shovel: { name: 'Pala', ref: 'la pala' },
+  'hedge-trimmer': { name: 'Cortasetos', ref: 'el cortasetos' },
+  'grass-trimmer': { name: 'Recortadora', ref: 'la recortadora' },
+  'pruning-shears': { name: 'Tijeras de podar', ref: 'las tijeras de podar', plural: true },
+  trowel: { name: 'Pala de mano', ref: 'la pala de mano' },
+  'snow-blower': { name: 'Quitanieves', ref: 'la quitanieves' },
+  'pressure-washer': { name: 'Hidrolavadora', ref: 'la hidrolavadora' },
 };

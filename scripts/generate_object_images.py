@@ -296,6 +296,15 @@ STYLE_PROMPTS = {
         "Simple, uncluttered composition, captured as if by a professional architecture photographer. "
         "No readable words, no signs with lettering, no logos, no watermarks. Square 1:1 composition."
     ),
+    "garden": (
+        "A beautiful, high-quality photograph of {subject}. "
+        "Photorealistic with vivid colors and bright, cheerful natural daylight "
+        "in a tidy green backyard garden. The object is centered, fills most of the "
+        "frame, and is instantly recognizable at a glance. "
+        "Captured as if by a professional product photographer, sharp focus on the object, "
+        "softly blurred garden background. "
+        "No brand logos, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
     # My Day / daily routine (concepts/routine): ONE recurring family — the
     # same toddler boy and the same dad — so the only thing changing between
     # pictures is the moment of the day (same-subject storytelling, like the
@@ -1047,6 +1056,22 @@ ITEMS = {
         "barn": "a classic big red barn with white trim on a green farm, a silo beside it",
         "lighthouse": "a tall red-and-white striped lighthouse on rocks by the sea",
         "castle": "a fairy-tale stone castle with tall round towers, pointed roofs, flags and a drawbridge",
+    },
+    "garden": {
+        "lawn-mower": "a red push lawn mower on a half-mowed green lawn, neat stripes of cut grass behind it",
+        "leaf-blower": "a handheld orange leaf blower held by a gardener's gloved hand, blowing a swirl of colorful autumn leaves across a lawn",
+        "rake": "a garden leaf rake with a long wooden handle leaning beside a pile of autumn leaves on the lawn",
+        "wheelbarrow": "a green wheelbarrow with one front wheel, full of soil, standing in a vegetable garden",
+        "watering-can": "a bright green metal watering can sprinkling water onto flowers",
+        "garden-hose": "a coiled green garden hose with a spray nozzle on a reel beside a garden bed",
+        "sprinkler": "a lawn sprinkler spraying sparkling arcs of water over a green lawn",
+        "shovel": "a garden shovel with a wooden handle stuck in fresh brown soil beside a hole",
+        "hedge-trimmer": "a yellow electric hedge trimmer with a long toothed blade beside a neatly trimmed green hedge",
+        "grass-trimmer": "a red string grass trimmer with a long shaft and a round spinning head, trimming grass along a garden path",
+        "pruning-shears": "a pair of red-handled pruning shears snipping a stem on a rose bush",
+        "trowel": "a small hand trowel with a wooden handle digging into soil in a flower pot",
+        "snow-blower": "a red snow blower clearing a snowy driveway, a big arc of snow shooting out of its chute",
+        "pressure-washer": "a yellow pressure washer spraying a powerful jet of water that cleans a stripe across a dirty patio",
     },
     # My Day — ordered morning-to-night. Pajamas before Get Dressed and after
     # Play Time; the yellow t-shirt for the whole day between.
