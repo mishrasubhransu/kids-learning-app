@@ -12,6 +12,7 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { useFamily } from '../../context/FamilyContext';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../../context/ChildProfileContext';
 import {
   clipLocale,
@@ -33,6 +34,10 @@ import LessonTree from './LessonTree';
 import CustomWordsEditor from './CustomWordsEditor';
 import ProfileEditor from './ProfileEditor';
 import FamilyManager from './FamilyManager';
+import AccountTransfer from './AccountTransfer';
+import FamilyAccounts from './FamilyAccounts';
+import ChildProgress from './ChildProgress';
+import ChildLocked from './ChildLocked';
 import VoiceSelector from '../ui/VoiceSelector';
 
 // Pill-style option picker for a per-child setting
@@ -184,6 +189,7 @@ const NameAudioStatus = ({ child, status, onGenerate }) => {
 const ParentZone = () => {
   const [unlocked, setUnlocked] = useState(false);
   const { user, signOut } = useAuth();
+  const { isChildLogin } = useFamily();
   const {
     childProfiles,
     activeChild,
@@ -200,6 +206,14 @@ const ParentZone = () => {
   const [editorMode, setEditorMode] = useState(null); // null | 'new' | childId
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
 
+  // A child's own login never gets in — not even by holding the circle
+  if (isChildLogin) {
+    return (
+      <ChildLocked
+        childName={activeChild && activeChild.name !== DEFAULT_CHILD_NAME ? activeChild.name : null}
+      />
+    );
+  }
   if (!unlocked) return <HoldGate onUnlock={() => setUnlocked(true)} />;
 
   const profiles = childProfiles || [];
@@ -513,6 +527,16 @@ const ParentZone = () => {
           </>
         )}
 
+        {selected && (
+          <>
+            {/* ---- Progress ---- */}
+            <SectionTitle>
+              {selected.name === DEFAULT_CHILD_NAME ? 'Progress' : `${selected.name}'s week`}
+            </SectionTitle>
+            <ChildProgress child={selected} />
+          </>
+        )}
+
         {/* ---- Family ---- */}
         <SectionTitle>Family</SectionTitle>
         <p className="text-sm text-gray-500 -mt-2 mb-3">
@@ -521,6 +545,15 @@ const ParentZone = () => {
           they recognize the real face.
         </p>
         <FamilyManager />
+
+        {/* ---- Family accounts ---- */}
+        <SectionTitle>Family accounts</SectionTitle>
+        <p className="text-sm text-gray-500 -mt-2 mb-3">
+          Other Google accounts that share this family: a second parent with
+          the same controls, or a child&apos;s own login so their device never
+          carries yours.
+        </p>
+        <FamilyAccounts />
 
         {/* ---- Account ---- */}
         <SectionTitle>Account</SectionTitle>
@@ -532,6 +565,9 @@ const ParentZone = () => {
           >
             <LogOut size={16} /> Sign out
           </button>
+        </div>
+        <div className="mt-3">
+          <AccountTransfer />
         </div>
       </div>
     </div>

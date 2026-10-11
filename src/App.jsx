@@ -16,6 +16,7 @@ import OppositesPage from './components/opposites/OppositesPage';
 import AdditionPage from './components/addition/AdditionPage';
 import FamilyPage from './components/family/FamilyPage';
 import FeedbackButton from './components/FeedbackButton';
+import InvitePrompt from './components/InvitePrompt';
 import LoginPage from './components/LoginPage';
 import ProtectedRoute from './components/ProtectedRoute';
 import LessonGuard from './components/LessonGuard';
@@ -88,6 +89,7 @@ const App = () => {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <FeedbackButton />
+      {user && <InvitePrompt />}
     </>
   );
 };

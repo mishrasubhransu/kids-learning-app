@@ -14,12 +14,14 @@ import { homeCategories } from '../data/categories';
 import { isLessonVisible, isLessonAvailable, newLessonKeys } from '../data/lessons';
 import { useChildProfile, DEFAULT_CHILD_NAME } from '../context/ChildProfileContext';
 import { useLocale } from '../context/LocaleContext';
+import { useFamily } from '../context/FamilyContext';
 import useChildSetting from '../hooks/useChildSetting';
 
 const NUMBER_RANGES = ['10', '20', '30', '40'];
 
 const Home = () => {
   const { activeChild } = useChildProfile();
+  const { isChildLogin } = useFamily();
   const { locale, t } = useLocale();
   const enabledLessons = activeChild?.settings?.enabledLessons;
 
@@ -189,6 +191,7 @@ const Home = () => {
         <span className="text-gray-500 text-sm">
           {t('home.navHint')}
         </span>
+        {!isChildLogin && (
         <Link
           to="/parent"
           className="relative mt-1 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
@@ -202,6 +205,7 @@ const Home = () => {
             />
           )}
         </Link>
+        )}
       </div>
       </div>
     </div>

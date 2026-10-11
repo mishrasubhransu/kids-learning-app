@@ -1,7 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react';
 import useSpeech from './useSpeech';
 import { useAuth } from '../context/AuthContext';
-import { ADMIN_EMAIL, hasRecording, getRecordingObjectUrl } from '../lib/recordings';
+import {
+  RECORDED_VOICE_SETTING,
+  canPlayRecordings,
+  hasRecording,
+  getRecordingObjectUrl,
+} from '../lib/recordings';
+import useUserSetting from './useUserSetting';
 import { hasVoiceClip, getVoiceClipUrl } from '../lib/voice';
 import { itemPart } from '../lib/voiceKeys';
 import { getTtsLang } from '../lib/locale';
@@ -12,7 +18,7 @@ import { track } from '../lib/analytics';
 // parts (played back to back — how compound sentences avoid a clip per
 // pairing), or a plain string (TTS only — dynamic text like family names
 // has no pre-generated clip). Priority: parent recording (admin account
-// only) → ElevenLabs clip → TTS, with an analytics event when a clip we
+// and accounts it transferred to) → ElevenLabs clip → TTS, with an analytics event when a clip we
 // expected to have doesn't play. Resolves when playback ends; never
 // rejects, so feedback chains can't stall a game.
 //
@@ -24,8 +30,10 @@ const useVoice = (recordingCategory = null) => {
   const { speak: tts, cancel: cancelTts } = useSpeech();
   const { user } = useAuth();
   // Recorded clips are the admin's own voice and accent — wrong for other
-  // families (same gate as the old useRecordedAudio).
-  const category = user?.email === ADMIN_EMAIL ? recordingCategory : null;
+  // families (same gate as the old useRecordedAudio) unless the account was
+  // handed the admin's content by an account transfer.
+  const [recordedVoice] = useUserSetting(RECORDED_VOICE_SETTING, '');
+  const category = canPlayRecordings(user, recordedVoice) ? recordingCategory : null;
   const audioRef = useRef(null);
   const tokenRef = useRef(0);
 

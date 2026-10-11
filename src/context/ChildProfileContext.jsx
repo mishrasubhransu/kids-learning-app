@@ -14,6 +14,7 @@ import {
   resolveNameAudioPath,
 } from '../lib/nameAudio';
 import { useAuth } from './AuthContext';
+import { useFamily } from './FamilyContext';
 import { setAnalyticsChild } from '../lib/analytics';
 import { defaultEnabledLessons } from '../data/lessons';
 import { CATEGORY_IMAGE_STYLES } from '../lib/imageStyles';
@@ -25,6 +26,11 @@ import { CATEGORY_IMAGE_STYLES } from '../lib/imageStyles';
 // The ACTIVE child is deliberately device-local (localStorage only, never
 // synced): two siblings can be on two tablets at once, each with their own
 // profile — cross-device sync would make them fight.
+//
+// Rows are keyed by the FAMILY id (FamilyContext — the owner's user id),
+// so a second parent sees and edits the same children. A child login is
+// pinned to its linked profile: that is the only profile it sees, and the
+// active child can't be switched away from it.
 
 const LS_CACHE = 'childProfiles-v1'; // { userId, profiles }
 const LS_ACTIVE = 'activeChildId';
@@ -69,7 +75,15 @@ const legacyDeviceSettings = () => {
 };
 
 export const ChildProfileProvider = ({ children }) => {
-  const { user, session } = useAuth();
+  const { user: login, session } = useAuth();
+  const { familyId, resolved, isChildLogin, linkedChildId } = useFamily();
+  // The family identity every row and cache keys by. Null until the
+  // membership lookup has answered, so a parent-of-another-family never
+  // flashes (or bootstraps into) their own empty family first.
+  const user = useMemo(
+    () => (login && resolved ? { id: familyId } : null),
+    [login, resolved, familyId]
+  );
   const [profiles, setProfiles] = useState(() => {
     const cached = readCache();
     return cached?.profiles ?? null;
@@ -232,7 +246,13 @@ export const ChildProfileProvider = ({ children }) => {
       // First run for this account: auto-create one profile with everything
       // enabled + this device's legacy settings, so nothing visibly changes.
       // The partial unique index on is_default makes a two-device race safe.
-      if (bootstrapping.current) return;
+      // A child login never bootstraps — its family's children exist; an
+      // empty answer means the link was removed, and RLS would refuse the
+      // insert anyway.
+      if (bootstrapping.current || isChildLogin) {
+        setLoading(false);
+        return;
+      }
       bootstrapping.current = true;
       const { data: created, error: insertError } = await supabase
         .from('child_profiles')
@@ -263,12 +283,18 @@ export const ChildProfileProvider = ({ children }) => {
     return () => {
       cancelled = true;
     };
-  }, [user, applyProfiles]);
+  }, [user, applyProfiles, isChildLogin]);
+
+  // A child login sees only its own profile
+  const visibleProfiles = useMemo(() => {
+    if (!profiles) return profiles;
+    return isChildLogin ? profiles.filter((p) => p.id === linkedChildId) : profiles;
+  }, [profiles, isChildLogin, linkedChildId]);
 
   const activeChild = useMemo(() => {
-    if (!profiles || profiles.length === 0) return null;
-    return profiles.find((p) => p.id === activeChildId) || profiles[0];
-  }, [profiles, activeChildId]);
+    if (!visibleProfiles || visibleProfiles.length === 0) return null;
+    return visibleProfiles.find((p) => p.id === activeChildId) || visibleProfiles[0];
+  }, [visibleProfiles, activeChildId]);
 
   // Self-heal: generation only fires on create/rename/language-switch, so a
   // one-time failure (dev server without /api, missing env vars, network)
@@ -420,7 +446,7 @@ export const ChildProfileProvider = ({ children }) => {
 
   const value = useMemo(
     () => ({
-      childProfiles: profiles,
+      childProfiles: visibleProfiles,
       activeChild,
       loading,
       setActiveChild,
@@ -433,7 +459,7 @@ export const ChildProfileProvider = ({ children }) => {
       requestNameAudio,
     }),
     [
-      profiles,
+      visibleProfiles,
       activeChild,
       loading,
       setActiveChild,

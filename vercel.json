@@ -1,6 +1,7 @@
 {
   "functions": {
-    "api/generate-name-audio.js": { "maxDuration": 60 }
+    "api/generate-name-audio.js": { "maxDuration": 60 },
+    "api/transfer-account.js": { "maxDuration": 60 }
   },
   "rewrites": [
     { "source": "/((?!api/).*)", "destination": "/index.html" }

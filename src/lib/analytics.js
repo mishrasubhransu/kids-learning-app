@@ -18,6 +18,9 @@ const sessionId = crypto.randomUUID();
 let auth = null; // { userId, email, token }
 // Active child profile, set by ChildProfileContext so events are per-kid
 let activeChildId = null;
+// The family the device's login belongs to (FamilyContext) — what the
+// parents' progress panel reads events by; user_id stays the actual login
+let familyId = null;
 let queue = [];
 let flushTimer = null;
 let segment = null; // { path, category, mode, startedAt }
@@ -44,9 +47,14 @@ export const setAnalyticsChild = (childId) => {
   activeChildId = childId ?? null;
 };
 
+export const setAnalyticsFamily = (id) => {
+  familyId = id ?? null;
+};
+
 const row = (event, fields = {}) => ({
   user_id: auth.userId,
   email: auth.email,
+  family_id: familyId ?? auth.userId,
   child_id: activeChildId,
   session_id: sessionId,
   event,

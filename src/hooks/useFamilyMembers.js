@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../context/AuthContext';
+import { useFamily } from '../context/FamilyContext';
 import {
   uploadFamilyPhoto,
   removeFamilyPhoto,
@@ -101,7 +102,15 @@ const writeCache = (userId, members) => {
 };
 
 const useFamilyMembers = () => {
-  const { user, session } = useAuth();
+  const { user: login, session } = useAuth();
+  const { familyId, resolved } = useFamily();
+  // Rows, photo folders and caches all key by the FAMILY (its owner's id),
+  // so a second parent or a child login sees the same people. `user` below
+  // is that family identity; the real login only matters for the token.
+  const user = useMemo(
+    () => (login && resolved ? { id: familyId } : null),
+    [login, resolved, familyId]
+  );
   // State is keyed by userId so a signed-in-account change never flashes
   // the previous family — the derived value below just goes null until the
   // new account's fetch lands

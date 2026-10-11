@@ -10,6 +10,14 @@ import { supabase } from './supabase';
 
 export const ADMIN_EMAIL = 'subhransu.kumar.mishra@gmail.com';
 
+// Who hears the recorded clips: the admin (it's their own voice and accent —
+// wrong for other families), plus any account that received the admin's
+// content through an account transfer (api/transfer-account.js writes the
+// recordedVoice user setting). Everyone else gets the generated clips/TTS.
+export const RECORDED_VOICE_SETTING = 'recordedVoice';
+export const canPlayRecordings = (user, recordedVoiceSetting) =>
+  Boolean(user) && (user.email === ADMIN_EMAIL || recordedVoiceSetting === 'on');
+
 const BUCKET = 'recordings';
 const CACHE_NAME = 'recordings-v1';
 const LS_VERSION = 'recordings-version';

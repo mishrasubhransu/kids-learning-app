@@ -2,7 +2,7 @@ import { supabase } from './supabase';
 
 // Family member photos: public-read bucket with unguessable uuid paths
 // (same trust model as name-audio); RLS restricts writes to the caller's
-// own <user_id>/ folder. Paths are timestamped so replacing a photo is a
+// family folder (<family owner id>/, the userId every caller passes here). Paths are timestamped so replacing a photo is a
 // brand-new URL — no stale caches.
 
 const BUCKET = 'family-photos';

@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider } from './context/AuthContext'
+import { FamilyProvider } from './context/FamilyContext'
 import { ChildProfileProvider } from './context/ChildProfileContext'
 import { LocaleProvider } from './context/LocaleContext'
 import './index.css'
@@ -15,12 +16,14 @@ createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <ChildProfileProvider>
-          <LocaleProvider>
-            <App />
-            <Analytics />
-          </LocaleProvider>
-        </ChildProfileProvider>
+        <FamilyProvider>
+          <ChildProfileProvider>
+            <LocaleProvider>
+              <App />
+              <Analytics />
+            </LocaleProvider>
+          </ChildProfileProvider>
+        </FamilyProvider>
       </AuthProvider>
     </BrowserRouter>
   </StrictMode>,

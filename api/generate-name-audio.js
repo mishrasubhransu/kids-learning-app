@@ -2,6 +2,7 @@
 import { createHash } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 import { alertTelegram } from './_lib/telegram-alert.js';
+import { resolveFamily, mayManage } from './_lib/family.js';
 
 // Per-child voice clips (same ElevenLabs voice as the prerecorded praise
 // clips), stored in the name-audio bucket. Three actions, all keyed by a
@@ -292,6 +293,8 @@ export default async function handler(req, res) {
           `(server key: ${kind}/${k.length}/#${keyHash}${keyClaims}, url: ${urlHost}, token: ${tokenInfo})`,
       });
     }
+    // Co-parents act on the owner's rows; a child login gets nothing here
+    const family = await resolveFamily(admin, userData.user.id);
 
     if (memberId) {
       const { data: member } = await admin
@@ -299,7 +302,7 @@ export default async function handler(req, res) {
         .select('id, user_id, name, name_lang, name_phonetic')
         .eq('id', memberId)
         .maybeSingle();
-      if (!member || member.user_id !== userData.user.id) {
+      if (!member || !mayManage(family, member.user_id)) {
         return res.status(404).json({ error: 'Member not found' });
       }
       const prefix = `${member.user_id}/family/${member.id}`;
@@ -372,7 +375,7 @@ export default async function handler(req, res) {
       .select('id, user_id, name, name_audio_path, name_audio_paths, settings')
       .eq('id', childId)
       .maybeSingle();
-    if (!child || child.user_id !== userData.user.id) {
+    if (!child || !mayManage(family, child.user_id)) {
       return res.status(404).json({ error: 'Child not found' });
     }
 
