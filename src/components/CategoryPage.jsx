@@ -122,13 +122,27 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
       : null;
   }, [category, locale, customWordKeys]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Alphabets follow the shared letterCase pill: 'small' pairs each capital
+  // with its lowercase ("Aa"), matching Letter Sounds. Only display changes —
+  // speech, slugs and progress keep the stored capital.
+  const [letterCase] = useChildSetting('letterCase', 'capital', {
+    legacyKey: 'setting-letterCase',
+  });
+
   // Numbers honor the per-child counting range before any session capping
   const sizedItems = useMemo(() => {
     if (!resolvedItems) return null;
+    if (category === 'alphabets' && letterCase === 'small') {
+      return resolvedItems.map((item) =>
+        /^[A-Z]$/.test(item.display)
+          ? { ...item, display: item.display + item.display.toLowerCase() }
+          : item
+      );
+    }
     return category === 'numbers'
       ? resolvedItems.slice(0, Number(numberMax || '10'))
       : resolvedItems;
-  }, [resolvedItems, category, numberMax]);
+  }, [resolvedItems, category, numberMax, letterCase]);
 
   // Parent-configured session sizes; capped pools rotate unseen-first
   // across visits. Lesson modes (scroll/tile/trace) share one pool so the

@@ -58,7 +58,8 @@ const Home = () => {
     );
   };
 
-  // ABC/Aa on the Letter Sounds card — the same setting the lesson reads
+  // ABC/Aa on the Alphabets and Letter Sounds cards — the same setting both
+  // lessons read
   const [letterCase, setLetterCase] = useChildSetting('letterCase', 'capital', {
     legacyKey: 'setting-letterCase',
   });
@@ -99,6 +100,7 @@ const Home = () => {
           const hasPill =
             category.id === 'numbers' ||
             category.id === 'addition' ||
+            category.id === 'alphabets' ||
             category.id === 'letter-sounds' ||
             Boolean(stylesForCategory(category.id));
           // Pills are siblings positioned over the card, not children of the
@@ -166,7 +168,7 @@ const Home = () => {
                     {additionObjects[additionObject].emoji}
                   </button>
                 </div>
-              ) : category.id === 'letter-sounds' ? (
+              ) : category.id === 'alphabets' || category.id === 'letter-sounds' ? (
                 <button
                   onClick={toggleLetterCase}
                   aria-pressed={letterCase === 'small'}
