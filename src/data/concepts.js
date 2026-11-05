@@ -44,6 +44,7 @@ export const conceptCategories = [
   { id: 'leisure', name: 'Leisure', emoji: '🏂', color: 'bg-teal-600', hoverColor: 'hover:bg-teal-700' },
   { id: 'buildings', name: 'Buildings', emoji: '🏢', color: 'bg-stone-500', hoverColor: 'hover:bg-stone-600' },
   { id: 'garden', name: 'Garden', emoji: '🌱', color: 'bg-lime-600', hoverColor: 'hover:bg-lime-700' },
+  { id: 'monuments', name: 'Monuments', emoji: '🗽', color: 'bg-amber-600', hoverColor: 'hover:bg-amber-700' },
   { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
@@ -548,6 +549,30 @@ export const conceptItems = {
     { id: 11, name: 'Trowel', image: '/concepts/garden/trowel.webp' },
     { id: 12, name: 'Snow Blower', image: '/concepts/garden/snow-blower.webp' },
     { id: 13, name: 'Pressure Washer', image: '/concepts/garden/pressure-washer.webp' },
+  ],
+  // Famous landmarks around the world. Real photos from Wikimedia Commons
+  // (not generated) — authors and licenses in data/photoCredits.js.
+  monuments: [
+    { id: 0, name: 'Taj Mahal', image: '/concepts/monuments/taj-mahal.webp' },
+    { id: 1, name: 'Pyramids', image: '/concepts/monuments/pyramids.webp' },
+    { id: 2, name: 'Sphinx', image: '/concepts/monuments/sphinx.webp' },
+    { id: 3, name: 'Eiffel Tower', image: '/concepts/monuments/eiffel-tower.webp' },
+    { id: 4, name: 'Louvre', image: '/concepts/monuments/louvre.webp' },
+    { id: 5, name: 'Statue of Liberty', image: '/concepts/monuments/statue-of-liberty.webp' },
+    { id: 6, name: 'Lincoln Memorial', image: '/concepts/monuments/lincoln-memorial.webp' },
+    { id: 7, name: 'Washington Monument', image: '/concepts/monuments/washington-monument.webp' },
+    { id: 8, name: 'White House', image: '/concepts/monuments/white-house.webp' },
+    { id: 9, name: 'Golden Gate Bridge', image: '/concepts/monuments/golden-gate-bridge.webp' },
+    { id: 10, name: 'Big Ben', image: '/concepts/monuments/big-ben.webp' },
+    { id: 11, name: 'Colosseum', image: '/concepts/monuments/colosseum.webp' },
+    { id: 12, name: 'Leaning Tower of Pisa', image: '/concepts/monuments/leaning-tower-of-pisa.webp' },
+    { id: 13, name: 'Great Wall of China', image: '/concepts/monuments/great-wall-of-china.webp' },
+    { id: 14, name: 'Sydney Opera House', image: '/concepts/monuments/sydney-opera-house.webp' },
+    { id: 15, name: 'Christ the Redeemer', image: '/concepts/monuments/christ-the-redeemer.webp' },
+    { id: 16, name: 'Machu Picchu', image: '/concepts/monuments/machu-picchu.webp' },
+    { id: 17, name: 'Mount Rushmore', image: '/concepts/monuments/mount-rushmore.webp' },
+    { id: 18, name: 'Konark Sun Temple', image: '/concepts/monuments/konark-sun-temple.webp' },
+    { id: 19, name: "Saint Basil's Cathedral", image: '/concepts/monuments/st-basils-cathedral.webp' },
   ],
   routine: [
     { id: 0, name: 'Wake Up', image: '/concepts/routine/wake-up.webp' },

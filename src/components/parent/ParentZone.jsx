@@ -38,6 +38,7 @@ import AccountTransfer from './AccountTransfer';
 import FamilyAccounts from './FamilyAccounts';
 import ChildProgress from './ChildProgress';
 import ChildLocked from './ChildLocked';
+import PhotoCredits from './PhotoCredits';
 import VoiceSelector from '../ui/VoiceSelector';
 
 // Pill-style option picker for a per-child setting
@@ -569,6 +570,10 @@ const ParentZone = () => {
         <div className="mt-3">
           <AccountTransfer />
         </div>
+
+        {/* ---- Photo credits ---- */}
+        <SectionTitle>Photo credits</SectionTitle>
+        <PhotoCredits />
       </div>
     </div>
   );

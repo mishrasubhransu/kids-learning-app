@@ -1,5 +1,5 @@
 {
-  "version": "2026-10-08T23:22:54.006Z",
+  "version": "2026-11-02T14:15:08.023Z",
   "clips": {
     "en/lines/this-is-my-family": {
       "v": 1785378972,
@@ -40376,6 +40376,326 @@
     "es/quiz/that-was/jumping-on-trampoline": {
       "v": 1791501774,
       "h": "f4801dd926"
+    },
+    "en/items/taj-mahal": {
+      "v": 1793628834,
+      "h": "69574d981b"
+    },
+    "en/quiz/which-one/taj-mahal": {
+      "v": 1793628835,
+      "h": "5dd32b742b"
+    },
+    "en/quiz/that-was/taj-mahal": {
+      "v": 1793628836,
+      "h": "7097da5094"
+    },
+    "en/quiz/try-to-find/taj-mahal": {
+      "v": 1793628837,
+      "h": "f66fd0c8ec"
+    },
+    "en/items/pyramids": {
+      "v": 1793628838,
+      "h": "622633cf49"
+    },
+    "en/quiz/which-one/pyramids": {
+      "v": 1793628838,
+      "h": "6a8e75624f"
+    },
+    "en/quiz/that-was/pyramids": {
+      "v": 1793628840,
+      "h": "5a4a505303"
+    },
+    "en/quiz/try-to-find/pyramids": {
+      "v": 1793628840,
+      "h": "6deaee865e"
+    },
+    "en/items/sphinx": {
+      "v": 1793628841,
+      "h": "d3881546ab"
+    },
+    "en/quiz/which-one/sphinx": {
+      "v": 1793628842,
+      "h": "e3a4cb498a"
+    },
+    "en/quiz/that-was/sphinx": {
+      "v": 1793628843,
+      "h": "5be2021815"
+    },
+    "en/quiz/try-to-find/sphinx": {
+      "v": 1793628844,
+      "h": "0a8642b97d"
+    },
+    "en/items/eiffel-tower": {
+      "v": 1793628845,
+      "h": "f43a796d8a"
+    },
+    "en/quiz/which-one/eiffel-tower": {
+      "v": 1793628846,
+      "h": "0519adc5d4"
+    },
+    "en/quiz/that-was/eiffel-tower": {
+      "v": 1793628847,
+      "h": "f19ed8b188"
+    },
+    "en/items/louvre": {
+      "v": 1793628848,
+      "h": "4b10f7c719"
+    },
+    "en/quiz/try-to-find/eiffel-tower": {
+      "v": 1793628848,
+      "h": "6534f8fdb7"
+    },
+    "en/quiz/which-one/louvre": {
+      "v": 1793628849,
+      "h": "1cb7c67696"
+    },
+    "en/quiz/that-was/louvre": {
+      "v": 1793628850,
+      "h": "c100435fbf"
+    },
+    "en/quiz/try-to-find/louvre": {
+      "v": 1793628851,
+      "h": "d9fc136631"
+    },
+    "en/items/statue-of-liberty": {
+      "v": 1793628852,
+      "h": "54baf48fcf"
+    },
+    "en/quiz/which-one/statue-of-liberty": {
+      "v": 1793628853,
+      "h": "9f6767e298"
+    },
+    "en/quiz/that-was/statue-of-liberty": {
+      "v": 1793628854,
+      "h": "882667d3ed"
+    },
+    "en/quiz/try-to-find/statue-of-liberty": {
+      "v": 1793628855,
+      "h": "4a1d308972"
+    },
+    "en/items/lincoln-memorial": {
+      "v": 1793628856,
+      "h": "670b8285fb"
+    },
+    "en/quiz/which-one/lincoln-memorial": {
+      "v": 1793628857,
+      "h": "6fbdacf17e"
+    },
+    "en/quiz/that-was/lincoln-memorial": {
+      "v": 1793628857,
+      "h": "1d01c5dbb8"
+    },
+    "en/quiz/try-to-find/lincoln-memorial": {
+      "v": 1793628859,
+      "h": "cf8721a173"
+    },
+    "en/items/washington-monument": {
+      "v": 1793628859,
+      "h": "a008627501"
+    },
+    "en/quiz/which-one/washington-monument": {
+      "v": 1793628860,
+      "h": "9834dc0a3b"
+    },
+    "en/quiz/that-was/washington-monument": {
+      "v": 1793628861,
+      "h": "f1d568c4bd"
+    },
+    "en/quiz/try-to-find/washington-monument": {
+      "v": 1793628862,
+      "h": "5bd01db61a"
+    },
+    "en/items/white-house": {
+      "v": 1793628862,
+      "h": "6ee1fd537f"
+    },
+    "en/quiz/that-was/white-house": {
+      "v": 1793628864,
+      "h": "43dd3aaf9f"
+    },
+    "en/quiz/which-one/white-house": {
+      "v": 1793628865,
+      "h": "caebed016d"
+    },
+    "en/quiz/try-to-find/white-house": {
+      "v": 1793628866,
+      "h": "21f97e9907"
+    },
+    "en/items/golden-gate-bridge": {
+      "v": 1793628866,
+      "h": "db858d559d"
+    },
+    "en/quiz/which-one/golden-gate-bridge": {
+      "v": 1793628867,
+      "h": "8ea0cbb35c"
+    },
+    "en/quiz/that-was/golden-gate-bridge": {
+      "v": 1793628868,
+      "h": "f2f6020f8d"
+    },
+    "en/quiz/try-to-find/golden-gate-bridge": {
+      "v": 1793628869,
+      "h": "4a66bd662f"
+    },
+    "en/items/big-ben": {
+      "v": 1793628870,
+      "h": "3577aa3436"
+    },
+    "en/quiz/which-one/big-ben": {
+      "v": 1793628871,
+      "h": "791ad1244e"
+    },
+    "en/quiz/that-was/big-ben": {
+      "v": 1793628872,
+      "h": "f3da07bc6c"
+    },
+    "en/quiz/try-to-find/big-ben": {
+      "v": 1793628873,
+      "h": "8098f4c440"
+    },
+    "en/items/colosseum": {
+      "v": 1793628873,
+      "h": "19cc854467"
+    },
+    "en/quiz/which-one/colosseum": {
+      "v": 1793628875,
+      "h": "7bf6a0111f"
+    },
+    "en/quiz/that-was/colosseum": {
+      "v": 1793628875,
+      "h": "a4b663715f"
+    },
+    "en/quiz/try-to-find/colosseum": {
+      "v": 1793628876,
+      "h": "8660e40bb2"
+    },
+    "en/items/leaning-tower-of-pisa": {
+      "v": 1793628877,
+      "h": "32465a016d"
+    },
+    "en/quiz/which-one/leaning-tower-of-pisa": {
+      "v": 1793628878,
+      "h": "dbde299025"
+    },
+    "en/quiz/that-was/leaning-tower-of-pisa": {
+      "v": 1793628880,
+      "h": "ace59bddd8"
+    },
+    "en/quiz/try-to-find/leaning-tower-of-pisa": {
+      "v": 1793628881,
+      "h": "36e312631b"
+    },
+    "en/items/great-wall-of-china": {
+      "v": 1793628881,
+      "h": "66ce9805c5"
+    },
+    "en/quiz/which-one/great-wall-of-china": {
+      "v": 1793628884,
+      "h": "b58742cf47"
+    },
+    "en/quiz/that-was/great-wall-of-china": {
+      "v": 1793628884,
+      "h": "a676bfbf21"
+    },
+    "en/quiz/try-to-find/great-wall-of-china": {
+      "v": 1793628886,
+      "h": "0d1015cf9d"
+    },
+    "en/items/sydney-opera-house": {
+      "v": 1793628887,
+      "h": "de4efcbf76"
+    },
+    "en/quiz/which-one/sydney-opera-house": {
+      "v": 1793628888,
+      "h": "e1c00ff68c"
+    },
+    "en/quiz/that-was/sydney-opera-house": {
+      "v": 1793628889,
+      "h": "8dec1243fe"
+    },
+    "en/quiz/try-to-find/sydney-opera-house": {
+      "v": 1793628890,
+      "h": "23f01420b7"
+    },
+    "en/items/christ-the-redeemer": {
+      "v": 1793628891,
+      "h": "12ab22847f"
+    },
+    "en/quiz/which-one/christ-the-redeemer": {
+      "v": 1793628892,
+      "h": "d280ef4c3e"
+    },
+    "en/quiz/that-was/christ-the-redeemer": {
+      "v": 1793628893,
+      "h": "f4ab41f5b8"
+    },
+    "en/quiz/try-to-find/christ-the-redeemer": {
+      "v": 1793628894,
+      "h": "b460add0e1"
+    },
+    "en/items/machu-picchu": {
+      "v": 1793628894,
+      "h": "0072e071cf"
+    },
+    "en/quiz/which-one/machu-picchu": {
+      "v": 1793628895,
+      "h": "3dfe3a7baf"
+    },
+    "en/quiz/that-was/machu-picchu": {
+      "v": 1793628896,
+      "h": "eb49aad24b"
+    },
+    "en/quiz/try-to-find/machu-picchu": {
+      "v": 1793628897,
+      "h": "650eeb7fb1"
+    },
+    "en/items/mount-rushmore": {
+      "v": 1793628898,
+      "h": "bfb96e96d2"
+    },
+    "en/quiz/which-one/mount-rushmore": {
+      "v": 1793628899,
+      "h": "e2cf4c7e72"
+    },
+    "en/quiz/that-was/mount-rushmore": {
+      "v": 1793628900,
+      "h": "06af630795"
+    },
+    "en/quiz/try-to-find/mount-rushmore": {
+      "v": 1793628901,
+      "h": "dc0e0c52ad"
+    },
+    "en/items/konark-sun-temple": {
+      "v": 1793628901,
+      "h": "f4694721d9"
+    },
+    "en/quiz/which-one/konark-sun-temple": {
+      "v": 1793628902,
+      "h": "4f4089c6a6"
+    },
+    "en/quiz/that-was/konark-sun-temple": {
+      "v": 1793628903,
+      "h": "44e3bc9887"
+    },
+    "en/quiz/try-to-find/konark-sun-temple": {
+      "v": 1793628904,
+      "h": "8b6a7a8aef"
+    },
+    "en/items/saint-basil-s-cathedral": {
+      "v": 1793628905,
+      "h": "8dd841debb"
+    },
+    "en/quiz/which-one/saint-basil-s-cathedral": {
+      "v": 1793628906,
+      "h": "ce56324210"
+    },
+    "en/quiz/that-was/saint-basil-s-cathedral": {
+      "v": 1793628907,
+      "h": "744e181249"
+    },
+    "en/quiz/try-to-find/saint-basil-s-cathedral": {
+      "v": 1793628908,
+      "h": "81a1f4138e"
     }
   }
 }

@@ -639,4 +639,28 @@ export default {
   trowel: { name: 'ଖୁରପି' },
   'snow-blower': { name: 'ବରଫ ହଟା ମେସିନ' },
   'pressure-washer': { name: 'ପ୍ରେସର ୱାସର' },
+
+  // Monuments — foreign names are transliterations. Leaning Tower
+  // "ପିସାର ହେଲା ଟାୱାର", Louvre "ଲୁଭ୍ର" and Christ the Redeemer
+  // "କ୍ରାଇଷ୍ଟ ଦ ରିଡିମର" are low-confidence.
+  'taj-mahal': { name: 'ତାଜମହଲ' },
+  pyramids: { name: 'ପିରାମିଡ୍' },
+  sphinx: { name: 'ସ୍ଫିଙ୍କସ୍' },
+  'eiffel-tower': { name: 'ଆଇଫେଲ ଟାୱାର' },
+  louvre: { name: 'ଲୁଭ୍ର' },
+  'statue-of-liberty': { name: 'ଷ୍ଟାଚ୍ୟୁ ଅଫ୍ ଲିବର୍ଟି' },
+  'lincoln-memorial': { name: 'ଲିଙ୍କନ ମେମୋରିଆଲ' },
+  'washington-monument': { name: 'ୱାଶିଂଟନ ମନୁମେଣ୍ଟ' },
+  'white-house': { name: 'ହ୍ୱାଇଟ ହାଉସ' },
+  'golden-gate-bridge': { name: 'ଗୋଲ୍ଡେନ ଗେଟ ବ୍ରିଜ' },
+  'big-ben': { name: 'ବିଗ ବେନ' },
+  colosseum: { name: 'କଲୋସିୟମ' },
+  'leaning-tower-of-pisa': { name: 'ପିସାର ହେଲା ଟାୱାର' },
+  'great-wall-of-china': { name: 'ଚୀନର ମହାପ୍ରାଚୀର' },
+  'sydney-opera-house': { name: 'ସିଡନୀ ଅପେରା ହାଉସ' },
+  'christ-the-redeemer': { name: 'କ୍ରାଇଷ୍ଟ ଦ ରିଡିମର' },
+  'machu-picchu': { name: 'ମାଚୁ ପିଚୁ' },
+  'mount-rushmore': { name: 'ମାଉଣ୍ଟ ରସମୋର' },
+  'konark-sun-temple': { name: 'କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର' },
+  'saint-basil-s-cathedral': { name: 'ସେଣ୍ଟ ବାସିଲ କାଥେଡ୍ରାଲ' },
 };

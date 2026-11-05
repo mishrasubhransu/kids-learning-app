@@ -51,6 +51,7 @@ export default {
   'cat.concepts.leisure': 'Tiempo libre',
   'cat.concepts.buildings': 'Edificios',
   'cat.concepts.garden': 'Jardín',
+  'cat.concepts.monuments': 'Monumentos',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

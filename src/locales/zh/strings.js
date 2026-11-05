@@ -47,6 +47,7 @@ export default {
   'cat.concepts.leisure': '休闲',
   'cat.concepts.buildings': '建筑',
   'cat.concepts.garden': '花园',
+  'cat.concepts.monuments': '名胜古迹',
 
   // Category page chrome
   'mode.scroll': '滑动',

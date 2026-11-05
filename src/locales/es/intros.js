@@ -134,6 +134,11 @@ export default {
     '¡Brrrum! ¡Las máquinas del jardín están trabajando!',
     '[gasps] Rastrillos, mangueras y podadoras — ¡vamos a ver!',
   ],
+  'concepts-monuments': [
+    '¡Vamos a visitar lugares famosos del mundo!',
+    '[gasps] Torres, templos y pirámides — ¡cuántas maravillas!',
+    '¡Prepara la maleta — vamos a ver el mundo!',
+  ],
   addition: [
     '¡Vamos a sumar!',
     '[gasps] ¿Cuántos hay en total? ¡Vamos a contar!',

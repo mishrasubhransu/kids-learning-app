@@ -56,6 +56,7 @@ export default {
   'cat.concepts.leisure': 'Leisure',
   'cat.concepts.buildings': 'Buildings',
   'cat.concepts.garden': 'Garden',
+  'cat.concepts.monuments': 'Monuments',
   'cat.concepts.indian-food': 'Indian Food',
 
   // Category page chrome
