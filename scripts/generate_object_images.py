@@ -290,10 +290,12 @@ STYLE_PROMPTS = {
     ),
     "buildings": (
         "A beautiful, high-quality architectural photograph of {subject}. "
-        "Photorealistic with vivid colors and bright, cheerful natural daylight under a blue sky. "
-        "The whole building is visible from the outside, centered, and instantly "
-        "recognizable at a glance from its shape and the things around it. "
-        "Simple, uncluttered composition, captured as if by a professional architecture photographer. "
+        "Photorealistic with vivid colors and bright, cheerful light; unless the scene says "
+        "otherwise, it is seen from the outside in natural daylight under a blue sky. "
+        "The building is the clear hero of the picture and instantly recognizable at a glance "
+        "from its shape and the things around it. People, vehicles and activity are small, "
+        "natural and secondary, bringing the scene to life without crowding it. "
+        "Captured as if by a professional architecture photographer. "
         "No readable words, no signs with lettering, no logos, no watermarks. Square 1:1 composition."
     ),
     "garden": (
@@ -1034,28 +1036,34 @@ ITEMS = {
         "bowling": "seen from directly behind, a happy child at a bowling alley with their back to the camera, having just released a bright colorful bowling ball that rolls away from us down the shiny lane toward the white pins standing at the far end",
     },
     "buildings": {
-        "house": "a cozy two-story family house with a red roof, a front door, windows, a little garden and a path",
-        "apartment-building": "an ordinary, realistic mid-rise residential apartment building of about six floors in warm beige and red brick, rows of matching windows and small balconies with a few potted plants, a front entrance with a short path, trees along the sidewalk and a few parked cars, like a typical city neighborhood",
-        "skyscraper": "a very tall glass skyscraper reaching up into the blue sky, seen from the street looking up",
-        "school": "a cheerful red-brick school building with big windows, a playground and a yellow school bus out front",
-        "hospital": "a large clean white hospital building with an ambulance parked at the entrance and a big red cross symbol on the wall",
-        "fire-station": "a red-brick fire station with big open garage doors and a shiny red fire truck parked inside",
-        "police-station": "a police station building with blue trim and two police cars parked out front",
-        "airport": "an airport terminal building with big glass windows, a control tower and passenger airplanes parked at the gates",
-        "train-station": "a busy train station with a long platform, a big arched roof and a train waiting at the platform",
-        "gas-station": "a gas station with a canopy roof, fuel pumps and a car filling up",
-        "post-office": "a small post office building with a red mailbox out front and a mail van parked beside it",
-        "library": "a grand library building with columns and wide front steps, a big window showing shelves full of books",
+        # framed close so the house fills most of the picture
+        "house": "a cozy two-story family house with a red roof, framed fairly close so the house fills most of the picture, its front door standing open with warm light glowing inside, a parent on the porch waving, a small tricycle on the garden path, two young children playing together on the grass, a friendly dog on the lawn and a mailbox at the curb",
+        "apartment-building": "a realistic gated residential community of mid-rise apartment buildings about six floors high in warm beige and red brick, rows of matching windows and small balconies with potted plants, a decorative metal entrance gate set in a low brick wall with neatly landscaped grounds and trees inside, someone watering plants on a balcony, a resident walking in through the open front door of the nearest building carrying grocery bags, a parent and toddler walking along the sidewalk outside the gate",
+        "skyscraper": "a very tall glass skyscraper seen from the point of view of a person standing on the sidewalk right at its base and looking straight up, the tower soaring into the blue sky with dramatic perspective, a small window-washer platform hanging partway up its glass face, the tops of shorter neighboring buildings framing the edges of the picture to show how tall it is, and a few people walking past close by on the sidewalk at the bottom of the picture",
+        "school": "a cheerful red-brick school building with big windows and a yellow school bus out front, children with backpacks walking in through the open front doors, a smiling teacher greeting them at the door, kids playing on the swings and slide in the playground beside it, a flagpole by the entrance",
+        "hospital": "a large clean white hospital building with a big red cross symbol on the wall and a busy entrance, an ambulance at the entrance with its back doors open and two paramedics standing beside it, a nurse pushing a patient in a wheelchair along the path, doctors in white coats and nurses in scrubs walking in and out, a family arriving with a child holding a parent's hand, patients and visitors on a bench, no injured person anywhere, nothing on the roof",
+        "fire-station": "a red-brick fire station with big open garage doors and a shiny red fire truck parked inside, firefighters in yellow gear standing beside the truck, hoses coiled on the wall, helmets and boots lined up neatly inside. No dogs.",
+        "police-station": "a police station building with blue trim and two police cars parked out front, a police officer walking out of the front door, another officer standing beside a patrol car, a police motorcycle parked nearby",
+        "airport": "an airport terminal building with big glass windows and a control tower, passenger airplanes parked at the gates with a jet bridge attached to one of them, a little baggage-cart train and a fuel truck on the tarmac, travelers with suitcases visible through the glass, another plane taking off into the sky behind",
+        "train-station": "a busy train station with a long platform and a big arched roof, a bright red train waiting at the platform with its doors open and passengers with suitcases stepping aboard, a conductor standing on the platform, a big round station clock hanging from the roof, a second train arriving in the far distance",
+        # framed close so the pumps and car fill the picture
+        "gas-station": "a gas station with a canopy roof, framed fairly close so the pumps and car fill most of the picture, a driver holding the fuel nozzle in their car's tank, a small shop with lit windows beside the pumps, someone filling a tire at the air pump",
+        "post-office": "a small post office building with a red mailbox out front and a mail van parked beside it, a mail carrier loading parcels into the back of the van, a child posting a letter into the red mailbox, stacks of parcels visible through the window",
+        # inside view — the shelves of books say "library" better than any facade
+        "library": "the inside of a bright, welcoming public library, tall wooden shelves full of colorful books, a librarian at the front desk checking out books, a parent reading a picture book to a toddler on a beanbag in a cozy children's corner, a child pulling a book off a low shelf, reading tables with lamps, a wheeled book cart",
         # big-box look in familiar Walmart-style blue and yellow, but no logo
         "supermarket": "a big-box supermarket with a wide blue facade and bright yellow accent stripes over the entrance, shoppers walking out pushing shopping carts full of grocery bags, one family loading bags from their cart into the trunk of their car in the parking lot, rows of parked cars and cart corrals",
-        "restaurant": "a cozy restaurant with outdoor tables under umbrellas and big windows, warm lights inside",
-        "museum": "a grand museum building with tall columns and a huge dinosaur skeleton visible through the big front windows",
-        "stadium": "a big round sports stadium with tiers of seats around a green field, seen from above",
-        "factory": "a factory building with tall smokestacks puffing white steam, big sheds and trucks at the loading area",
-        "warehouse": "a huge warehouse building with many loading dock doors, delivery trucks backed up to them and stacked boxes visible inside",
-        "barn": "a classic big red barn with white trim on a green farm, a silo beside it",
-        "lighthouse": "a tall red-and-white striped lighthouse on rocks by the sea",
-        "castle": "a fairy-tale stone castle with tall round towers, pointed roofs, flags and a drawbridge",
+        # inside view, like the library
+        "restaurant": "the inside of a cozy, busy family restaurant, photographed from within the dining room with the camera standing among the tables, so no outside walls, street or sky are visible, warm lighting, families eating at tables with plates of food, a waiter carrying a tray of dishes between the tables, a chef in a white hat visible through the open kitchen window at the back",
+        # inside view: dinosaur hall up front, a royal gallery through the archway
+        "museum": "the inside of a grand museum hall with a high ceiling, a huge dinosaur skeleton as the centerpiece, families and children looking up at it in wonder, and through a wide archway at the side a royal gallery with a king's and queen's golden thrones, crowns, a sword and a suit of armor displayed behind glass",
+        "stadium": "a big round sports stadium seen from above, tiers of seats around a green field, the stands filled with cheering crowds, players on the field in the middle of a game, tall floodlight towers around the rim",
+        "factory": "a factory building with tall smokestacks puffing white steam and big sheds, workers in hard hats and hi-vis vests at the loading area, a forklift moving pallets, a conveyor belt visible through a big open door, trucks at the loading area",
+        "warehouse": "a huge warehouse building with many loading dock doors and delivery trucks backed up to them, a forklift carrying a pallet into one of the trucks, tall racks of boxes visible through the open dock doors, workers in hi-vis vests, a delivery van pulling out",
+        "barn": "a classic big red barn with white trim on a green farm, a silo beside it, its big front doors wide open showing hay bales and a cow and a horse in stalls inside, hay poking out of the open loft door, chickens pecking in the yard, a hay wagon and a plow parked beside the barn, a wooden fence, and far away in the background a small farmer driving a tractor across a field",
+        # evening, so the beam shows — the one building not in daylight
+        "lighthouse": "a tall red-and-white striped lighthouse on rocks by the sea in the evening, a deep blue sky with the last warm glow of sunset at the horizon, a bright beam of light shining out from the lamp across the sea, the keeper's cottage at its base with warm lit windows, a sailboat and a small fishing boat out at sea with tiny lights, waves splashing on the rocks",
+        "castle": "a fairy-tale stone castle with tall round towers, pointed roofs and flags flying, its drawbridge lowered over a moat of water, a knight on horseback riding across the drawbridge, ducks swimming in the moat",
     },
     "garden": {
         "lawn-mower": "a red push lawn mower on a half-mowed green lawn, neat stripes of cut grass behind it",
