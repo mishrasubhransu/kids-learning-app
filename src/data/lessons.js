@@ -44,10 +44,12 @@ export const allLessonKeys = lessonTree.flatMap((l) => [
 // whole subtree. This is availability, not enablement — the parent's
 // enabledLessons map keeps its entries, so switching languages back restores
 // their choices untouched.
+// Human Body is narrated films, cut per language — hidden until a
+// language's cuts exist (item.film in data/concepts.js).
 const LOCALE_HIDDEN_LESSONS = {
-  es: ['phonics', 'concepts.indian-food'],
-  zh: ['alphabets', 'phonics', 'typing', 'concepts.indian-food'],
-  or: ['alphabets', 'phonics', 'typing'],
+  es: ['phonics', 'concepts.indian-food', 'concepts.body'],
+  zh: ['alphabets', 'phonics', 'typing', 'concepts.indian-food', 'concepts.body'],
+  or: ['alphabets', 'phonics', 'typing', 'concepts.body'],
 };
 
 // Lessons whose audio plays in a FIXED language the parent must pick before

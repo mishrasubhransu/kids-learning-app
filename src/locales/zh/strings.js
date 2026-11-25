@@ -48,6 +48,7 @@ export default {
   'cat.concepts.buildings': '建筑',
   'cat.concepts.garden': '花园',
   'cat.concepts.monuments': '名胜古迹',
+  'cat.concepts.body': '人体',
 
   // Category page chrome
   'mode.scroll': '滑动',
@@ -61,6 +62,7 @@ export default {
   // Learning views
   'scroll.hint': '点图片或用箭头键 | 按空格键再听一遍',
   'scroll.revealHint': '先读一读，再按 → ！',
+  'scroll.filmHint': '按 → 或点图片来看',
   'scroll.autoplay': '自动播放',
   'tile.hint': '点一点，听听它的名字',
   'pair.hint': '按右箭头继续',

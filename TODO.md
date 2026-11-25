@@ -39,3 +39,9 @@ Build order — each step shippable, locale stays dark until clips are complete:
 - [x] Per-locale praise templates in `api/generate-name-audio.js` — es children get Gemini Autonoe (PCM→WAV, no ffmpeg in serverless), manifest stamps `locale`, language switch regenerates. **Deploy note: Vercel needs `GEMINI_API_KEY`.**
 - [ ] Repeat pack + batch generation for zh (Autonoe Mandarin ear-check first)
 Full context & open decisions: session memory `toddlearn-i18n-plan`.
+
+# Ideas to revisit later
+
+## [ ] Physics lesson: melting, gravity, condensation
+Three short videos showing change rather than stills: ice melts to water and then steam (12 s), a ball thrown up and caught (8 s), an iced glass sweating (12 s). Ice, Water and Steam were already taken out of Nature for it (4a8d47a).
+- Tried Sept 2026 with fal nano-banana-pro start frames + minimax H3 Max timed prompts; raw takes in `fal-creations/out/toddlearn-physics`. **Skipped: the video quality wasn't good enough**, so it never reached master. Try a better video model before building it again. If it comes back, make each one a narrated explainer film the way Human Body does (`scripts/generate_body_explainer.mjs`, `item.film`, `ui/FilmPlayer`).

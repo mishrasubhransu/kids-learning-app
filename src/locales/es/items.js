@@ -618,6 +618,11 @@ export default {
   'snow-blower': { name: 'Quitanieves', ref: 'la quitanieves' },
   'pressure-washer': { name: 'Hidrolavadora', ref: 'la hidrolavadora' },
 
+  // Human Body — one narrated film per system
+  'digestive-system': { name: 'Sistema Digestivo', ref: 'el sistema digestivo' },
+  'circulatory-system': { name: 'Sistema Circulatorio', ref: 'el sistema circulatorio' },
+  'nervous-system': { name: 'Sistema Nervioso', ref: 'el sistema nervioso' },
+  'skeletal-system': { name: 'Esqueleto', ref: 'el esqueleto' },
   // Monuments — proper names keep their usual Spanish forms.
   'taj-mahal': { name: 'Taj Mahal', ref: 'el Taj Mahal' },
   pyramids: { name: 'Pirámides', ref: 'las pirámides', plural: true },

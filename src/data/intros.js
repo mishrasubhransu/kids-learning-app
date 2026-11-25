@@ -145,6 +145,11 @@ export const intros = {
     '[gasps] Towers, temples and pyramids — so many wonders!',
     "Pack your bags — let's go see the world!",
   ],
+  'concepts-body': [
+    "Let's peek inside your body!",
+    '[gasps] Bones, blood and brains — what a busy body!',
+    "Your body is amazing — let's see how it works!",
+  ],
   // Fixed-language lesson: the SCREEN text follows the app language (this
   // table / the or pack), but the CLIP plays in the child's chosen Indian
   // Food language — CategoryIntro resolves it via the speech locale.

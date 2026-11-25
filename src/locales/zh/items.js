@@ -603,6 +603,11 @@ export default {
   'pressure-washer': { name: '高压水枪' },
 
   // Monuments
+  // Human Body — one narrated film per system
+  'digestive-system': { name: '消化系统' },
+  'circulatory-system': { name: '循环系统' },
+  'nervous-system': { name: '神经系统' },
+  'skeletal-system': { name: '骨骼系统' },
   'taj-mahal': { name: '泰姬陵' },
   pyramids: { name: '金字塔' },
   sphinx: { name: '狮身人面像' },

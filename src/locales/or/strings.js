@@ -48,6 +48,7 @@ export default {
   'cat.concepts.buildings': 'କୋଠା',
   'cat.concepts.garden': 'ବଗିଚା',
   'cat.concepts.monuments': 'ସ୍ମାରକୀ',
+  'cat.concepts.body': 'ମଣିଷ ଦେହ',
   'cat.concepts.indian-food': 'ଆମ ଖାଦ୍ୟ',
 
   // Category page chrome
@@ -62,6 +63,7 @@ export default {
   // Learning views
   'scroll.hint': 'ଛବିକୁ ଟିପ କିମ୍ବା ତୀର ଚିହ୍ନ ଦବାଅ | ଆଉ ଥରେ ଶୁଣିବାକୁ ସ୍ପେସ୍ ଦବାଅ',
   'scroll.revealHint': 'ଆଗେ କୁହ, ତା\'ପରେ → ଦବାଅ!',
+  'scroll.filmHint': 'ଦେଖିବାକୁ → ଦବାଅ କିମ୍ବା ଛବିକୁ ଟିପ',
   'scroll.autoplay': 'ଆପେ ଆପେ ଚାଲିବ',
   'tile.hint': 'ଟିପି ଦିଅ, ନାଁ ଶୁଣ',
   'pair.hint': 'ଆଗକୁ ଯିବାକୁ → ଦବାଅ',

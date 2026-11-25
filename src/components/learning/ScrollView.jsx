@@ -6,11 +6,13 @@ import { recordingCategoryFor } from '../../lib/recordings';
 import { useLocale } from '../../context/LocaleContext';
 import preloadImages from '../../utils/preloadImages';
 import ItemMedia from '../ui/ItemMedia';
+import FilmPlayer from '../ui/FilmPlayer';
 import CountingFrames from '../ui/CountingFrames';
 import useShortViewport from '../../hooks/useShortViewport';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
 import { pickForArrival, recordShown } from '../../lib/variantHistory';
+import { track } from '../../lib/analytics';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const bgColors = [
@@ -19,8 +21,9 @@ const bgColors = [
 ];
 
 // Sets whose sequence IS the lesson: never shuffled. My Day runs wake-up
-// to sleep in the order the child's day actually goes.
-const orderedCategories = ['alphabets', 'numbers', 'concepts-routine'];
+// to sleep in the order the child's day actually goes; the Human Body films
+// build on each other (food → blood → brain).
+const orderedCategories = ['alphabets', 'numbers', 'concepts-routine', 'concepts-body'];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -50,8 +53,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   const [revealed, setRevealed] = useState(false);
   // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
   // browser TTS as the last resort (2-letter syllables stay TTS by design)
-  const { speakItem } = useVoice(recordingCategoryFor(category));
-  const { t } = useLocale();
+  const { speakItem, cancel: cancelVoice } = useVoice(recordingCategoryFor(category));
+  const { t, locale } = useLocale();
   const caseClass = useWordCase();
   const hasInteracted = useRef(false);
   const prevIndexRef = useRef(currentIndex);
@@ -79,22 +82,71 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       (displayItems[0]?.image || displayItems[0]?.video)
   );
 
+  // Explainer films (Human Body): the narration is baked into the cut, so
+  // an item only has a film in the languages it was cut for. The arrival
+  // still says the item's name over the poster; the right arrow (or a tap)
+  // then plays the film, and the arrow after that moves on — the same
+  // two-step the word reveal uses. The run is keyed by index, so landing on
+  // another item starts from its poster with no reset effect.
+  const film = currentItem?.film?.[locale] ?? null;
+  const [filmRun, setFilmRun] = useState({ index: -1, state: 'idle' });
+  const filmStarted = Boolean(film) && filmRun.index === currentIndex;
+  const filmState = filmStarted ? filmRun.state : 'idle';
+  const resetFilm = useCallback(() => setFilmRun({ index: -1, state: 'idle' }), []);
+
   const speakCurrent = useCallback((options) => {
     if (currentItem) {
       speakItem(currentItem, options);
     }
   }, [currentItem, speakItem]);
 
+  // Start (or replay) the film from the top. Deliberately independent of
+  // the film's own state: the autoplay effect depends on this callback, and
+  // a new identity mid-film would re-run it and speak over the narration.
+  const playFilm = useCallback(() => {
+    // The name must never talk over the narration
+    cancelVoice();
+    track('film_play', { category, item: currentItem.enName ?? currentItem.name });
+    setFilmRun({ index: currentIndex, state: 'playing' });
+  }, [cancelVoice, currentIndex, currentItem, category]);
+
+  const filmAdvanceTimer = useRef(null);
   const stopAutoplay = useCallback(() => {
+    clearTimeout(filmAdvanceTimer.current);
     setIsAutoplay(false);
   }, []);
 
   const startAutoplay = useCallback(() => {
+    resetFilm();
     setCurrentIndex(0);
     setArrival((a) => a + 1);
     setIsAutoplay(true);
     hasInteracted.current = true;
-  }, []);
+  }, [resetFilm]);
+
+  // One autoplay step forward — after the spoken name, or after the film
+  const autoAdvance = useCallback(() => {
+    if (currentIndex >= displayItems.length - 1) {
+      setIsAutoplay(false);
+      onAutoplayComplete?.();
+    } else {
+      setCurrentIndex((prev) => prev + 1);
+      setArrival((a) => a + 1);
+    }
+  }, [currentIndex, displayItems.length, onAutoplayComplete]);
+
+  const handleFilmEnded = useCallback(() => {
+    setFilmRun({ index: currentIndex, state: 'idle' });
+    track('film_end', { category, item: currentItem.enName ?? currentItem.name });
+    if (isAutoplay) filmAdvanceTimer.current = setTimeout(autoAdvance, 1500);
+  }, [currentIndex, currentItem, category, isAutoplay, autoAdvance]);
+
+  // The browser refused sound-on playback: back to the poster so a tap can
+  // start it, and autoplay moves on rather than stalling on a still
+  const handleFilmBlocked = useCallback(() => {
+    resetFilm();
+    if (isAutoplay) autoAdvance();
+  }, [resetFilm, isAutoplay, autoAdvance]);
 
   // Speak the first item when entering the page — held while the category
   // intro page is up (holdIntro), so the word lands as the reveal opens.
@@ -140,22 +192,21 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       setBgColor((c) => nextBgColor(bgColors, c));
     }
 
+    // A film item plays its film after the name; the film's own ending
+    // (handleFilmEnded) then advances, however long it runs
+    let stepped = false;
     const advance = () => {
-      if (cancelled) return;
+      if (cancelled || stepped) return;
+      stepped = true;
       clearTimeout(fallbackTimer);
       clearTimeout(advanceTimer);
-      if (currentIndex >= displayItems.length - 1) {
-        setIsAutoplay(false);
-        onAutoplayComplete?.();
-      } else {
-        setCurrentIndex(prev => prev + 1);
-        setArrival((a) => a + 1);
-      }
+      if (film) playFilm();
+      else autoAdvance();
     };
 
     const onSpeechEnd = () => {
       if (cancelled) return;
-      advanceTimer = setTimeout(advance, 1500);
+      advanceTimer = setTimeout(advance, film ? 600 : 1500);
     };
 
     ended.then(onSpeechEnd);
@@ -168,7 +219,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       clearTimeout(advanceTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [isAutoplay, currentIndex, speakItem, currentItem, category, displayItems.length, onAutoplayComplete, isRevealCategory]);
+  }, [isAutoplay, currentIndex, speakItem, currentItem, category, isRevealCategory, film, playFilm, autoAdvance]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -188,13 +239,16 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       // Picture and voice arrive together, after the child's silent try
       setRevealed(true);
       speakCurrent();
+    } else if (film && !filmStarted) {
+      // First press on a film item plays it; the next one moves on
+      playFilm();
     } else {
       setRevealed(false);
       setCurrentIndex((prev) => (prev < displayItems.length - 1 ? prev + 1 : 0));
       setArrival((a) => a + 1);
     }
     startCooldown();
-  }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed, speakCurrent]);
+  }, [displayItems.length, startCooldown, stopAutoplay, isRevealCategory, revealed, speakCurrent, film, filmStarted, playFilm]);
 
   // Going back is a correction, so it mirrors goNext step-for-step and
   // skips the cooldown that only exists to stop forward mashing.
@@ -203,18 +257,40 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     hasInteracted.current = true;
     if (isRevealCategory && revealed) {
       setRevealed(false);
+    } else if (filmStarted && filmState !== 'idle') {
+      // Back out of a running film to its poster first
+      resetFilm();
     } else {
       setRevealed(false);
       setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
       setArrival((a) => a + 1);
     }
-  }, [displayItems.length, stopAutoplay, isRevealCategory, revealed]);
+  }, [displayItems.length, stopAutoplay, isRevealCategory, revealed, filmStarted, filmState, resetFilm]);
 
-  const handleItemClick = () => {
+  // The speaker button: say the name again (a running film gives way)
+  const handleSpeak = () => {
     stopAutoplay();
     hasInteracted.current = true;
+    if (filmState !== 'idle') resetFilm();
     speakCurrent();
   };
+
+  // Tapping the picture (or Space/Enter): a film item plays, pauses and
+  // resumes; everything else says its name
+  const handleItemClick = useCallback(() => {
+    stopAutoplay();
+    hasInteracted.current = true;
+    if (!film) {
+      speakCurrent();
+    } else if (filmState === 'idle') {
+      playFilm();
+    } else {
+      setFilmRun({
+        index: currentIndex,
+        state: filmState === 'playing' ? 'paused' : 'playing',
+      });
+    }
+  }, [stopAutoplay, film, filmState, speakCurrent, currentIndex, playFilm]);
 
   // Keyboard navigation — inert while the intro page is up (its own
   // listener turns those keys into "skip the intro")
@@ -227,19 +303,20 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         goPrev();
       } else if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
-        stopAutoplay();
-        hasInteracted.current = true;
-        speakCurrent();
+        handleItemClick();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [goNext, goPrev, speakCurrent, stopAutoplay, holdIntro]);
+  }, [goNext, goPrev, handleItemClick, holdIntro]);
 
-  // Cleanup cooldown timer on unmount
+  // Cleanup timers on unmount
   useEffect(() => {
-    return () => clearTimeout(cooldownTimerRef.current);
+    return () => {
+      clearTimeout(cooldownTimerRef.current);
+      clearTimeout(filmAdvanceTimer.current);
+    };
   }, []);
 
   const renderItem = () => {
@@ -356,11 +433,25 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         if (currentItem.image || currentItem.video) {
           return (
             <div className="flex flex-col items-center gap-6">
-              <ItemMedia
-                item={shownItem}
-                alt={currentItem.name}
-                className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
-              />
+              {film ? (
+                <FilmPlayer
+                  key={film}
+                  src={film}
+                  poster={currentItem.image}
+                  alt={currentItem.name}
+                  state={filmState}
+                  watched={filmStarted}
+                  onEnded={handleFilmEnded}
+                  onBlocked={handleFilmBlocked}
+                  className="w-[var(--img-hero)] h-[var(--img-hero)] rounded-2xl shadow-lg bg-white"
+                />
+              ) : (
+                <ItemMedia
+                  item={shownItem}
+                  alt={currentItem.name}
+                  className="w-[var(--img-hero)] h-[var(--img-hero)] object-contain rounded-2xl shadow-lg bg-white"
+                />
+              )}
               <span className={`text-4xl md:text-6xl font-bold text-gray-600 ${caseClass}`}>
                 {currentItem.name}
               </span>
@@ -385,7 +476,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         className={`flex items-center justify-center min-h-[50vh] cursor-pointer hover:opacity-90 transition-opacity ${
           isAlphabets ? 'focus-visible:outline-white/70' : ''
         }`}
-        aria-label={`Speak ${currentItem?.name}`}
+        aria-label={`${film ? 'Play' : 'Speak'} ${currentItem?.name}`}
       >
         {renderItem()}
       </button>
@@ -408,7 +499,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
           {isAutoplay ? <Square size={24} /> : <Play size={24} />}
         </button>
         <button
-          onClick={handleItemClick}
+          onClick={handleSpeak}
           className={`p-3 rounded-full transition-colors ${
             isAlphabets
               ? 'bg-white/20 text-white hover:bg-white/30 focus-visible:outline-white/70'
@@ -475,6 +566,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
               stopAutoplay();
               hasInteracted.current = true;
               setRevealed(false);
+              resetFilm();
               setCurrentIndex(idx);
             }}
             className={`group w-6 h-6 flex items-center justify-center ${
@@ -498,7 +590,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
           ? `${t('scroll.autoplay')}: ${currentIndex + 1} / ${displayItems.length}`
           : isRevealCategory && !revealed
             ? t('scroll.revealHint')
-            : t('scroll.hint')}
+            : film
+              ? t('scroll.filmHint')
+              : t('scroll.hint')}
       </div>
     </div>
   );

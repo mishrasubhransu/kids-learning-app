@@ -57,6 +57,7 @@ export default {
   'cat.concepts.buildings': 'Buildings',
   'cat.concepts.garden': 'Garden',
   'cat.concepts.monuments': 'Monuments',
+  'cat.concepts.body': 'Human Body',
   'cat.concepts.indian-food': 'Indian Food',
 
   // Category page chrome
@@ -71,6 +72,7 @@ export default {
   // Learning views
   'scroll.hint': 'Click the letter or use Arrow Keys | Space to hear',
   'scroll.revealHint': 'Say the word, then press → !',
+  'scroll.filmHint': 'Press → or tap the picture to watch',
   'scroll.autoplay': 'Autoplay',
   'tile.hint': 'Click any item to hear its name',
   'pair.hint': 'Press the right arrow to keep going',

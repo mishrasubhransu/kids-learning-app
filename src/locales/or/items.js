@@ -640,6 +640,11 @@ export default {
   'snow-blower': { name: 'ବରଫ ହଟା ମେସିନ' },
   'pressure-washer': { name: 'ପ୍ରେସର ୱାସର' },
 
+  // Human Body — one narrated film per system (AI-drafted, review)
+  'digestive-system': { name: 'ହଜମ ପ୍ରଣାଳୀ' },
+  'circulatory-system': { name: 'ରକ୍ତ ସଞ୍ଚାଳନ ପ୍ରଣାଳୀ' },
+  'nervous-system': { name: 'ସ୍ନାୟୁ ପ୍ରଣାଳୀ' },
+  'skeletal-system': { name: 'କଙ୍କାଳ' },
   // Monuments — foreign names are transliterations. Leaning Tower
   // "ପିସାର ହେଲା ଟାୱାର", Louvre "ଲୁଭ୍ର" and Christ the Redeemer
   // "କ୍ରାଇଷ୍ଟ ଦ ରିଡିମର" are low-confidence.

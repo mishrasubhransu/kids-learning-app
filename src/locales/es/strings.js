@@ -52,6 +52,7 @@ export default {
   'cat.concepts.buildings': 'Edificios',
   'cat.concepts.garden': 'Jardín',
   'cat.concepts.monuments': 'Monumentos',
+  'cat.concepts.body': 'Cuerpo Humano',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',
@@ -65,6 +66,7 @@ export default {
   // Learning views
   'scroll.hint': 'Toca la imagen o usa las flechas | Espacio para escuchar',
   'scroll.revealHint': '¡Di la palabra y presiona → !',
+  'scroll.filmHint': 'Presiona → o toca la imagen para ver',
   'scroll.autoplay': 'Automático',
   'tile.hint': 'Toca cualquier cosa para escuchar su nombre',
   'pair.hint': 'Presiona la flecha derecha para seguir',
