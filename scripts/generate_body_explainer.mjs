@@ -9,6 +9,7 @@
 //   node scripts/generate_body_explainer.mjs <system> videos   [shot…]  # Kling 4 clips ($0.157/s at 720p)
 //   node scripts/generate_body_explainer.mjs <system> cost               # what `videos` would cost
 //   node scripts/generate_body_explainer.mjs <system> assemble           # cut → out/…/<system>-explainer-vN.mp4
+//   node scripts/generate_body_explainer.mjs <system> publish            # newest cut → public/films/body (picture + narration)
 //
 // <system> is digestive | circulatory | nervous (digestive when left out); each has its
 // shot list in scripts/body-explainers/<system>.mjs. A shot is named by its
@@ -21,10 +22,14 @@
 // never overwritten: a shot uses its newest frame and newest take unless
 // PICKS below pins one.
 //
-// Publishing an approved cut: copy it to public/films/body/<slug>.<locale>.mp4
-// (the narration is baked in, so each language gets its own cut), save a
-// 1024² webp of a representative frame to public/concepts/body/<slug>.webp
-// as the poster, and list both on the item in src/data/concepts.js.
+// The app never ships a cut as one file. `publish` splits the newest cut
+// into public/films/body/<slug>.mp4 (the picture, no sound) and
+// <slug>.en.m4a (the narration); the lesson plays the two in sync, so
+// another language is one more small audio file over the SAME picture.
+// `assemble` writes <cut>.timeline.json — each shot's start, length and
+// narration window — which is what a translated line has to fit into.
+// The poster is by hand: a 1024² webp of a representative frame in
+// public/science/body/<slug>.webp, listed on the item in src/data/science.js.
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
@@ -36,7 +41,7 @@ import * as nervous from './body-explainers/nervous.mjs';
 const SYSTEMS = { digestive, circulatory, nervous };
 const argv = process.argv.slice(2);
 const SYSTEM = SYSTEMS[argv[0]] ? argv.shift() : 'digestive';
-const { name: NAME, shots: SHOTS } = SYSTEMS[SYSTEM];
+const { name: NAME, shots: SHOTS, slug: SLUG } = SYSTEMS[SYSTEM];
 
 const FAL_DIR = '/home/autel/projects/libraries/fal-creations';
 const BODY_OUT = path.join(FAL_DIR, 'out/toddlearn-body');
@@ -238,10 +243,33 @@ async function makeVideo(i) {
 
 // One segment per shot: picture held to cover the narration, voice delayed a
 // beat after the cut, short fades between shots; then concat + loudnorm.
+// Narration starts LEAD into its shot and the shot holds TAIL after it
+const LEAD = 0.45;
+const TAIL = 0.6;
+const FADE = 0.25;
+
+// Where each shot sits in a cut. A translated narration track is laid over
+// the same picture, so every line must fit its shot's `window` seconds.
+const writeTimeline = (cut, lens) => {
+  let start = 0;
+  const shots = FILM.map((i, k) => {
+    const shot = {
+      id: SHOTS[i].id,
+      start: Number(start.toFixed(2)),
+      length: Number(lens[k].toFixed(2)),
+      narrationAt: Number((start + LEAD).toFixed(2)),
+      window: Number((lens[k] - LEAD - FADE).toFixed(2)),
+      narration: SHOTS[i].narration,
+    };
+    start += lens[k];
+    return shot;
+  });
+  const file = cut.replace(/\.mp4$/, '.timeline.json');
+  fs.writeFileSync(file, JSON.stringify({ cut: path.basename(cut), seconds: Number(start.toFixed(2)), shots }, null, 2) + '\n');
+  return file;
+};
+
 function assemble() {
-  const LEAD = 0.45;
-  const TAIL = 0.6;
-  const FADE = 0.25;
   const segs = FILM.map((i) => {
     const voice = probe(voicePath(i));
     const clip = takePath(i);
@@ -279,8 +307,31 @@ function assemble() {
     '-af', 'loudnorm=I=-16:TP=-1.5:LRA=11', '-c:v', 'libx264', '-crf', '23', '-preset', 'slow',
     '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '128k', '-movflags', '+faststart', out,
   ]);
+  writeTimeline(out, segs.map((s) => s.len));
   const total = segs.reduce((a, s) => a + s.len, 0);
   console.log(`cut v${n}: ${total.toFixed(1)}s, ${segs.filter((s) => s.clip).length}/${segs.length} shots animated → ${out}`);
+}
+
+// Newest cut → the two files the app plays. Stream copies, so the picture
+// and the narration are bit-for-bit what was approved, just separated.
+function publish() {
+  const n = versions(`${NAME}-v`, '.mp4').at(-1);
+  if (!n) throw new Error('no cut yet — run assemble first');
+  const cut = path.join(OUT, `${NAME}-v${n}.mp4`);
+  const dir = path.resolve('public/films/body');
+  fs.mkdirSync(dir, { recursive: true });
+  const picture = path.join(dir, `${SLUG}.mp4`);
+  const narration = path.join(dir, `${SLUG}.en.m4a`);
+  ff(['-i', cut, '-an', '-c:v', 'copy', '-movflags', '+faststart', picture]);
+  ff(['-i', cut, '-vn', '-c:a', 'copy', '-movflags', '+faststart', narration]);
+  // Cuts made before timelines existed: the per-shot segments of the
+  // newest assemble are still on disk, so rebuild it from their lengths
+  const timeline = cut.replace(/\.mp4$/, '.timeline.json');
+  if (!fs.existsSync(timeline)) {
+    writeTimeline(cut, FILM.map((i) => probe(path.join(OUT, `seg-${tag(i)}.mp4`))));
+  }
+  const mb = (f) => (fs.statSync(f).size / 1e6).toFixed(1);
+  console.log(`published cut v${n}: ${picture} (${mb(picture)} MB) + ${narration} (${mb(narration)} MB)`);
 }
 
 const [step, ...rest] = argv;
@@ -294,13 +345,15 @@ const targets = picked.length ? picked : step === 'frames' ? SHOTS.map((_, i) =>
 
 if (step === 'assemble') {
   assemble();
+} else if (step === 'publish') {
+  publish();
 } else if (step === 'cost') {
   const secs = targets.map(clipSeconds);
   console.log(secs.map((s, k) => `${tag(targets[k])}: ${s}s`).join('\n'));
   console.log(`total ${secs.reduce((a, b) => a + b, 0)}s ≈ $${(secs.reduce((a, b) => a + b, 0) * 0.157).toFixed(2)} at 720p`);
 } else {
   const run = { frames: makeFrame, ends: makeEnd, tts: makeVoice, videos: makeVideo }[step];
-  if (!run) throw new Error('step must be frames | ends | tts | videos | assemble | cost');
+  if (!run) throw new Error('step must be frames | ends | tts | videos | assemble | publish | cost');
   let failed = false;
   if (step === 'frames') {
     // shots that only need text (or an existing reference) first, then the

@@ -18,6 +18,9 @@ export default {
   'cat.shapes.desc': '认识形状',
   'cat.concepts': '认识世界',
   'cat.concepts.desc': '探索身边的世界',
+  'cat.science': '科学',
+  'cat.science.desc': '看看世界怎么运转',
+  'cat.science.body': '人体',
   'cat.opposites': '反义词',
   'cat.family': '我的家',
   'cat.family.desc': '你爱的人',
@@ -48,7 +51,6 @@ export default {
   'cat.concepts.buildings': '建筑',
   'cat.concepts.garden': '花园',
   'cat.concepts.monuments': '名胜古迹',
-  'cat.concepts.body': '人体',
 
   // Category page chrome
   'mode.scroll': '滑动',
@@ -58,6 +60,8 @@ export default {
   'lesson.notFound': '嗯，找不到这节课',
   'concepts.title': '选一个类别来探索吧！',
   'concepts.itemCount': '{count} 样东西',
+  'science.title': '选一个来探索吧！',
+  'science.itemCount': '{count} 个短片',
 
   // Learning views
   'scroll.hint': '点图片或用箭头键 | 按空格键再听一遍',

@@ -1,10 +1,11 @@
 import { homeCategories } from './categories';
 import { conceptCategories } from './concepts';
+import { scienceCategories } from './science';
 import { phonicsFamilies } from './phonics';
 
 // Single source of truth for what counts as a "lesson" in the Parent Zone,
 // menu filtering, and the route guard. Keys are 'alphabets' at the top level
-// and 'concepts.animals' / 'phonics.at' one level down.
+// and 'concepts.animals' / 'science.body' / 'phonics.at' one level down.
 //
 // Enablement lives in each child profile's settings.enabledLessons map.
 // Semantics: a key ABSENT from the map is DISABLED — so lessons added to the
@@ -25,7 +26,13 @@ export const lessonTree = homeCategories.map((cat) => ({
           name: c.name,
           emoji: c.emoji,
         }))
-      : cat.id === 'phonics'
+      : cat.id === 'science'
+        ? scienceCategories.map((c) => ({
+            key: `science.${c.id}`,
+            name: c.name,
+            emoji: c.emoji,
+          }))
+        : cat.id === 'phonics'
         ? phonicsFamilies.map((f) => ({
             key: `phonics.${f.id}`,
             name: f.name,
@@ -44,12 +51,12 @@ export const allLessonKeys = lessonTree.flatMap((l) => [
 // whole subtree. This is availability, not enablement — the parent's
 // enabledLessons map keeps its entries, so switching languages back restores
 // their choices untouched.
-// Human Body is narrated films, cut per language — hidden until a
-// language's cuts exist (item.film in data/concepts.js).
+// Science is narrated films — hidden in a language until its narration
+// tracks exist (item.film.narration in data/science.js).
 const LOCALE_HIDDEN_LESSONS = {
-  es: ['phonics', 'concepts.indian-food', 'concepts.body'],
-  zh: ['alphabets', 'phonics', 'typing', 'concepts.indian-food', 'concepts.body'],
-  or: ['alphabets', 'phonics', 'typing', 'concepts.body'],
+  es: ['phonics', 'concepts.indian-food', 'science'],
+  zh: ['alphabets', 'phonics', 'typing', 'concepts.indian-food', 'science'],
+  or: ['alphabets', 'phonics', 'typing', 'science'],
 };
 
 // Lessons whose audio plays in a FIXED language the parent must pick before

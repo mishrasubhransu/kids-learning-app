@@ -7,6 +7,8 @@
 import { KID } from './shared.mjs';
 
 export const name = 'nervous-explainer';
+// the lesson item's slug: the film is published under this name
+export const slug = 'nervous-system';
 
 // Pictures from the earlier films, so this one stars the same boy in the
 // same see-through look (paths inside fal-creations/out/toddlearn-body).

@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { conceptCategories, conceptItems } from '../data/concepts';
 import HomeButton from './ui/HomeButton';
 import StyleToggle from './ui/StyleToggle';
 import { stylesForCategory } from '../lib/imageStyles';
@@ -7,7 +6,11 @@ import { isLessonEnabled, isLessonAvailable, lessonLanguageChosen } from '../dat
 import { useChildProfile } from '../context/ChildProfileContext';
 import { useLocale } from '../context/LocaleContext';
 
-const ConceptsHome = () => {
+// The menu page of a home card that holds several lessons (Concepts,
+// Science): one card per lesson the active child can see. `section` is the
+// card's id — it prefixes the lesson keys ('concepts.animals'), the routes
+// ('/concepts/animals') and the strings ('cat.concepts.animals').
+const SectionHome = ({ section, categories, items, gradient }) => {
   const { activeChild } = useChildProfile();
   const { t, locale } = useLocale();
   const settings = activeChild?.settings;
@@ -15,8 +18,8 @@ const ConceptsHome = () => {
   // Besides enablement: locale availability (indian-food doesn't exist for
   // es/zh) and the language gate (it stays hidden until the parent picks
   // its voice language in the Parent Zone)
-  const visibleCategories = conceptCategories.filter((cat) => {
-    const key = `concepts.${cat.id}`;
+  const visibleCategories = categories.filter((cat) => {
+    const key = `${section}.${cat.id}`;
     return (
       isLessonAvailable(locale, key) &&
       isLessonEnabled(enabledLessons, key) &&
@@ -25,13 +28,13 @@ const ConceptsHome = () => {
   });
 
   return (
-    <div className="h-full bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50 flex flex-col">
+    <div className={`h-full bg-gradient-to-br ${gradient} flex flex-col`}>
       {/* Header */}
       <div className="bg-white shadow-sm border-b border-gray-100 p-4">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <HomeButton />
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
-            {t('cat.concepts')}
+            {t(`cat.${section}`)}
           </h1>
         </div>
       </div>
@@ -42,7 +45,7 @@ const ConceptsHome = () => {
       <div className="flex-1 min-h-0 overflow-y-auto">
         <div className="min-h-full flex flex-col items-center justify-center p-6 md:p-12">
           <p className="text-lg md:text-xl text-gray-600 mb-8 text-center">
-            {t('concepts.title')}
+            {t(`${section}.title`)}
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6 max-w-5xl w-full">
@@ -51,7 +54,7 @@ const ConceptsHome = () => {
               // cartoon/real) get a toggle pill. It sits over the card as a
               // sibling of the Link, not inside it — nested interactive
               // elements are invalid HTML (same pattern as Home).
-              const styleCategory = `concepts-${cat.id}`;
+              const styleCategory = `${section}-${cat.id}`;
               const hasStyles = Boolean(stylesForCategory(styleCategory));
               return (
                 <div
@@ -61,15 +64,15 @@ const ConceptsHome = () => {
                   {/* No name callout on tap — the category's intro page
                       announces it with the collage instead */}
                   <Link
-                    to={`/concepts/${cat.id}`}
+                    to={`/${section}/${cat.id}`}
                     className={`${cat.color} ${cat.hoverColor} h-full rounded-2xl p-6 md:p-8 text-white shadow-lg transition-all duration-200 group-hover:shadow-xl motion-safe:active:scale-95 flex flex-col items-center justify-center gap-3`}
                   >
                     <span className="text-5xl md:text-6xl">{cat.emoji}</span>
                     <span className="text-lg md:text-xl font-semibold">
-                      {t(`cat.concepts.${cat.id}`)}
+                      {t(`cat.${section}.${cat.id}`)}
                     </span>
                     <span className="text-sm opacity-80">
-                      {t('concepts.itemCount', { count: conceptItems[cat.id].length })}
+                      {t(`${section}.itemCount`, { count: items[cat.id].length })}
                     </span>
                     {hasStyles && <span className="h-8" aria-hidden="true" />}
                   </Link>
@@ -89,4 +92,4 @@ const ConceptsHome = () => {
   );
 };
 
-export default ConceptsHome;
+export default SectionHome;

@@ -2,6 +2,8 @@
 import { KID, KID_REF, INSIDE_BG } from './shared.mjs';
 
 export const name = 'digestive-explainer';
+// the lesson item's slug: the film is published under this name
+export const slug = 'digestive-system';
 
 // ref: which shot's frame the image edit takes as its reference (the hero
 // kid, or an earlier organ shot so pinks and shapes match across shots).

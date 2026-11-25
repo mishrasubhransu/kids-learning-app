@@ -23,6 +23,9 @@ export default {
   'cat.shapes.desc': 'Learn shapes',
   'cat.concepts': 'Concepts',
   'cat.concepts.desc': 'Learn about the world',
+  'cat.science': 'Science',
+  'cat.science.desc': 'See how things work',
+  'cat.science.body': 'Human Body',
   'cat.opposites': 'Opposites',
   'cat.family': 'My Family',
   'cat.family.desc': 'The people you love',
@@ -57,7 +60,6 @@ export default {
   'cat.concepts.buildings': 'Buildings',
   'cat.concepts.garden': 'Garden',
   'cat.concepts.monuments': 'Monuments',
-  'cat.concepts.body': 'Human Body',
   'cat.concepts.indian-food': 'Indian Food',
 
   // Category page chrome
@@ -68,6 +70,8 @@ export default {
   'lesson.notFound': "Hmm, we can't find that lesson",
   'concepts.title': 'Pick a category to explore!',
   'concepts.itemCount': '{count} items',
+  'science.title': 'Pick something to explore!',
+  'science.itemCount': '{count} films',
 
   // Learning views
   'scroll.hint': 'Click the letter or use Arrow Keys | Space to hear',

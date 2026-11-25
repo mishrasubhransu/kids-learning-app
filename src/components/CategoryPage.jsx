@@ -26,6 +26,7 @@ import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
 import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
 import { conceptCategories, conceptItems, pickItemVariants } from '../data/concepts';
+import { scienceCategories, scienceItems } from '../data/science';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
 import { customWordItems } from '../data/wordLibrary';
 
@@ -39,6 +40,13 @@ const categoryData = {
 conceptCategories.forEach((cat) => {
   categoryData[`concepts-${cat.id}`] = {
     items: conceptItems[cat.id],
+    title: cat.name,
+  };
+});
+
+scienceCategories.forEach((cat) => {
+  categoryData[`science-${cat.id}`] = {
+    items: scienceItems[cat.id],
     title: cat.name,
   };
 });
@@ -60,10 +68,11 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Recorded clips only play for the admin account (regional pronunciation
   // varies), so don't warm the audio cache for anyone else
   const isAdmin = user?.email === ADMIN_EMAIL;
-  // Concepts lessons open with the collage intro page ("Let's learn about
-  // animals!") that circle-reveals into the content; other categories (no
-  // photo assets yet) go straight in. 'intro' → 'revealing' → 'done'.
-  const hasIntro = category.startsWith('concepts-');
+  // Concepts and Science lessons open with the collage intro page ("Let's
+  // learn about animals!") that circle-reveals into the content; other
+  // categories (no photo assets yet) go straight in.
+  // 'intro' → 'revealing' → 'done'.
+  const hasIntro = category.startsWith('concepts-') || category.startsWith('science-');
   const [introState, setIntroState] = useState(hasIntro ? 'intro' : 'done');
   const [mode, setMode] = useState('scroll'); // 'scroll' | 'tile' | 'test'
   // "Ready to play a game?" screen after autoplay, instead of a silent jump to test
@@ -281,7 +290,7 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
           {/* Back button and title */}
           <div className="flex items-center gap-4">
             <HomeButton to={backTo} />
-            {/* Echo the card the child tapped on ConceptsHome (its color + emoji) */}
+            {/* Echo the card the child tapped on the section menu (its color + emoji) */}
             {catInfo && (
               <span
                 className={`${catInfo.color} w-10 h-10 rounded-xl flex items-center justify-center text-2xl shadow-sm`}

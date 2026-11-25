@@ -145,7 +145,7 @@ export const intros = {
     '[gasps] Towers, temples and pyramids — so many wonders!',
     "Pack your bags — let's go see the world!",
   ],
-  'concepts-body': [
+  'science-body': [
     "Let's peek inside your body!",
     '[gasps] Bones, blood and brains — what a busy body!',
     "Your body is amazing — let's see how it works!",

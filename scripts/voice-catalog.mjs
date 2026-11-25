@@ -33,6 +33,7 @@ import numbers from '../src/data/numbers.js';
 import colors from '../src/data/colors.js';
 import { shapes } from '../src/data/shapes.jsx';
 import { conceptItems } from '../src/data/concepts.js';
+import { scienceItems } from '../src/data/science.js';
 import { phonicsWords } from '../src/data/phonics.js';
 import { letterSounds } from '../src/data/letterSounds.js';
 import opposites, { wordSubject } from '../src/data/opposites.js';
@@ -64,6 +65,12 @@ export function buildCatalog(locale = 'en') {
   // for es/zh — its dosa/vada slugs still arrive via the food lesson)
   Object.entries(conceptItems).forEach(([id, items]) => {
     if (!isLessonAvailable(locale, `concepts.${id}`)) return;
+    items.forEach((i) => addQuizSet(i.name));
+  });
+  // Science films are narrated on their own; the lesson still says each
+  // film's name and quizzes on the posters
+  Object.entries(scienceItems).forEach(([id, items]) => {
+    if (!isLessonAvailable(locale, `science.${id}`)) return;
     items.forEach((i) => addQuizSet(i.name));
   });
 

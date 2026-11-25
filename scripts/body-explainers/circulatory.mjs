@@ -7,6 +7,8 @@
 import { KID, INSIDE_BG } from './shared.mjs';
 
 export const name = 'circulatory-explainer';
+// the lesson item's slug: the film is published under this name
+export const slug = 'circulatory-system';
 
 // Pictures from the digestive film, so this one stars the same boy with the
 // same see-through look (paths inside fal-creations/out/toddlearn-body).

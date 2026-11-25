@@ -139,7 +139,7 @@ export default {
     '[gasps] Torres, templos y pirámides — ¡cuántas maravillas!',
     '¡Prepara la maleta — vamos a ver el mundo!',
   ],
-  'concepts-body': [
+  'science-body': [
     '¡Vamos a mirar dentro de tu cuerpo!',
     '[gasps] Huesos, sangre y cerebro — ¡qué cuerpo tan ocupado!',
     'Tu cuerpo es increíble — ¡veamos cómo funciona!',

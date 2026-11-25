@@ -18,6 +18,9 @@ export default {
   'cat.shapes.desc': 'ଆକୃତି ଚିହ୍ନିବା ଶିଖ',
   'cat.concepts': 'ଆମ ଦୁନିଆ',
   'cat.concepts.desc': 'ଚାରିପାଖର ଦୁନିଆ ଦେଖ',
+  'cat.science': 'ବିଜ୍ଞାନ',
+  'cat.science.desc': 'ସବୁ ଜିନିଷ କେମିତି କାମ କରେ ଦେଖ',
+  'cat.science.body': 'ମଣିଷ ଦେହ',
   'cat.opposites': 'ଓଲଟା କଥା',
   'cat.family': 'ମୋ ପରିବାର',
   'cat.family.desc': 'ଯେଉଁମାନଙ୍କୁ ତୁମେ ଭଲ ପାଅ',
@@ -48,7 +51,6 @@ export default {
   'cat.concepts.buildings': 'କୋଠା',
   'cat.concepts.garden': 'ବଗିଚା',
   'cat.concepts.monuments': 'ସ୍ମାରକୀ',
-  'cat.concepts.body': 'ମଣିଷ ଦେହ',
   'cat.concepts.indian-food': 'ଆମ ଖାଦ୍ୟ',
 
   // Category page chrome
@@ -59,6 +61,8 @@ export default {
   'lesson.notFound': 'ଏ ପାଠଟି ମିଳିଲା ନାହିଁ',
   'concepts.title': 'ଗୋଟିଏ ବିଷୟ ବାଛ!',
   'concepts.itemCount': '{count}ଟି ଜିନିଷ',
+  'science.title': 'ଗୋଟିଏ ବିଷୟ ବାଛ!',
+  'science.itemCount': '{count}ଟି ଭିଡିଓ',
 
   // Learning views
   'scroll.hint': 'ଛବିକୁ ଟିପ କିମ୍ବା ତୀର ଚିହ୍ନ ଦବାଅ | ଆଉ ଥରେ ଶୁଣିବାକୁ ସ୍ପେସ୍ ଦବାଅ',

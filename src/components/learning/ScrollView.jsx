@@ -23,7 +23,7 @@ const bgColors = [
 // Sets whose sequence IS the lesson: never shuffled. My Day runs wake-up
 // to sleep in the order the child's day actually goes; the Human Body films
 // build on each other (food → blood → brain).
-const orderedCategories = ['alphabets', 'numbers', 'concepts-routine', 'concepts-body'];
+const orderedCategories = ['alphabets', 'numbers', 'concepts-routine', 'science-body'];
 
 function shuffle(arr) {
   const a = [...arr];
@@ -82,13 +82,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       (displayItems[0]?.image || displayItems[0]?.video)
   );
 
-  // Explainer films (Human Body): the narration is baked into the cut, so
-  // an item only has a film in the languages it was cut for. The arrival
-  // still says the item's name over the poster; the right arrow (or a tap)
-  // then plays the film, and the arrow after that moves on — the same
-  // two-step the word reveal uses. The run is keyed by index, so landing on
-  // another item starts from its poster with no reset effect.
-  const film = currentItem?.film?.[locale] ?? null;
+  // Explainer films (Science): one silent picture plus a narration track
+  // per language, so an item only has a film in the languages it has been
+  // narrated in. The arrival still says the item's name over the poster;
+  // the right arrow (or a tap) then plays the film, and the arrow after
+  // that moves on — the same two-step the word reveal uses. The run is
+  // keyed by index, so landing on another item starts from its poster with
+  // no reset effect.
+  const filmAudio = currentItem?.film?.narration?.[locale] ?? null;
+  const film = filmAudio ? currentItem.film.video : null;
   const [filmRun, setFilmRun] = useState({ index: -1, state: 'idle' });
   const filmStarted = Boolean(film) && filmRun.index === currentIndex;
   const filmState = filmStarted ? filmRun.state : 'idle';
@@ -435,8 +437,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
             <div className="flex flex-col items-center gap-6">
               {film ? (
                 <FilmPlayer
-                  key={film}
+                  key={`${film}|${filmAudio}`}
                   src={film}
+                  audioSrc={filmAudio}
                   poster={currentItem.image}
                   alt={currentItem.name}
                   state={filmState}

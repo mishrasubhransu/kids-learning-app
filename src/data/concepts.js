@@ -45,7 +45,6 @@ export const conceptCategories = [
   { id: 'buildings', name: 'Buildings', emoji: '🏢', color: 'bg-stone-500', hoverColor: 'hover:bg-stone-600' },
   { id: 'garden', name: 'Garden', emoji: '🌱', color: 'bg-lime-600', hoverColor: 'hover:bg-lime-700' },
   { id: 'monuments', name: 'Monuments', emoji: '🗽', color: 'bg-amber-600', hoverColor: 'hover:bg-amber-700' },
-  { id: 'body', name: 'Human Body', emoji: '🫀', color: 'bg-red-400', hoverColor: 'hover:bg-red-500' },
   { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
   // (en/or/hi) before enabling, independent of the app language — see
@@ -576,18 +575,6 @@ export const conceptItems = {
     { id: 17, name: 'Mount Rushmore', image: '/concepts/monuments/mount-rushmore.webp' },
     { id: 18, name: 'Konark Sun Temple', image: '/concepts/monuments/konark-sun-temple.webp' },
     { id: 19, name: "Saint Basil's Cathedral", image: '/concepts/monuments/st-basils-cathedral.webp' },
-  ],
-  // Inside the body: one narrated explainer FILM per system
-  // (scripts/generate_body_explainer.mjs). `image` is the poster every view
-  // shows (tiles, quiz, intro); `film` maps a language to its narrated cut,
-  // which the lesson scroll plays with sound (ui/FilmPlayer). The narration
-  // is baked into the cut, so a language without one has no film — and the
-  // lesson stays hidden there (LOCALE_HIDDEN_LESSONS in data/lessons.js).
-  // Skeletal System joins when its film is made.
-  body: [
-    { id: 0, name: 'Digestive System', image: '/concepts/body/digestive-system.webp', film: { en: '/films/body/digestive-system.en.mp4' } },
-    { id: 1, name: 'Circulatory System', image: '/concepts/body/circulatory-system.webp', film: { en: '/films/body/circulatory-system.en.mp4' } },
-    { id: 2, name: 'Nervous System', image: '/concepts/body/nervous-system.webp', film: { en: '/films/body/nervous-system.en.mp4' } },
   ],
   routine: [
     { id: 0, name: 'Wake Up', image: '/concepts/routine/wake-up.webp' },

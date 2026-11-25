@@ -6,8 +6,10 @@ import { pruneVoiceCache } from './lib/voice';
 import Home from './components/Home';
 import CategoryPage from './components/CategoryPage';
 import TypingMode from './components/TypingMode';
-import ConceptsHome from './components/ConceptsHome';
-import ConceptsCategoryPage from './components/ConceptsCategoryPage';
+import SectionHome from './components/SectionHome';
+import SectionCategoryPage from './components/SectionCategoryPage';
+import { conceptCategories, conceptItems } from './data/concepts';
+import { scienceCategories, scienceItems } from './data/science';
 import PhonicsHome from './components/PhonicsHome';
 import PhonicsCategoryPage from './components/PhonicsCategoryPage';
 import MyWordsPage from './components/MyWordsPage';
@@ -71,8 +73,12 @@ const App = () => {
         <Route path="/addition" element={<ProtectedRoute><LessonGuard lesson="addition"><AdditionPage /></LessonGuard></ProtectedRoute>} />
         <Route path="/colors/*" element={<ProtectedRoute><LessonGuard lesson="colors"><CategoryPage category="colors" /></LessonGuard></ProtectedRoute>} />
         <Route path="/shapes/*" element={<ProtectedRoute><LessonGuard lesson="shapes"><CategoryPage category="shapes" /></LessonGuard></ProtectedRoute>} />
-        <Route path="/concepts" element={<ProtectedRoute><LessonGuard lesson="concepts"><ConceptsHome /></LessonGuard></ProtectedRoute>} />
-        <Route path="/concepts/:subcategory/*" element={<ProtectedRoute><LessonGuard prefix="concepts" param="subcategory"><ConceptsCategoryPage /></LessonGuard></ProtectedRoute>} />
+        <Route path="/concepts" element={<ProtectedRoute><LessonGuard lesson="concepts"><SectionHome section="concepts" categories={conceptCategories} items={conceptItems} gradient="from-amber-50 via-orange-50 to-yellow-50" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/concepts/:subcategory/*" element={<ProtectedRoute><LessonGuard prefix="concepts" param="subcategory"><SectionCategoryPage section="concepts" categories={conceptCategories} items={conceptItems} /></LessonGuard></ProtectedRoute>} />
+        {/* Human Body spent its first day under Concepts */}
+        <Route path="/concepts/body/*" element={<Navigate to="/science/body" replace />} />
+        <Route path="/science" element={<ProtectedRoute><LessonGuard lesson="science"><SectionHome section="science" categories={scienceCategories} items={scienceItems} gradient="from-sky-50 via-indigo-50 to-slate-100" /></LessonGuard></ProtectedRoute>} />
+        <Route path="/science/:subcategory/*" element={<ProtectedRoute><LessonGuard prefix="science" param="subcategory"><SectionCategoryPage section="science" categories={scienceCategories} items={scienceItems} /></LessonGuard></ProtectedRoute>} />
         {/* Old bookmarks from before the Objects → Concepts rename */}
         <Route path="/objects/*" element={<Navigate to="/concepts" replace />} />
         <Route path="/phonics" element={<ProtectedRoute><LessonGuard lesson="phonics"><PhonicsHome /></LessonGuard></ProtectedRoute>} />

@@ -1,4 +1,4 @@
-import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2, Users, Plus } from 'lucide-react';
+import { BookOpen, Hash, Palette, Shapes, Keyboard, Image, ArrowLeftRight, Volume2, Users, Plus, FlaskConical } from 'lucide-react';
 
 // Top-level lesson cards on the Home screen. Light backgrounds
 // (yellow/amber/green/cyan/orange) need dark text to stay readable; the
@@ -80,6 +80,17 @@ export const homeCategories = [
     hoverColor: 'group-hover:bg-amber-600',
     textColor: 'text-gray-900',
     preview: '🦁',
+  },
+  // Narrated explainer films about how things work (data/science.js)
+  {
+    id: 'science',
+    name: 'Science',
+    description: 'See how things work',
+    icon: FlaskConical,
+    color: 'bg-slate-700',
+    hoverColor: 'group-hover:bg-slate-800',
+    textColor: 'text-white',
+    preview: '🔬',
   },
   {
     id: 'opposites',

@@ -20,6 +20,9 @@ export default {
   'cat.shapes.desc': 'Aprende las figuras',
   'cat.concepts': 'Conceptos',
   'cat.concepts.desc': 'Aprende sobre el mundo',
+  'cat.science': 'Ciencia',
+  'cat.science.desc': 'Descubre cómo funcionan las cosas',
+  'cat.science.body': 'Cuerpo Humano',
   'cat.opposites': 'Opuestos',
   'cat.family': 'Mi familia',
   'cat.family.desc': 'Las personas que amas',
@@ -52,7 +55,6 @@ export default {
   'cat.concepts.buildings': 'Edificios',
   'cat.concepts.garden': 'Jardín',
   'cat.concepts.monuments': 'Monumentos',
-  'cat.concepts.body': 'Cuerpo Humano',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',
@@ -62,6 +64,8 @@ export default {
   'lesson.notFound': 'Mmm, no encontramos esa lección',
   'concepts.title': '¡Elige una categoría para explorar!',
   'concepts.itemCount': '{count} cosas',
+  'science.title': '¡Elige algo para explorar!',
+  'science.itemCount': '{count} videos',
 
   // Learning views
   'scroll.hint': 'Toca la imagen o usa las flechas | Espacio para escuchar',
