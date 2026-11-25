@@ -11,7 +11,7 @@
 //   node scripts/generate_body_explainer.mjs <system> assemble           # cut → out/…/<system>-explainer-vN.mp4
 //   node scripts/generate_body_explainer.mjs <system> publish            # newest cut → public/films/body (picture + narration)
 //
-// <system> is digestive | circulatory | nervous (digestive when left out); each has its
+// <system> is digestive | circulatory | nervous | skeletal (digestive when left out); each has its
 // shot list in scripts/body-explainers/<system>.mjs. A shot is named by its
 // id, or by its 1-based position in that list.
 //
@@ -37,8 +37,9 @@ import { STYLE, MOTION_BASE } from './body-explainers/shared.mjs';
 import * as digestive from './body-explainers/digestive.mjs';
 import * as circulatory from './body-explainers/circulatory.mjs';
 import * as nervous from './body-explainers/nervous.mjs';
+import * as skeletal from './body-explainers/skeletal.mjs';
 
-const SYSTEMS = { digestive, circulatory, nervous };
+const SYSTEMS = { digestive, circulatory, nervous, skeletal };
 const argv = process.argv.slice(2);
 const SYSTEM = SYSTEMS[argv[0]] ? argv.shift() : 'digestive';
 const { name: NAME, shots: SHOTS, slug: SLUG } = SYSTEMS[SYSTEM];

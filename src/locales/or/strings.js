@@ -63,6 +63,8 @@ export default {
   'concepts.itemCount': '{count}ଟି ଜିନିଷ',
   'science.title': 'ଗୋଟିଏ ବିଷୟ ବାଛ!',
   'science.itemCount': '{count}ଟି ଭିଡିଓ',
+  'film.pick': 'ଦେଖିବାକୁ ଗୋଟିଏ ଭିଡିଓ ବାଛ!',
+  'film.more': 'ଆହୁରି ଭିଡିଓ',
 
   // Learning views
   'scroll.hint': 'ଛବିକୁ ଟିପ କିମ୍ବା ତୀର ଚିହ୍ନ ଦବାଅ | ଆଉ ଥରେ ଶୁଣିବାକୁ ସ୍ପେସ୍ ଦବାଅ',

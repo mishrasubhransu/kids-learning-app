@@ -72,6 +72,8 @@ export default {
   'concepts.itemCount': '{count} items',
   'science.title': 'Pick something to explore!',
   'science.itemCount': '{count} films',
+  'film.pick': 'Pick a film to watch!',
+  'film.more': 'More films',
 
   // Learning views
   'scroll.hint': 'Click the letter or use Arrow Keys | Space to hear',

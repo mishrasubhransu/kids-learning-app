@@ -66,6 +66,8 @@ export default {
   'concepts.itemCount': '{count} cosas',
   'science.title': '¡Elige algo para explorar!',
   'science.itemCount': '{count} videos',
+  'film.pick': '¡Elige un video para ver!',
+  'film.more': 'Más videos',
 
   // Learning views
   'scroll.hint': 'Toca la imagen o usa las flechas | Espacio para escuchar',
