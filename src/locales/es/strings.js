@@ -68,6 +68,10 @@ export default {
   'science.itemCount': '{count} videos',
   'film.pick': '¡Elige un video para ver!',
   'film.more': 'Más videos',
+  'film.game': 'Jugar',
+  'film.quizReady': '¿Listo para jugar?',
+  'film.quizHint': '¡Escucha la pregunta y toca la imagen correcta!',
+  'film.quizDone': '¡Lo lograste!',
 
   // Learning views
   'scroll.hint': 'Toca la imagen o usa las flechas | Espacio para escuchar',

@@ -11,6 +11,12 @@
 //   node scripts/generate_body_explainer.mjs <system> assemble           # cut → out/…/<system>-explainer-vN.mp4
 //   node scripts/generate_body_explainer.mjs <system> publish            # newest cut → public/films/body (picture + narration)
 //
+// The films' tests (src/data/filmQuizzes.js) are made here too. `quiz` is a
+// shot list of its own (the few test pictures no film still covers):
+//   node scripts/generate_body_explainer.mjs quiz frames                 # draw those pictures
+//   node scripts/generate_body_explainer.mjs quiz pictures  [id…]        # cut every test picture → public/science/body/quiz
+//   node scripts/generate_body_explainer.mjs quiz questions [--redo]     # record the question clips → public/films/body/quiz
+//
 // <system> is digestive | circulatory | nervous | skeletal (digestive when left out); each has its
 // shot list in scripts/body-explainers/<system>.mjs. A shot is named by its
 // id, or by its 1-based position in that list.
@@ -38,8 +44,10 @@ import * as digestive from './body-explainers/digestive.mjs';
 import * as circulatory from './body-explainers/circulatory.mjs';
 import * as nervous from './body-explainers/nervous.mjs';
 import * as skeletal from './body-explainers/skeletal.mjs';
+import * as quiz from './body-explainers/quiz.mjs';
+import { filmQuizzes, quizPictureFile, quizClipFile } from '../src/data/filmQuizzes.js';
 
-const SYSTEMS = { digestive, circulatory, nervous, skeletal };
+const SYSTEMS = { digestive, circulatory, nervous, skeletal, quiz };
 const argv = process.argv.slice(2);
 const SYSTEM = SYSTEMS[argv[0]] ? argv.shift() : 'digestive';
 const { name: NAME, shots: SHOTS, slug: SLUG } = SYSTEMS[SYSTEM];
@@ -195,12 +203,13 @@ async function makeEnd(i) {
   console.log(`${tag(i)}: end frame for ${path.basename(file)}`);
 }
 
-async function makeVoice(i) {
+// The narrator's voice — the films' lines and their tests' questions
+async function narrate(text, file) {
   const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${VOICE_ID}?output_format=mp3_44100_128`, {
     method: 'POST',
     headers: { 'xi-api-key': EL_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      text: SHOTS[i].narration,
+      text,
       model_id: 'eleven_v3',
       // 0.5 = "Natural": a warm, steady explainer read (the app's one-word
       // clips use 0.0 Creative, which is too bouncy across eight sentences)
@@ -208,7 +217,11 @@ async function makeVoice(i) {
     }),
   });
   if (!res.ok) throw new Error(`ElevenLabs ${res.status}: ${await res.text()}`);
-  fs.writeFileSync(voicePath(i), Buffer.from(await res.arrayBuffer()));
+  fs.writeFileSync(file, Buffer.from(await res.arrayBuffer()));
+}
+
+async function makeVoice(i) {
+  await narrate(SHOTS[i].narration, voicePath(i));
   fs.writeFileSync(`${voicePath(i)}.txt`, SHOTS[i].narration);
   console.log(`${tag(i)}: voice ${probe(voicePath(i)).toFixed(1)}s`);
 }
@@ -335,6 +348,47 @@ function publish() {
   console.log(`published cut v${n}: ${picture} (${mb(picture)} MB) + ${narration} (${mb(narration)} MB)`);
 }
 
+// Test pictures: each is one film still (or one drawing of the quiz shot
+// list), cut square and saved small. Named ids only, or all of them.
+function cutQuizPictures(ids) {
+  const dir = path.resolve('public', path.dirname(quizPictureFile('x')).slice(1));
+  fs.mkdirSync(dir, { recursive: true });
+  for (const [id, pic] of Object.entries(quiz.pictures)) {
+    if (ids.length && !ids.includes(id)) continue;
+    let from = pic.from && path.join(BODY_OUT, pic.from);
+    if (pic.shot) {
+      const dirOf = path.join(BODY_OUT, quiz.name);
+      const v = fs.existsSync(dirOf)
+        ? fs.readdirSync(dirOf).map((f) => f.match(new RegExp(`^${pic.shot}-frame-v(\\d+)\\.png$`))?.[1]).filter(Boolean).map(Number).sort((a, b) => a - b).at(-1)
+        : null;
+      from = v ? path.join(dirOf, `${pic.shot}-frame-v${v}.png`) : null;
+    }
+    if (!from || !fs.existsSync(from)) throw new Error(`${id}: source picture missing (${pic.from ?? `quiz frames ${pic.shot}`})`);
+    const [x, y, size] = pic.crop ?? [0, 0, 1];
+    const out = path.join(dir, `${id}.webp`);
+    ff(['-i', from, '-vf', `crop=iw*${size}:ih*${size}:iw*${x}:ih*${y},scale=640:640`, '-c:v', 'libwebp', '-quality', '82', out]);
+    console.log(`${id}: ${(fs.statSync(out).size / 1024).toFixed(0)} KB ← ${path.basename(from)}`);
+  }
+}
+
+// Question clips, in the narrator's voice. Existing clips are kept (a clip
+// costs money and a re-read sounds different) unless --redo is passed.
+async function recordQuizQuestions(args) {
+  const redo = args.includes('--redo');
+  const only = args.filter((a) => !a.startsWith('--'));
+  for (const [film, questions] of Object.entries(filmQuizzes)) {
+    for (const q of questions) {
+      const key = `${film}-${q.id}`;
+      if (only.length && !only.includes(key) && !only.includes(film)) continue;
+      const file = path.resolve('public', quizClipFile(film, q.id, 'en').slice(1));
+      fs.mkdirSync(path.dirname(file), { recursive: true });
+      if (fs.existsSync(file) && !redo) { console.log(`${key}: kept`); continue; }
+      await narrate(q.question, file);
+      console.log(`${key}: ${probe(file).toFixed(1)}s  "${q.question}"`);
+    }
+  }
+}
+
 const [step, ...rest] = argv;
 fs.mkdirSync(OUT, { recursive: true });
 // shots by position (1-based) or by id
@@ -344,7 +398,11 @@ const picked = rest
 const FILM = SHOTS.map((_, i) => i).filter((i) => !SHOTS[i].asset);
 const targets = picked.length ? picked : step === 'frames' ? SHOTS.map((_, i) => i) : FILM;
 
-if (step === 'assemble') {
+if (step === 'pictures') {
+  cutQuizPictures(rest);
+} else if (step === 'questions') {
+  await recordQuizQuestions(rest);
+} else if (step === 'assemble') {
   assemble();
 } else if (step === 'publish') {
   publish();
@@ -354,7 +412,7 @@ if (step === 'assemble') {
   console.log(`total ${secs.reduce((a, b) => a + b, 0)}s ≈ $${(secs.reduce((a, b) => a + b, 0) * 0.157).toFixed(2)} at 720p`);
 } else {
   const run = { frames: makeFrame, ends: makeEnd, tts: makeVoice, videos: makeVideo }[step];
-  if (!run) throw new Error('step must be frames | ends | tts | videos | assemble | publish | cost');
+  if (!run) throw new Error('step must be frames | ends | tts | videos | assemble | publish | cost | pictures | questions');
   let failed = false;
   if (step === 'frames') {
     // shots that only need text (or an existing reference) first, then the

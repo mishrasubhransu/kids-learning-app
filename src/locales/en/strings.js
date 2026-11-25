@@ -74,6 +74,10 @@ export default {
   'science.itemCount': '{count} films',
   'film.pick': 'Pick a film to watch!',
   'film.more': 'More films',
+  'film.game': 'Play a game',
+  'film.quizReady': 'Ready to play?',
+  'film.quizHint': 'Listen to the question and tap the right picture!',
+  'film.quizDone': 'You did it!',
 
   // Learning views
   'scroll.hint': 'Click the letter or use Arrow Keys | Space to hear',

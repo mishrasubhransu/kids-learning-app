@@ -7,8 +7,8 @@ import FilmLesson from './films/FilmLesson';
 // back to the section's menu.
 //
 // A lesson whose items are all explainer films (Science → Human Body) is a
-// film gallery instead of a slide show: /science/body lists the films and
-// /science/body/<film> plays one.
+// film gallery instead of a slide show: /science/body lists the films,
+// /science/body/<film> plays one and /science/body/<film>/quiz tests it.
 const SectionCategoryPage = ({ section, categories, items }) => {
   const { subcategory, '*': rest } = useParams();
   const catInfo = categories.find((c) => c.id === subcategory);
@@ -18,12 +18,14 @@ const SectionCategoryPage = ({ section, categories, items }) => {
   }
 
   if (items[subcategory].every((item) => item.film)) {
+    const [slug, page] = (rest ?? '').split('/');
     return (
       <FilmLesson
         section={section}
         catInfo={catInfo}
         items={items[subcategory]}
-        slug={rest?.split('/')[0] || null}
+        slug={slug || null}
+        page={page || null}
       />
     );
   }

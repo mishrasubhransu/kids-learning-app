@@ -65,6 +65,10 @@ export default {
   'science.itemCount': '{count}ଟି ଭିଡିଓ',
   'film.pick': 'ଦେଖିବାକୁ ଗୋଟିଏ ଭିଡିଓ ବାଛ!',
   'film.more': 'ଆହୁରି ଭିଡିଓ',
+  'film.game': 'ଖେଳ ଖେଳ',
+  'film.quizReady': 'ଖେଳିବାକୁ ପ୍ରସ୍ତୁତ?',
+  'film.quizHint': 'ପ୍ରଶ୍ନ ଶୁଣ ଓ ଠିକ୍ ଛବିକୁ ଟିପ!',
+  'film.quizDone': 'ତୁମେ କରିଦେଲ!',
 
   // Learning views
   'scroll.hint': 'ଛବିକୁ ଟିପ କିମ୍ବା ତୀର ଚିହ୍ନ ଦବାଅ | ଆଉ ଥରେ ଶୁଣିବାକୁ ସ୍ପେସ୍ ଦବାଅ',

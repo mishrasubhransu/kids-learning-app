@@ -64,6 +64,10 @@ export default {
   'science.itemCount': '{count} 个短片',
   'film.pick': '选一个短片来看吧！',
   'film.more': '更多短片',
+  'film.game': '玩游戏',
+  'film.quizReady': '准备好玩了吗？',
+  'film.quizHint': '听问题，点对的图片！',
+  'film.quizDone': '你做到了！',
 
   // Learning views
   'scroll.hint': '点图片或用箭头键 | 按空格键再听一遍',
