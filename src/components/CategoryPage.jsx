@@ -24,7 +24,7 @@ import shuffle from '../utils/shuffle';
 import alphabets from '../data/alphabets';
 import numbers, { objectIcons } from '../data/numbers';
 import colors from '../data/colors';
-import shapes, { getRandomShapeColor } from '../data/shapes.jsx';
+import shapes, { getRandomShapeColor, shapesForDim } from '../data/shapes.jsx';
 import { conceptCategories, conceptItems, pickItemVariants } from '../data/concepts';
 import { scienceCategories, scienceItems } from '../data/science';
 import { phonicsFamilies, phonicsWords } from '../data/phonics';
@@ -88,6 +88,8 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   // Counting range and image style are per-child too (Parent Zone / pills)
   const [numberMax] = useChildSetting('numberMax', '10');
   const [savedImageStyle] = useChildSetting(`imageStyle-${category}`, null);
+  // 2D/3D pill on the home Shapes card
+  const [shapeDim] = useChildSetting('shapeDim', '2d');
 
   // Indian Food speaks the language the parent pinned for it, not the app
   // language. Stamped during render (before children mount — same pattern
@@ -125,11 +127,13 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const resolvedItems = useMemo(() => {
     const categoryItems = customWordKeys
       ? customWordItems(customWordKeys)
-      : categoryData[category]?.items;
+      : category === 'shapes'
+        ? shapesForDim(shapeDim)
+        : categoryData[category]?.items;
     return categoryItems?.length
       ? localizeItems(pickItemVariants(categoryItems))
       : null;
-  }, [category, locale, customWordKeys]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [category, locale, customWordKeys, shapeDim]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Alphabets follow the shared letterCase pill: 'small' pairs each capital
   // with its lowercase ("Aa"), matching Letter Sounds. Only display changes —

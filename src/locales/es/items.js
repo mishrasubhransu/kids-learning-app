@@ -77,6 +77,20 @@ export default {
   ring: { name: 'Anillo', ref: 'el anillo' },
   semicircle: { name: 'Semicírculo', ref: 'el semicírculo' },
 
+  // 3D shapes
+  sphere: { name: 'Esfera', ref: 'la esfera' },
+  cube: { name: 'Cubo', ref: 'el cubo' },
+  cuboid: { name: 'Prisma rectangular', ref: 'el prisma rectangular' },
+  cylinder: { name: 'Cilindro', ref: 'el cilindro' },
+  cone: { name: 'Cono', ref: 'el cono' },
+  pyramid: { name: 'Pirámide', ref: 'la pirámide' },
+  prism: { name: 'Prisma', ref: 'el prisma' },
+  ellipsoid: { name: 'Elipsoide', ref: 'el elipsoide' },
+  hemisphere: { name: 'Semiesfera', ref: 'la semiesfera' },
+  tube: { name: 'Tubo', ref: 'el tubo' },
+  torus: { name: 'Toro', ref: 'el toro' },
+  helix: { name: 'Hélice', ref: 'la hélice' },
+
   // Emotions (faces — refs agree with "la carita")
   happy: { name: 'Feliz', ref: 'la carita feliz', bare: 'feliz' },
   sad: { name: 'Triste', ref: 'la carita triste', bare: 'triste' },

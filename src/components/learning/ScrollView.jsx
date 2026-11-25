@@ -8,6 +8,7 @@ import preloadImages from '../../utils/preloadImages';
 import ItemMedia from '../ui/ItemMedia';
 import FilmPlayer from '../ui/FilmPlayer';
 import CountingFrames from '../ui/CountingFrames';
+import { SolidViewer } from '../ui/Solid3D';
 import useShortViewport from '../../hooks/useShortViewport';
 import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
@@ -379,7 +380,16 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         return (
           <div className="flex flex-col items-center gap-6">
             <div className="w-[var(--img-hero)] h-[var(--img-hero)]">
-              {currentItem.svg(shapeColor)}
+              {/* 3D shapes are live: drag to turn, tap to hear the name */}
+              {currentItem.solid ? (
+                <SolidViewer
+                  kind={currentItem.solid}
+                  color={shapeColor}
+                  label={currentItem.name}
+                />
+              ) : (
+                currentItem.svg(shapeColor)
+              )}
             </div>
             <span className={`text-4xl md:text-6xl font-bold text-gray-600 ${caseClass}`}>
               {currentItem.name}
@@ -466,6 +476,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   };
 
   const isAlphabets = category === 'alphabets';
+  const Hero = currentItem?.solid ? 'div' : 'button';
   const shortViewport = useShortViewport();
 
   return (
@@ -473,8 +484,10 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       className="flex-1 flex flex-col items-center justify-center p-4 relative transition-colors duration-300"
       style={isAlphabets ? { backgroundColor: bgColor } : undefined}
     >
-      {/* Main display - clickable to speak */}
-      <button
+      {/* Main display - clickable to speak. A draggable 3D shape can't live
+          inside a <button> (no interactive content in buttons), so solids
+          get a plain div; Space/Enter and the speaker button still speak. */}
+      <Hero
         onClick={handleItemClick}
         className={`flex items-center justify-center min-h-[50vh] cursor-pointer hover:opacity-90 transition-opacity ${
           isAlphabets ? 'focus-visible:outline-white/70' : ''
@@ -482,7 +495,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
         aria-label={`${film ? 'Play' : 'Speak'} ${currentItem?.name}`}
       >
         {renderItem()}
-      </button>
+      </Hero>
 
       {/* Top-right controls */}
       <div className="absolute top-4 right-4 flex items-center gap-2">

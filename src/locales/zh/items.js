@@ -60,6 +60,20 @@ export default {
   ring: { name: '圆环' },
   semicircle: { name: '半圆' },
 
+  // 3D shapes
+  sphere: { name: '球体' },
+  cube: { name: '正方体' },
+  cuboid: { name: '长方体' },
+  cylinder: { name: '圆柱体' },
+  cone: { name: '圆锥体' },
+  pyramid: { name: '金字塔形' },
+  prism: { name: '三棱柱' },
+  ellipsoid: { name: '椭球体' },
+  hemisphere: { name: '半球体' },
+  tube: { name: '圆管' },
+  torus: { name: '圆环体' },
+  helix: { name: '螺旋形' },
+
   // Emotions (faces — refs agree with "…的脸")
   happy: { name: '开心', ref: '开心的脸', bare: '开心' },
   sad: { name: '难过', ref: '难过的脸', bare: '难过' },

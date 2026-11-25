@@ -67,6 +67,11 @@ const Home = () => {
     setLetterCase(letterCase === 'capital' ? 'small' : 'capital');
   };
 
+  // 2D/3D on the Shapes card: flat shapes, or solids the child can turn
+  const [savedShapeDim, setShapeDim] = useChildSetting('shapeDim', '2d');
+  const shapeDim = savedShapeDim === '3d' ? '3d' : '2d';
+  const toggleShapeDim = () => setShapeDim(shapeDim === '3d' ? '2d' : '3d');
+
   // Cards that alias a nested lesson (Letter Sounds → phonics.letters) are
   // checked under their registry key, not their card id
   const visibleCategories = homeCategories.filter((cat) => {
@@ -102,6 +107,7 @@ const Home = () => {
             category.id === 'addition' ||
             category.id === 'alphabets' ||
             category.id === 'letter-sounds' ||
+            category.id === 'shapes' ||
             Boolean(stylesForCategory(category.id));
           // Pills are siblings positioned over the card, not children of the
           // Link — nested interactive elements are invalid HTML and a tap
@@ -175,6 +181,14 @@ const Home = () => {
                   className={`${pillBase} ${pillPos}`}
                 >
                   {letterCase === 'capital' ? 'ABC' : 'Aa'}
+                </button>
+              ) : category.id === 'shapes' ? (
+                <button
+                  onClick={toggleShapeDim}
+                  aria-label={`${shapeDim.toUpperCase()} shapes. Tap for ${shapeDim === '3d' ? '2D' : '3D'}.`}
+                  className={`${pillBase} ${pillPos}`}
+                >
+                  {shapeDim === '3d' ? '🧊 3D' : '⬛ 2D'}
                 </button>
               ) : stylesForCategory(category.id) ? (
                 <StyleToggle

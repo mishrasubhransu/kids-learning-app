@@ -1,3 +1,5 @@
+import { SolidSnapshot } from '../components/ui/Solid3D.jsx';
+
 // SVG paths for shapes
 export const shapes = [
   {
@@ -172,6 +174,37 @@ export const shapes = [
     ),
   },
 ];
+
+// 3D shapes (the "3D" side of the Shapes pill). `solid` names the builder in
+// lib/solids3d.js: the lesson's hero renders it live and draggable
+// (ui/Solid3D SolidViewer); everywhere else — tiles, quiz cards, recap —
+// `svg` paints a still, so the 2D render paths work unchanged.
+const solid = (id, name, kind) => ({
+  id,
+  name,
+  display: name,
+  solid: kind,
+  svg: (color = '#3B82F6') => <SolidSnapshot kind={kind} color={color} />,
+});
+
+export const solids = [
+  solid(100, 'Sphere', 'sphere'),
+  solid(101, 'Cube', 'cube'),
+  solid(102, 'Cuboid', 'cuboid'),
+  solid(103, 'Cylinder', 'cylinder'),
+  solid(104, 'Cone', 'cone'),
+  solid(105, 'Pyramid', 'pyramid'),
+  solid(106, 'Prism', 'prism'),
+  solid(107, 'Ellipsoid', 'ellipsoid'),
+  solid(108, 'Hemisphere', 'hemisphere'),
+  solid(109, 'Tube', 'tube'),
+  solid(110, 'Torus', 'torus'),
+  solid(111, 'Helix', 'helix'),
+];
+
+// The pill's two sides; anything else saved reads as 2D
+export const SHAPE_DIMS = ['2d', '3d'];
+export const shapesForDim = (dim) => (dim === '3d' ? solids : shapes);
 
 // Nice colors for shapes
 export const shapeColors = [

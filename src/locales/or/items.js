@@ -68,6 +68,20 @@ export default {
   ring: { name: 'ରିଙ୍ଗ' },
   semicircle: { name: 'ଅଧା ଗୋଲ' },
 
+  // 3D shapes (AI-drafted like the rest — review pending)
+  sphere: { name: 'ଗୋଲକ' },
+  cube: { name: 'ଘନ' },
+  cuboid: { name: 'ଆୟତଘନ' },
+  cylinder: { name: 'ସିଲିଣ୍ଡର' },
+  cone: { name: 'କୋନ୍' },
+  pyramid: { name: 'ପିରାମିଡ୍' },
+  prism: { name: 'ପ୍ରିଜିମ୍' },
+  ellipsoid: { name: 'ଅଣ୍ଡାକାର ଗୋଲକ' },
+  hemisphere: { name: 'ଅର୍ଦ୍ଧଗୋଲକ' },
+  tube: { name: 'ନଳୀ' },
+  torus: { name: 'ଟୋରସ୍' },
+  helix: { name: 'ହେଲିକ୍ସ' },
+
   // Emotions (faces — refs agree with "… ମୁହଁ")
   happy: { name: 'ଖୁସି', ref: 'ଖୁସି ମୁହଁ', bare: 'ଖୁସି' },
   sad: { name: 'ଦୁଃଖୀ', ref: 'ଦୁଃଖୀ ମୁହଁ', bare: 'ଦୁଃଖୀ' },

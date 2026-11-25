@@ -31,7 +31,7 @@ import { isLessonAvailable } from '../src/data/lessons.js';
 import alphabets from '../src/data/alphabets.js';
 import numbers from '../src/data/numbers.js';
 import colors from '../src/data/colors.js';
-import { shapes } from '../src/data/shapes.jsx';
+import { shapes, solids } from '../src/data/shapes.jsx';
 import { conceptItems } from '../src/data/concepts.js';
 import { scienceItems } from '../src/data/science.js';
 import { phonicsWords } from '../src/data/phonics.js';
@@ -60,7 +60,7 @@ export function buildCatalog(locale = 'en') {
   if (isLessonAvailable(locale, 'alphabets')) {
     alphabets.forEach((i) => addQuizSet(i.name));
   }
-  [...numbers, ...colors, ...shapes].forEach((i) => addQuizSet(i.name));
+  [...numbers, ...colors, ...shapes, ...solids].forEach((i) => addQuizSet(i.name));
   // Skip concept lessons the registry hides for this locale (indian-food
   // for es/zh — its dosa/vada slugs still arrive via the food lesson)
   Object.entries(conceptItems).forEach(([id, items]) => {
