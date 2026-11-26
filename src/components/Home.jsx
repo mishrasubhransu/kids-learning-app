@@ -71,6 +71,11 @@ const Home = () => {
   const [savedShapeDim, setShapeDim] = useChildSetting('shapeDim', '2d');
   const shapeDim = savedShapeDim === '3d' ? '3d' : '2d';
   const toggleShapeDim = () => setShapeDim(shapeDim === '3d' ? '2d' : '3d');
+  // …and for 3D, the look: the plain checker, or real-world skins (a
+  // sandstone pyramid, half an orange) that change each time a slide returns
+  const [savedShapeLook, setShapeLook] = useChildSetting('shapeLook', 'plain');
+  const shapeLook = savedShapeLook === 'real' ? 'real' : 'plain';
+  const toggleShapeLook = () => setShapeLook(shapeLook === 'real' ? 'plain' : 'real');
 
   // Cards that alias a nested lesson (Letter Sounds → phonics.letters) are
   // checked under their registry key, not their card id
@@ -183,13 +188,24 @@ const Home = () => {
                   {letterCase === 'capital' ? 'ABC' : 'Aa'}
                 </button>
               ) : category.id === 'shapes' ? (
-                <button
-                  onClick={toggleShapeDim}
-                  aria-label={`${shapeDim.toUpperCase()} shapes. Tap for ${shapeDim === '3d' ? '2D' : '3D'}.`}
-                  className={`${pillBase} ${pillPos}`}
-                >
-                  {shapeDim === '3d' ? '🧊 3D' : '⬛ 2D'}
-                </button>
+                <div className={`${pillPos} flex items-center gap-2`}>
+                  <button
+                    onClick={toggleShapeDim}
+                    aria-label={`${shapeDim.toUpperCase()} shapes. Tap for ${shapeDim === '3d' ? '2D' : '3D'}.`}
+                    className={pillBase}
+                  >
+                    {shapeDim === '3d' ? '3D' : '2D'}
+                  </button>
+                  {shapeDim === '3d' && (
+                    <button
+                      onClick={toggleShapeLook}
+                      aria-label={`${shapeLook === 'real' ? 'Real-world' : 'Plain'} look. Tap for ${shapeLook === 'real' ? 'plain' : 'real-world'}.`}
+                      className={pillBase}
+                    >
+                      {shapeLook === 'real' ? '🍊 Real' : '🏁 Plain'}
+                    </button>
+                  )}
+                </div>
               ) : stylesForCategory(category.id) ? (
                 <StyleToggle
                   category={category.id}

@@ -386,6 +386,8 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
                   kind={currentItem.solid}
                   color={shapeColor}
                   label={currentItem.name}
+                  real={currentItem.real}
+                  turn={arrival}
                 />
               ) : (
                 currentItem.svg(shapeColor)

@@ -7,18 +7,25 @@ const loadSolids = () => import('../../lib/solids3d.js');
 // A still picture of a solid — tiles, quiz cards, recap. Painted once by a
 // shared offscreen renderer and cached, so a grid of them costs no WebGL
 // contexts.
-export const SolidSnapshot = ({ kind, color, alt = '' }) => {
+// `real` picks one of the shape's real-world skins (per mount, so a grid
+// re-render doesn't reshuffle it); otherwise the plain checker.
+export const SolidSnapshot = ({ kind, color, real = false, alt = '' }) => {
   const [src, setSrc] = useState(null);
 
   useEffect(() => {
     let live = true;
     loadSolids()
-      .then((m) => live && setSrc(m.snapshot(kind, color)))
+      .then(async (m) => {
+        const skin = real ? m.randomSkin(kind) : null;
+        // A photo skin's image files must be in hand before it is painted
+        await m.prepareSkin(kind, skin);
+        if (live) setSrc(m.snapshot(kind, color, skin));
+      })
       .catch(() => {});
     return () => {
       live = false;
     };
-  }, [kind, color]);
+  }, [kind, color, real]);
 
   return src ? (
     <img src={src} alt={alt} draggable={false} className="w-full h-full object-contain" />
@@ -30,19 +37,21 @@ export const SolidSnapshot = ({ kind, color, alt = '' }) => {
 // The live shape: drag to turn it about its centroid. A press that never
 // moved is a tap and falls through to the parent's click (say the name); a
 // drag swallows that click so turning the shape doesn't also speak.
-export const SolidViewer = ({ kind, color, label }) => {
+// `real` dresses it in a real-world skin, re-picked whenever `turn` changes
+// (the lesson bumps it each time a slide comes round).
+export const SolidViewer = ({ kind, color, label, real = false, turn = 0 }) => {
   const canvasRef = useRef(null);
   const viewerRef = useRef(null);
-  const latest = useRef({ kind, color });
+  const latest = useRef({ kind, color, real });
   const [failed, setFailed] = useState(false);
 
   // Next item: same canvas and GL context, new solid. Declared before the
   // mount effect so a viewer that finishes loading late still starts on the
   // item now showing.
   useEffect(() => {
-    latest.current = { kind, color };
-    viewerRef.current?.setShape(kind, color);
-  }, [kind, color]);
+    latest.current = { kind, color, real };
+    viewerRef.current?.setShape(kind, color, real);
+  }, [kind, color, real, turn]);
 
   useEffect(() => {
     let live = true;

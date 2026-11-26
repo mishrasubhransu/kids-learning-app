@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-25T21:51:38.191Z",
+  "version": "2026-11-26T02:58:41.031Z",
   "clips": {
     "en/lines/this-is-my-family": {
       "v": 1785378972,
@@ -40952,6 +40952,22 @@
     "en/quiz/try-to-find/helix": {
       "v": 1795643498,
       "h": "0642cd36c0"
+    },
+    "en/items/spiral": {
+      "v": 1795661920,
+      "h": "47436a3287"
+    },
+    "en/quiz/which-one/spiral": {
+      "v": 1795661920,
+      "h": "6f7a8b9afa"
+    },
+    "en/quiz/try-to-find/spiral": {
+      "v": 1795661920,
+      "h": "577bc103a2"
+    },
+    "en/quiz/that-was/spiral": {
+      "v": 1795661921,
+      "h": "cf626f7b22"
     }
   }
 }

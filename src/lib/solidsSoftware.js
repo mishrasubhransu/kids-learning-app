@@ -15,7 +15,27 @@ const shade = (nx, ny, nz) => {
   return Math.min(1.06, 0.6 + 0.42 * sun + 0.14 * fill);
 };
 
-const rgb = (color) => [color.r * 255, color.g * 255, color.b * 255];
+// Texture pixels per canvas, read back once (checker clones share a canvas)
+const pixelCache = new WeakMap();
+const pixelsOf = (canvas) => {
+  if (!pixelCache.has(canvas)) {
+    const { width, height } = canvas;
+    const { data } = canvas.getContext('2d').getImageData(0, 0, width, height);
+    pixelCache.set(canvas, { width, height, data: new Uint32Array(data.buffer) });
+  }
+  return pixelCache.get(canvas);
+};
+
+// 1×1 "texture" for a plain-colored material (ABGR, as ImageData packs it)
+const flatColor = (color) => {
+  const c = color.clone().convertLinearToSRGB();
+  const byte = (x) => Math.round(Math.min(1, Math.max(0, x)) * 255);
+  return {
+    width: 1,
+    height: 1,
+    data: new Uint32Array([0xff000000 | (byte(c.b) << 16) | (byte(c.g) << 8) | byte(c.r)]),
+  };
+};
 
 // Flatten a solid into typed arrays once; frames only re-project them
 const extract = (solid) => {
@@ -33,15 +53,12 @@ const extract = (solid) => {
       index: g.index?.array ?? null,
       ranges: groups.map(({ start, count: n, materialIndex }) => {
         const m = materials[materialIndex] ?? materials[0];
-        const srgb = (c) => rgb(c.clone().convertLinearToSRGB());
-        const plain = srgb(m.color);
         return {
           start,
           end: start + n,
           repeatU: m.map?.repeat.x ?? 1,
           repeatV: m.map?.repeat.y ?? 1,
-          base: m.userData.checker?.base ?? plain,
-          pale: m.userData.checker?.pale ?? plain,
+          texture: m.map ? pixelsOf(m.map.image) : flatColor(m.color),
           flat: Boolean(m.flatShading),
           back: m.side === THREE.BackSide,
         };
@@ -118,7 +135,8 @@ export const createSoftPainter = (canvas) => {
       };
 
       for (const range of part.ranges) {
-        const { repeatU, repeatV, base, pale, flat, back } = range;
+        const { repeatU, repeatV, flat, back } = range;
+        const { width: tw, height: th, data: texels } = range.texture;
         const sign = back ? -1 : 1;
         for (let t = range.start; t < range.end; t += 3) {
           const a = index ? index[t] : t;
@@ -160,14 +178,16 @@ export const createSoftPainter = (canvas) => {
               depth[row] = iw;
               const u = (b0 * u0 + b1 * u1 + b2 * u2) / iw;
               const v = (b0 * v0 + b1 * v1 + b2 * v2) / iw;
-              // 2×2 checker per tile, same parity as the WebGL texture
-              const tint = (Math.floor(u * 2) + Math.floor(v * 2)) & 1 ? base : pale;
+              // Nearest texel, wrapping; canvas rows run top-down, v bottom-up
+              const tx = Math.min(tw - 1, ((u - Math.floor(u)) * tw) | 0);
+              const ty = Math.min(th - 1, ((1 - (v - Math.floor(v))) * th) | 0);
+              const texel = texels[ty * tw + tx];
               const light = b0 * l0 + b1 * l1 + b2 * l2;
               pixels[row] =
                 0xff000000 |
-                (Math.min(255, tint[2] * light) << 16) |
-                (Math.min(255, tint[1] * light) << 8) |
-                Math.min(255, tint[0] * light);
+                (Math.min(255, ((texel >> 16) & 255) * light) << 16) |
+                (Math.min(255, ((texel >> 8) & 255) * light) << 8) |
+                Math.min(255, (texel & 255) * light);
             }
           }
         }

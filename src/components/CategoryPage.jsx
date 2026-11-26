@@ -90,6 +90,8 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
   const [savedImageStyle] = useChildSetting(`imageStyle-${category}`, null);
   // 2D/3D pill on the home Shapes card
   const [shapeDim] = useChildSetting('shapeDim', '2d');
+  // …and, for 3D, the Plain/Real pill beside it
+  const [shapeLook] = useChildSetting('shapeLook', 'plain');
 
   // Indian Food speaks the language the parent pinned for it, not the app
   // language. Stamped during render (before children mount — same pattern
@@ -128,12 +130,12 @@ const CategoryPage = ({ category, backTo = '/home', catInfo }) => {
     const categoryItems = customWordKeys
       ? customWordItems(customWordKeys)
       : category === 'shapes'
-        ? shapesForDim(shapeDim)
+        ? shapesForDim(shapeDim, shapeLook)
         : categoryData[category]?.items;
     return categoryItems?.length
       ? localizeItems(pickItemVariants(categoryItems))
       : null;
-  }, [category, locale, customWordKeys, shapeDim]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [category, locale, customWordKeys, shapeDim, shapeLook]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Alphabets follow the shared letterCase pill: 'small' pairs each capital
   // with its lowercase ("Aa"), matching Letter Sounds. Only display changes —

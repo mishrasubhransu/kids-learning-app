@@ -76,6 +76,7 @@ export default {
   crescent: { name: 'Media luna', ref: 'la media luna' },
   ring: { name: 'Anillo', ref: 'el anillo' },
   semicircle: { name: 'Semicírculo', ref: 'el semicírculo' },
+  spiral: { name: 'Espiral', ref: 'la espiral' },
 
   // 3D shapes
   sphere: { name: 'Esfera', ref: 'la esfera' },

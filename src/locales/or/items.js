@@ -67,6 +67,7 @@ export default {
   crescent: { name: 'ଅର୍ଦ୍ଧଚନ୍ଦ୍ର' },
   ring: { name: 'ରିଙ୍ଗ' },
   semicircle: { name: 'ଅଧା ଗୋଲ' },
+  spiral: { name: 'ସର୍ପିଳ' },
 
   // 3D shapes (AI-drafted like the rest — review pending)
   sphere: { name: 'ଗୋଲକ' },

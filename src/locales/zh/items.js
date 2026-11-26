@@ -59,6 +59,7 @@ export default {
   crescent: { name: '月牙' },
   ring: { name: '圆环' },
   semicircle: { name: '半圆' },
+  spiral: { name: '螺旋线' },
 
   // 3D shapes
   sphere: { name: '球体' },

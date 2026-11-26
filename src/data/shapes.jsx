@@ -1,5 +1,14 @@
 import { SolidSnapshot } from '../components/ui/Solid3D.jsx';
 
+// Three turns of an evenly widening (Archimedean) spiral, centre outwards
+const SPIRAL_PATH = Array.from({ length: 145 }, (_, i) => {
+  const angle = (i / 144) * Math.PI * 6;
+  const radius = 3 + (i / 144) * 41;
+  const x = (50 + Math.cos(angle) * radius).toFixed(1);
+  const y = (50 + Math.sin(angle) * radius).toFixed(1);
+  return `${i ? 'L' : 'M'}${x},${y}`;
+}).join(' ');
+
 // SVG paths for shapes
 export const shapes = [
   {
@@ -173,6 +182,25 @@ export const shapes = [
       </svg>
     ),
   },
+  {
+    // A flat swirl that widens as it winds — the 2D cousin of the 3D helix,
+    // which climbs at a constant width instead
+    id: 15,
+    name: 'Spiral',
+    display: 'Spiral',
+    svg: (color = '#3B82F6') => (
+      <svg viewBox="0 0 100 100" className="w-full h-full">
+        <path
+          d={SPIRAL_PATH}
+          fill="none"
+          stroke={color}
+          strokeWidth="7"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </svg>
+    ),
+  },
 ];
 
 // 3D shapes (the "3D" side of the Shapes pill). `solid` names the builder in
@@ -202,9 +230,20 @@ export const solids = [
   solid(111, 'Helix', 'helix'),
 ];
 
-// The pill's two sides; anything else saved reads as 2D
-export const SHAPE_DIMS = ['2d', '3d'];
-export const shapesForDim = (dim) => (dim === '3d' ? solids : shapes);
+// The same solids in real-world skins (the "Real" side of the Plain/Real
+// pill): `real` tells the live viewer and the stills to pick a skin from
+// lib/solidSkins.js instead of the checker. Names, slugs and clips are the
+// plain solids' own.
+export const realSolids = solids.map((item) => ({
+  ...item,
+  real: true,
+  svg: (color = '#3B82F6') => <SolidSnapshot kind={item.solid} color={color} real />,
+}));
+
+// The Shapes pills: 2D/3D, and for 3D the look. Anything else saved reads
+// as 2D / plain.
+export const shapesForDim = (dim, look) =>
+  dim !== '3d' ? shapes : look === 'real' ? realSolids : solids;
 
 // Nice colors for shapes
 export const shapeColors = [
