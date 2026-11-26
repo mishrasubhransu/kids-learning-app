@@ -38,9 +38,16 @@ input, textarea {
  * box-shadow so it never fights shadow-* utilities, and in the base layer so
  * components on dark/saturated lesson backgrounds can override the color
  * with focus-visible:outline-white/70.
+ *
+ * Off by default — a parent enables it in Parent Zone (lib/focusRing puts
+ * .focus-ring on <html>). The outline: none also silences the browser's
+ * own ring, which would otherwise show in its place.
  */
 @layer base {
   :focus-visible {
+    outline: none;
+  }
+  html.focus-ring :focus-visible {
     outline: 4px solid rgb(99 102 241 / 0.75); /* indigo-500 */
     outline-offset: 2px;
   }

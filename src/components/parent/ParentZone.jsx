@@ -40,6 +40,7 @@ import ChildProgress from './ChildProgress';
 import ChildLocked from './ChildLocked';
 import PhotoCredits from './PhotoCredits';
 import VoiceSelector from '../ui/VoiceSelector';
+import { isFocusRingEnabled, setFocusRingEnabled } from '../../lib/focusRing';
 
 // Pill-style option picker for a per-child setting
 const OptionRow = ({ label, hint, options, value, onChange }) => (
@@ -95,6 +96,29 @@ const SelectRow = ({ label, hint, options, value, onChange }) => (
     </div>
   </div>
 );
+
+// Device-wide switch for the keyboard focus box (lib/focusRing) — off unless
+// a parent who navigates by keyboard asks for it
+const FocusBoxRow = () => {
+  const [on, setOn] = useState(isFocusRingEnabled);
+  return (
+    <div className="mt-4 bg-white rounded-2xl border border-gray-100 px-4 py-1">
+      <OptionRow
+        label="Keyboard focus box"
+        hint="Outline the button the Tab key is on, for moving around without touch or a mouse. Applies to this device"
+        options={[
+          { value: true, label: 'On' },
+          { value: false, label: 'Off' },
+        ]}
+        value={on}
+        onChange={(v) => {
+          setFocusRingEnabled(v);
+          setOn(v);
+        }}
+      />
+    </div>
+  );
+};
 
 const SectionTitle = ({ children }) => (
   <h2 className="text-lg font-bold text-gray-800 mt-8 mb-3">{children}</h2>
@@ -525,6 +549,7 @@ const ParentZone = () => {
               </div>
               <VoiceSelector />
             </div>
+            <FocusBoxRow />
           </>
         )}
 

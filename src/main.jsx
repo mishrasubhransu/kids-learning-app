@@ -9,8 +9,10 @@ import { LocaleProvider } from './context/LocaleContext'
 import './index.css'
 import App from './App.jsx'
 import blockPageZoom from './lib/blockPageZoom'
+import { applyFocusRing } from './lib/focusRing'
 
 blockPageZoom()
+applyFocusRing()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

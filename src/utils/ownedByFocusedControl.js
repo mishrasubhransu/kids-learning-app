@@ -9,14 +9,20 @@
  * leaves the button focused but not focus-visible, so Space after tapping
  * an arrow still speaks the word rather than re-clicking the arrow.
  * Typing fields and dropdowns own every key they receive.
+ *
+ * With the focus box switched off (the default — see lib/focusRing) nobody
+ * can see which button is focused, so buttons never own Enter/Space and
+ * the keys always drive the lesson.
  */
+import { isFocusRingEnabled } from '../lib/focusRing';
+
 const ownedByFocusedControl = (e) => {
   const el = e.target instanceof Element ? e.target : null;
   if (!el) return false;
   if (el.closest('input, select, textarea, [contenteditable="true"], [role="dialog"]')) {
     return true;
   }
-  if (e.key === 'Enter' || e.key === ' ') {
+  if ((e.key === 'Enter' || e.key === ' ') && isFocusRingEnabled()) {
     const control = el.closest('button, a, [role="button"]');
     return Boolean(control && control.matches(':focus-visible'));
   }
