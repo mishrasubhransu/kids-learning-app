@@ -15,14 +15,6 @@
 
 const TAU = Math.PI * 2;
 
-// Seeded so a skin looks the same every time it comes round
-const rng = (seed) => () => {
-  seed = (seed + 0x6d2b79f5) | 0;
-  let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-};
-
 const mix = (a, b, t) => {
   const pa = parseInt(a.slice(1), 16);
   const pb = parseInt(b.slice(1), 16);
@@ -247,29 +239,9 @@ export const SKINS = {
     },
     {
       id: 'globe',
-      slots: {
-        all: {
-          size: [1024, 512],
-          paint: (ctx, w, h) => {
-            const r = rng(11);
-            fill(ctx, w, h, '#2b7fd9');
-            for (let land = 0; land < 8; land++) {
-              const cx = r() * w;
-              const cy = h * (0.2 + r() * 0.6);
-              for (let i = 0; i < 16; i++) {
-                const x = cx + (r() - 0.5) * 190;
-                const y = cy + (r() - 0.5) * 130;
-                const rad = 18 + r() * 44;
-                const tone = r() < 0.3 ? '#8bc34a' : '#4caf50';
-                [-w, 0, w].forEach((dx) => dot(ctx, x + dx, y, rad, tone));
-              }
-            }
-            ctx.fillStyle = '#bfe3f5';
-            ctx.fillRect(0, 0, w, h * 0.07);
-            ctx.fillRect(0, h * 0.92, w, h * 0.08);
-          },
-        },
-      },
+      // NASA's Blue Marble (public domain), a whole-Earth map that wraps the
+      // ball exactly. The file's ice is tinted pale blue: no white outlines.
+      slots: { all: photo('earth', { size: [2048, 1024] }) },
     },
   ],
 
