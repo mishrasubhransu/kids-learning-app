@@ -112,6 +112,12 @@ export const ChildProfileProvider = ({ children }) => {
   // up on an in-flight two-phase run (mid-run the profile still has a
   // non-manifest path, which self-heal would otherwise treat as broken).
   const nameAudioAttempts = useRef(new Set());
+  // childId -> the promise of that child's latest generation run. Runs for
+  // one child go one after another: two at once write the same storage
+  // folders and the same row, and each one's cleanup can delete the other's
+  // fresh clips (the API guards against that too — this keeps a single
+  // device from causing it at all).
+  const nameAudioRuns = useRef(new Map());
 
   // Ask the serverless function for this child's voice clips, two-phase:
   // the quick neutral name clip first (parent gets fast confirmation), then
@@ -121,12 +127,8 @@ export const ChildProfileProvider = ({ children }) => {
   // show them (and offer retry). Clips generate in the child's current
   // language and cache per locale (name_audio_paths); reset:true (rename)
   // tells the API to drop the other locales' clips — they say the old name.
-  const requestNameAudio = useCallback(
-    async (childId, { reset = false } = {}) => {
-      const token = session?.access_token;
-      if (!token || !childId) return;
-      nameAudioAttempts.current.add(childId);
-
+  const generateNameAudio = useCallback(
+    async (childId, token, reset) => {
       const call = async (action) => {
         const res = await fetch('/api/generate-name-audio', {
           method: 'POST',
@@ -207,7 +209,23 @@ export const ChildProfileProvider = ({ children }) => {
         }));
       }
     },
-    [user, session]
+    [user]
+  );
+
+  // The entry point: queues the run behind any other run for the same child
+  // (see nameAudioRuns). A run never rejects — failures land in
+  // nameAudioStatus — so the chain can't get stuck.
+  const requestNameAudio = useCallback(
+    (childId, { reset = false } = {}) => {
+      const token = session?.access_token;
+      if (!token || !childId) return Promise.resolve();
+      nameAudioAttempts.current.add(childId);
+      const previous = nameAudioRuns.current.get(childId) ?? Promise.resolve();
+      const run = previous.then(() => generateNameAudio(childId, token, reset));
+      nameAudioRuns.current.set(childId, run);
+      return run;
+    },
+    [session, generateNameAudio]
   );
 
   useEffect(() => {
@@ -421,6 +439,13 @@ export const ChildProfileProvider = ({ children }) => {
   const patchChildSettings = useCallback(
     (childId, patch) => {
       if (!user || !childId) return Promise.resolve();
+      // A language change is followed by the caller's own generation (after
+      // this write lands — the API reads the language from the row). Mark
+      // the child now so the self-heal effect doesn't also fire on the
+      // optimistic update below: that second run raced the first one (and
+      // could still read the OLD language from the row), and the two
+      // deleted each other's clips.
+      if ('language' in patch) nameAudioAttempts.current.add(childId);
       setProfiles((prev) => {
         const next = (prev || []).map((p) =>
           p.id === childId ? { ...p, settings: { ...p.settings, ...patch } } : p

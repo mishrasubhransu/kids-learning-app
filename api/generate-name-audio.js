@@ -203,6 +203,21 @@ const listFilesDeep = async (admin, prefix) => {
   return files;
 };
 
+// A version folder this young may belong to a generation that is still
+// running in ANOTHER request (two tabs, a retry, a double-fired language
+// switch): its files exist but no row points at them yet. Cleanup must leave
+// it alone — deleting it is how a manifest once ended up listing clips that
+// were gone (2026-08: three praise clips and every name clip of one child).
+// Far above the function's 60 s limit (vercel.json), so "young" always
+// covers a live run.
+const IN_FLIGHT_MS = 10 * 60 * 1000;
+
+// Version folders are named by their creation time (<ts>/file).
+const isInFlight = (file, now) => {
+  const ts = Number(/\/(\d{13})\/[^/]+$/.exec(file)?.[1]);
+  return Number.isFinite(ts) && now - ts < IN_FLIGHT_MS;
+};
+
 // Remove every file under `prefix` that isn't inside the folder of one of
 // `keepPaths` — the row's current clip paths, so anything a locale still
 // references survives. Runs AFTER the row points at the new version; a
@@ -210,13 +225,18 @@ const listFilesDeep = async (admin, prefix) => {
 // This is what makes per-locale caching safe: regenerating one locale
 // keeps every other locale's folder (it's still in name_audio_paths), while
 // stale timestamps, legacy loose mp3s, and reset-orphaned locales all go.
+// Folders younger than IN_FLIGHT_MS are skipped (see above); an abandoned
+// one is collected by the child's next generation instead.
 const cleanupUnreferenced = async (admin, prefix, keepPaths) => {
   try {
     const keep = keepPaths
       .filter(Boolean)
       .map((p) => p.replace(/\/[^/]+$/, '/'));
     const files = await listFilesDeep(admin, prefix);
-    const stale = files.filter((f) => !keep.some((k) => f.startsWith(k)));
+    const now = Date.now();
+    const stale = files.filter(
+      (f) => !keep.some((k) => f.startsWith(k)) && !isInFlight(f, now)
+    );
     if (stale.length) await admin.storage.from(BUCKET).remove(stale);
   } catch (error) {
     console.warn('name-audio cleanup failed:', error.message);
@@ -429,6 +449,25 @@ export default async function handler(req, res) {
         ? child.name_audio_paths
         : {};
 
+    // The map as it is in the row NOW. A request runs for up to a minute
+    // and others may write meanwhile (another language, another tab), so
+    // every write merges into a fresh read — writing back the snapshot from
+    // the top of the request would drop their entries, and cleanup would
+    // then delete the folders those entries point at.
+    const readPaths = async () => {
+      const { data, error } = await admin
+        .from('child_profiles')
+        .select('name_audio_path, name_audio_paths')
+        .eq('id', child.id)
+        .maybeSingle();
+      if (error) throw new Error(`Profile read: ${error.message}`);
+      const stored = data?.name_audio_paths;
+      return {
+        latest: data?.name_audio_path ?? null,
+        paths: stored && typeof stored === 'object' ? stored : {},
+      };
+    };
+
     const setPaths = async (path, paths) => {
       const { error } = await admin
         .from('child_profiles')
@@ -454,7 +493,9 @@ export default async function handler(req, res) {
       // say the old name; cleanup below then removes their folders. The
       // praise phase that follows sees the already-reset stored map, so
       // only the name phase needs the flag.
-      const paths = reset ? { [locale]: path } : { ...savedPaths, [locale]: path };
+      const paths = reset
+        ? { [locale]: path }
+        : { ...(await readPaths()).paths, [locale]: path };
       await setPaths(path, paths);
       await cleanupUnreferenced(admin, childPrefix, Object.values(paths));
       return res.status(200).json({ path, paths });
@@ -464,12 +505,32 @@ export default async function handler(req, res) {
     // the name clip and the praise clips version together; anything else
     // there (legacy pre-locale layout, a seeded manifest path, no entry at
     // all) starts a fresh folder and regenerates the name clip too.
+    // The folder's contents as storage has them — the only proof a clip is
+    // really there (an upload that returned OK can still be deleted later
+    // by another request).
+    const filesIn = async (dir) => {
+      const { data, error } = await admin.storage
+        .from(BUCKET)
+        .list(dir, { limit: 100 });
+      if (error) throw new Error(`List ${dir}: ${error.message}`);
+      return new Set((data || []).map((entry) => entry.name));
+    };
+
     let ts = savedPaths[locale]?.match(
       new RegExp(`^${childPrefix}/${locale}/(\\d+)/name\\.${ext}$`)
     )?.[1];
+    // The row naming a name clip doesn't mean it survived — check.
+    if (ts && !(await filesIn(`${childPrefix}/${locale}/${ts}`)).has(`name.${ext}`)) {
+      ts = null;
+    }
+    // Every clip of this run stays in memory until the folder is verified,
+    // so anything that went missing can be put back without paying for a
+    // second generation.
+    const clips = new Map();
     if (!ts) {
       ts = `${Date.now()}`;
       const audio = await speakName(name);
+      clips.set(`name.${ext}`, audio);
       await upload(
         admin,
         `${childPrefix}/${locale}/${ts}/name.${ext}`,
@@ -501,10 +562,48 @@ export default async function handler(req, res) {
                   use_speaker_boost: true,
                 })
               : await ttsGemini(geminiKey, locale, text);
+          clips.set(files[i], audio);
           await upload(admin, `${folder}/${files[i]}`, audio, contentType);
         })
       );
       manifest.tiers[tier] = files;
+    }
+
+    // A manifest is a promise that every file it lists is there. Check the
+    // folder itself before making that promise: put back whatever is
+    // missing, look again, and fail the request (row untouched, stock praise
+    // keeps playing) rather than publish a manifest with holes in it.
+    const expected = [manifest.neutral, ...Object.values(manifest.tiers).flat()];
+    let present = await filesIn(folder);
+    const missing = expected.filter((f) => !present.has(f));
+    if (missing.length) {
+      for (const f of missing) {
+        // Only the name clip can be absent from memory (made by the name
+        // action, in an earlier request) — read it again.
+        const audio = clips.get(f) ?? (await speakName(name));
+        await upload(admin, `${folder}/${f}`, audio, contentType);
+      }
+      present = await filesIn(folder);
+      const stillMissing = expected.filter((f) => !present.has(f));
+      if (stillMissing.length) {
+        throw new Error(
+          `Clips missing after re-upload in ${folder}: ${stillMissing.join(', ')}`
+        );
+      }
+    }
+
+    // Another request may have changed this language's entry while this
+    // one was generating — a newer version (a second tab, a retry) or a
+    // rename that dropped it. That request wins: the row stays as it left
+    // it and this run's folder waits for a later cleanup. Without this, the
+    // slower run would point the row back at its own folder and delete the
+    // newer one.
+    const { latest, paths: latestPaths } = await readPaths();
+    const current = latestPaths[locale];
+    if (current !== savedPaths[locale] && !current?.startsWith(`${folder}/`)) {
+      return res
+        .status(200)
+        .json({ path: current ?? latest, paths: latestPaths, superseded: true });
     }
 
     const manifestPath = `${folder}/manifest.json`;
@@ -514,7 +613,7 @@ export default async function handler(req, res) {
       Buffer.from(JSON.stringify(manifest)),
       'application/json'
     );
-    const paths = { ...savedPaths, [locale]: manifestPath };
+    const paths = { ...latestPaths, [locale]: manifestPath };
     await setPaths(manifestPath, paths);
     await cleanupUnreferenced(admin, childPrefix, Object.values(paths));
     return res.status(200).json({ path: manifestPath, paths });

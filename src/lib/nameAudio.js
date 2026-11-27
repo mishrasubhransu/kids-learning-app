@@ -52,7 +52,13 @@ const fetchCached = async (url) => {
     /* no Cache Storage — network only */
   }
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (!res.ok) {
+    // The server answered and the file isn't there (a public bucket says
+    // 400 for a missing object) — callers tell this from a network failure
+    const error = new Error(`HTTP ${res.status}`);
+    error.status = res.status;
+    throw error;
+  }
   if (cache) {
     try {
       await cache.put(url, res.clone());
@@ -122,20 +128,26 @@ export const loadPraiseClips = (path) => {
 };
 
 // Play one clip, cache-first; resolves when playback ends (or fails —
-// praise must never stall a game).
+// praise must never stall a game). Resolves true when the clip played and
+// false when it could not, so the caller can say something else instead of
+// leaving a silence.
 export const playClipUrl = async (url) => {
   let src = url;
   try {
     const res = await fetchCached(url);
     src = URL.createObjectURL(await res.blob());
-  } catch {
-    /* stream straight from the network URL */
+  } catch (error) {
+    // The clip is missing — the same URL can't play either
+    if (error?.status) return false;
+    /* no answer at all (fetch blocked, offline): let the audio element try
+       the network URL itself */
   }
-  await new Promise((resolve) => {
+  const played = await new Promise((resolve) => {
     const audio = new Audio(src);
-    audio.onended = resolve;
-    audio.onerror = resolve;
-    audio.play().catch(resolve);
+    audio.onended = () => resolve(true);
+    audio.onerror = () => resolve(false);
+    audio.play().catch(() => resolve(false));
   });
   if (src !== url) URL.revokeObjectURL(src);
+  return played;
 };

@@ -25,7 +25,9 @@ import { hasVoiceClip, getVoiceClipUrl } from '../lib/voice';
  * When the active child has personalized praise clips ("Great job, Aarav!"),
  * the first praise of a game uses one, then ~1-in-3 — stock clips otherwise.
  * Personalized clips only play when they were generated in the active
- * language (manifest.locale, absent = en). Encouragement stays name-free on
+ * language (manifest.locale, absent = en). A personalized clip that fails to
+ * play (missing from storage, offline and not cached) is followed at once by
+ * a stock clip — praise is never silent. Encouragement stays name-free on
  * purpose (a name there reads as scolding).
  */
 const pickAvoiding = (count, recent) => {
@@ -150,7 +152,6 @@ const useAudioFeedback = () => {
     // the name out.
     const tierClips = praiseClips.current?.tiers?.[tier];
     if (tierClips?.length && (firstPersonalPending.current || Math.random() < 1 / 3)) {
-      firstPersonalPending.current = false;
       // Never the same personalized clip twice in a row (each tier has 2,
       // so consecutive picks within a tier alternate). Stock clips already
       // avoid their recent picks via pickAvoiding.
@@ -158,8 +159,18 @@ const useAudioFeedback = () => {
       if (tierClips.length > 1 && tierClips[idx] === lastPersonal.current) {
         idx = (idx + 1) % tierClips.length;
       }
-      lastPersonal.current = tierClips[idx];
-      return playClipUrl(tierClips[idx]);
+      const url = tierClips[idx];
+      if (await playClipUrl(url)) {
+        firstPersonalPending.current = false;
+        lastPersonal.current = url;
+        return;
+      }
+      // The clip didn't play. Don't try it again this session (the list is
+      // the shared memo from nameAudio, so every game skips it) and say the
+      // praise with a stock clip below — the "first praise is personalized"
+      // promise stays open for the next correct answer.
+      const failed = tierClips.indexOf(url);
+      if (failed !== -1) tierClips.splice(failed, 1);
     }
 
     const idx = pickAvoiding(tiers[tier].length, recentPositive.current);
