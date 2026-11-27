@@ -23,6 +23,9 @@ import {
   oppositeOfPart,
   scenePart,
   linePart,
+  spellPart,
+  spelledPart,
+  spellingLetters,
   voiceSlug,
 } from '../src/lib/voiceKeys.js';
 import hiPack from '../src/locales/hi/index.js';
@@ -36,9 +39,14 @@ import { conceptItems } from '../src/data/concepts.js';
 import { scienceItems } from '../src/data/science.js';
 import { phonicsWords } from '../src/data/phonics.js';
 import { letterSounds } from '../src/data/letterSounds.js';
+import { wordLibrary } from '../src/data/wordLibrary.js';
 import opposites, { wordSubject } from '../src/data/opposites.js';
 import { FIXED_LINES } from '../src/data/voiceLines.js';
 import { intros } from '../src/data/intros.js';
+
+// Slugs whose spelled/<word> take failed the transcription check after
+// retries (wrong or missing letters) — see the catalog entry below.
+const SPELLED_SKIP = new Set([]);
 
 export function buildCatalog(locale = 'en') {
   // Hindi is a speech-only locale (SPEECH_LOCALES): no app curriculum, just
@@ -84,6 +92,27 @@ export function buildCatalog(locale = 'en') {
     // words by the My Words custom list, so they need item + quiz clips;
     // about half already arrive via concepts lessons and dedupe here.
     letterSounds.forEach((l) => l.words.forEach((w) => addQuizSet(w.name)));
+    // Neutral letter names the word-reveal view strings together to spell
+    // a word. English only: the reading words are English, and the other
+    // locales fall back to their Alphabets clips.
+    if (locale === 'en') {
+      alphabets.forEach((l) => add(spellPart(l.name)));
+      // Every word the word-reveal view can show gets the real thing: the
+      // word spelled in one take. That is the whole My Words library, which
+      // already contains the three families and the Letter Sounds words.
+      // The generation text is the prompt that lands ~0.5s a letter
+      // ("U, N, D, E, R." alone comes out twice as slow); the runtime
+      // fallback keeps spelledPart's plain text. Words in SPELLED_SKIP never
+      // produced a clean take and stay on joined letters.
+      wordLibrary.forEach((w) => {
+        const part = spelledPart(w.name);
+        if (SPELLED_SKIP.has(part.key.slice('spelled/'.length))) return;
+        add({
+          key: part.key,
+          text: `[spelling out quickly] ${spellingLetters(w.name).join('-')}.`,
+        });
+      });
+    }
   }
 
   // The typing keyboard has a 0 key; the numbers lesson starts at 1

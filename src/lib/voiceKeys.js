@@ -107,6 +107,27 @@ export const scenePart = (question) => ({
   text: sceneQuestionText(question),
 });
 
+// One letter of a word being spelled aloud ("B. A. T."). Separate from the
+// Alphabets lesson's items/<letter> clips on purpose: those are standalone
+// exclamations ("B!"), each with its own lift, and sound disjointed played
+// in a row. These are generated flat and even, then trimmed and levelled
+// (scripts/generate-voice-clips.mjs), so any sequence joins cleanly.
+export const spellPart = (letter) => ({
+  key: `spell/${String(letter).toLowerCase()}`,
+  text: `${String(letter).toUpperCase()}.`,
+});
+
+// A whole word spelled out in one breath ("B, A, T.") — the voice model
+// spelling the word itself, which flows better than any row of joined
+// letter clips (user's pick, 2026-11-26). Only words with a generated clip
+// use it; the rest are joined from spellPart letters.
+export const spellingLetters = (word) =>
+  (String(word).match(/\p{L}/gu) || []).map((ch) => ch.toUpperCase());
+export const spelledPart = (word) => ({
+  key: `spelled/${voiceSlug(String(word))}`,
+  text: `${spellingLetters(word).join(', ')}.`,
+});
+
 export const linePart = (slug, text) => ({
   key: `lines/${slug}`,
   text: getPack()?.lines?.[slug] ?? text,

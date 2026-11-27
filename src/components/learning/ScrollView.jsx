@@ -14,12 +14,33 @@ import ownedByFocusedControl from '../../utils/ownedByFocusedControl';
 import nextBgColor from '../../utils/nextBgColor';
 import { pickForArrival, recordShown } from '../../lib/variantHistory';
 import { track } from '../../lib/analytics';
+import { itemPart, spellPart, spelledPart } from '../../lib/voiceKeys';
+import { preloadVoiceClips, hasVoiceClip } from '../../lib/voice';
 
 // No yellow here: these back white text, and white on #f1c40f is ~1.6:1
 const bgColors = [
   '#e74c3c', '#8e44ad', '#3498db', '#1abc9c',
   '#e67e22', '#2ecc71', '#ff0066', '#34495e',
 ];
+
+// Spelling a word aloud. Best is the word's own spelled/<word> clip — the
+// voice spelling it in one breath. Words without one are joined from the
+// neutral spell/<letter> clips (cut from a single take so any sequence
+// sounds like one voice; they play end to end, ~0.6s a letter). Locales
+// without that set use their Alphabets clips, which carry long silent
+// tails and so run on a fixed beat instead.
+const SPELL_CADENCE_MS = 550;
+const spellingParts = (item) => {
+  const word = item?.onset ? `${item.onset}${item.rime}` : String(item?.name ?? '');
+  const whole = spelledPart(item?.enName ?? word);
+  if (hasVoiceClip(whole.key)) return [whole];
+  return (word.match(/\p{L}/gu) || []).map((ch) => {
+    const part = spellPart(ch);
+    return hasVoiceClip(part.key) ? part : itemPart(ch.toUpperCase());
+  });
+};
+const spellPacing = (parts) =>
+  parts.some((p) => p.key.startsWith('items/')) ? { cadence: SPELL_CADENCE_MS } : {};
 
 // Sets whose sequence IS the lesson: never shuffled. My Day runs wake-up
 // to sleep in the order the child's day actually goes; the Human Body films
@@ -48,13 +69,14 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   const [bgColor, setBgColor] = useState('#2c3e50');
   const [isCoolingDown, setIsCoolingDown] = useState(false);
   const [isAutoplay, setIsAutoplay] = useState(false);
-  // Word-first reveal: phonics words with images show the word alone and
-  // silent — the child gets a beat to sound it out — then the right arrow
+  // Word-first reveal: phonics words with images show the word alone while
+  // its letters are spelled aloud ("B… E… D") — the child ties each letter
+  // to its name and gets a beat to read the word — then the right arrow
   // brings the picture and the spoken word in together.
   const [revealed, setRevealed] = useState(false);
   // Parent-recorded syllables for the admin, ElevenLabs clips elsewhere,
   // browser TTS as the last resort (2-letter syllables stay TTS by design)
-  const { speakItem, cancel: cancelVoice } = useVoice(recordingCategoryFor(category));
+  const { speak, speakItem, cancel: cancelVoice } = useVoice(recordingCategoryFor(category));
   const { t, locale } = useLocale();
   const caseClass = useWordCase();
   const hasInteracted = useRef(false);
@@ -102,6 +124,21 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       speakItem(currentItem, options);
     }
   }, [currentItem, speakItem]);
+
+  // The word-only step of a reveal category: letters, never the word itself
+  const spellParts = useMemo(
+    () => (isRevealCategory ? spellingParts(currentItem) : []),
+    [isRevealCategory, currentItem]
+  );
+  const speakSpelling = useCallback(
+    (options) => speak(spellParts, { ...spellPacing(spellParts), ...options }),
+    [speak, spellParts]
+  );
+  // Warm every word's letters up front so the first spelling isn't staggered
+  // by a fetch per letter
+  useEffect(() => {
+    if (isRevealCategory) preloadVoiceClips(displayItems.flatMap(spellingParts));
+  }, [isRevealCategory, displayItems]);
 
   // Start (or replay) the film from the top. Deliberately independent of
   // the film's own state: the autoplay effect depends on this callback, and
@@ -161,8 +198,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   useEffect(() => {
     if (holdIntro || spokeOnMount.current || isAutoplay) return;
     spokeOnMount.current = true;
-    // Reveal categories open silent so the child reads the word first
-    if (!isRevealCategory) speakCurrent({ enqueue: true });
+    // Reveal categories open on the word alone, spelled out letter by letter
+    if (isRevealCategory) speakSpelling({ enqueue: true });
+    else speakCurrent({ enqueue: true });
     hasInteracted.current = true;
   }, [holdIntro]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -170,14 +208,15 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
   useEffect(() => {
     if (isAutoplay) return;
     if (hasInteracted.current && prevIndexRef.current !== currentIndex) {
-      // Reveal categories land on the next word silent (spoken on reveal)
-      if (!isRevealCategory) speakCurrent();
+      // Reveal categories spell the next word; it is spoken on reveal
+      if (isRevealCategory) speakSpelling();
+      else speakCurrent();
       if (category === 'alphabets') {
         setBgColor((c) => nextBgColor(bgColors, c));
       }
     }
     prevIndexRef.current = currentIndex;
-  }, [currentIndex, speakCurrent, isAutoplay, category, isRevealCategory]);
+  }, [currentIndex, speakCurrent, speakSpelling, isAutoplay, category, isRevealCategory]);
 
   // Autoplay effect: speak current item, then advance after speech ends
   useEffect(() => {
@@ -190,7 +229,10 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     // Autoplay is passive listening, so the voice keeps its picture pairing:
     // reveal stays on for the whole run instead of gating each word
     if (isRevealCategory) setRevealed(true);
-    const ended = speakItem(currentItem);
+    // ...and each word is spelled first, then said: "B, E, D — bed!"
+    const ended = isRevealCategory
+      ? speak([...spellParts, itemPart(currentItem)], spellPacing(spellParts))
+      : speakItem(currentItem);
     if (category === 'alphabets') {
       setBgColor((c) => nextBgColor(bgColors, c));
     }
@@ -215,14 +257,16 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     ended.then(onSpeechEnd);
 
     // Fallback in case the ended/onend event doesn't fire
-    fallbackTimer = setTimeout(advance, 5000);
+    // (a spelled word runs longer — allow a second per letter on top)
+    const letterCount = isRevealCategory ? String(currentItem.name).length : 0;
+    fallbackTimer = setTimeout(advance, 5000 + letterCount * 1000);
 
     return () => {
       cancelled = true;
       clearTimeout(advanceTimer);
       clearTimeout(fallbackTimer);
     };
-  }, [isAutoplay, currentIndex, speakItem, currentItem, category, isRevealCategory, film, playFilm, autoAdvance]);
+  }, [isAutoplay, currentIndex, speak, speakItem, spellParts, currentItem, category, isRevealCategory, film, playFilm, autoAdvance]);
 
   const startCooldown = useCallback(() => {
     isCoolingDownRef.current = true;
@@ -239,7 +283,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     stopAutoplay();
     hasInteracted.current = true;
     if (isRevealCategory && !revealed) {
-      // Picture and voice arrive together, after the child's silent try
+      // Picture and word arrive together, after the spelling
       setRevealed(true);
       speakCurrent();
     } else if (film && !filmStarted) {
@@ -259,7 +303,9 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
     stopAutoplay();
     hasInteracted.current = true;
     if (isRevealCategory && revealed) {
+      // Back to the word alone — spelled again, like any arrival on it
       setRevealed(false);
+      speakSpelling();
     } else if (filmStarted && filmState !== 'idle') {
       // Back out of a running film to its poster first
       resetFilm();
@@ -268,7 +314,7 @@ const ScrollView = ({ items, category, objectIcons, shapeColor, objectType, hold
       setCurrentIndex((prev) => (prev > 0 ? prev - 1 : displayItems.length - 1));
       setArrival((a) => a + 1);
     }
-  }, [displayItems.length, stopAutoplay, isRevealCategory, revealed, filmStarted, filmState, resetFilm]);
+  }, [displayItems.length, stopAutoplay, isRevealCategory, revealed, speakSpelling, filmStarted, filmState, resetFilm]);
 
   // The speaker button: say the name again (a running film gives way)
   const handleSpeak = () => {

@@ -36,11 +36,21 @@ const useVoice = (recordingCategory = null) => {
   const category = canPlayRecordings(user, recordedVoice) ? recordingCategory : null;
   const audioRef = useRef(null);
   const tokenRef = useRef(0);
+  // Unmount silences in-flight speech through this flag, not by bumping the
+  // token: StrictMode's simulated unmount in dev would otherwise cancel a
+  // mount announcement still fetching its clip, and nothing re-speaks it.
+  // A real unmount leaves the flag set; the simulated one clears it again.
+  const unmountedRef = useRef(false);
+  const isStale = useCallback(
+    (token) => unmountedRef.current || tokenRef.current !== token,
+    []
+  );
 
   useEffect(() => {
+    unmountedRef.current = false;
     return () => {
       audioRef.current?.pause();
-      tokenRef.current += 1;
+      unmountedRef.current = true;
     };
   }, []);
 
@@ -70,7 +80,7 @@ const useVoice = (recordingCategory = null) => {
       if (!options.enqueue) cancelTts();
 
       const ttsRemaining = (fromIndex) => {
-        if (tokenRef.current !== token) return Promise.resolve();
+        if (isStale(token)) return Promise.resolve();
         const text = parts.slice(fromIndex).map((p) => p.text).join(' ');
         // Parts from a fixed-language lesson carry their own lang (their
         // text is in that language too — see voiceKeys buildPart)
@@ -82,7 +92,7 @@ const useVoice = (recordingCategory = null) => {
         const recName = options.recordingName;
         if (recName && category && hasRecording(category, recName)) {
           const url = await getRecordingObjectUrl(category, recName);
-          if (tokenRef.current !== token) return;
+          if (isStale(token)) return;
           if (url) await playUrl(url);
           else await ttsRemaining(0);
           return;
@@ -99,18 +109,30 @@ const useVoice = (recordingCategory = null) => {
 
         for (let i = 0; i < parts.length; i++) {
           const url = await getVoiceClipUrl(parts[i].key);
-          if (tokenRef.current !== token) return;
+          if (isStale(token)) return;
           if (!url) {
             track('voice_fallback', { item: parts[i].key, meta: { reason: 'unreachable' } });
             await ttsRemaining(i);
             return;
           }
-          await playUrl(url);
-          if (tokenRef.current !== token) return;
+          // options.cadence: start the next clip this many ms after this
+          // one started instead of waiting out its trailing silence — how
+          // spelled-out letters keep a brisk, even beat. The last clip
+          // always plays to its end.
+          const played = playUrl(url);
+          if (options.cadence && i < parts.length - 1) {
+            await Promise.race([
+              played,
+              new Promise((resolve) => setTimeout(resolve, options.cadence)),
+            ]);
+          } else {
+            await played;
+          }
+          if (isStale(token)) return;
         }
       })();
     },
-    [category, tts, cancelTts, playUrl]
+    [category, tts, cancelTts, playUrl, isStale]
   );
 
   // Item names: recording → items/<slug> clip → TTS. Takes a localized item
