@@ -13,7 +13,7 @@
 // Every picture a question can show: id → the label under its card
 export const quizPictures = {
   teeth: 'Teeth',
-  tummy: 'Tummy',
+  stomach: 'Stomach',
   'small-intestine': 'Small intestine',
   potty: 'Potty',
   kitchen: 'Kitchen',
@@ -39,19 +39,19 @@ export const quizPictures = {
 
 export const filmQuizzes = {
   'digestive-system': [
-    { id: 'chomp', question: 'What chomps your food into tiny pieces?', answer: 'teeth', wrong: ['tummy', 'heart'] },
-    { id: 'swallow', question: 'Where does your food go when you swallow?', answer: 'tummy', wrong: ['brain', 'heart'] },
-    { id: 'wiggly', question: 'Which one is the long, wiggly tube?', answer: 'small-intestine', wrong: ['tummy', 'backbone'] },
+    { id: 'chomp', question: 'What chomps your food into tiny pieces?', answer: 'teeth', wrong: ['stomach', 'heart'] },
+    { id: 'swallow', question: 'Where does your food go when you swallow?', answer: 'stomach', wrong: ['brain', 'heart'] },
+    { id: 'wiggly', question: 'Which one is the long, wiggly tube?', answer: 'small-intestine', wrong: ['stomach', 'backbone'] },
     { id: 'poop', question: 'Where does the poop go?', answer: 'potty', wrong: ['kitchen', 'park'] },
   ],
   'circulatory-system': [
-    { id: 'thump', question: 'What goes thump-thump in your chest?', answer: 'heart', wrong: ['brain', 'tummy'] },
+    { id: 'thump', question: 'What goes thump-thump in your chest?', answer: 'heart', wrong: ['brain', 'stomach'] },
     { id: 'push', question: 'What does your heart push all around your body?', answer: 'blood', wrong: ['apple', 'bones'] },
-    { id: 'air', question: 'Where does your blood pick up fresh air?', answer: 'lungs', wrong: ['tummy', 'brain'] },
+    { id: 'air', question: 'Where does your blood pick up fresh air?', answer: 'lungs', wrong: ['stomach', 'brain'] },
     { id: 'tubes', question: 'Which tubes carry your blood?', answer: 'blood-vessels', wrong: ['nerves', 'small-intestine'] },
   ],
   'nervous-system': [
-    { id: 'boss', question: 'Who is the boss of your whole body?', answer: 'brain', wrong: ['heart', 'tummy'] },
+    { id: 'boss', question: 'Who is the boss of your whole body?', answer: 'brain', wrong: ['heart', 'stomach'] },
     { id: 'wires', question: 'Which wires carry messages to your brain?', answer: 'nerves', wrong: ['blood-vessels', 'bones'] },
     { id: 'cold', question: 'What felt cold?', answer: 'ice-cube', wrong: ['apple', 'milk'] },
     { id: 'see', question: 'What do you see with?', answer: 'eyes', wrong: ['ears', 'nose'] },

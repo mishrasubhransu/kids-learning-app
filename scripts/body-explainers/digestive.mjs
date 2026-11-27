@@ -69,7 +69,7 @@ export const shots = [
     id: 'swallow',
     tag: '03-swallow',
     ref: ['swallow@3', 'master'],
-    narration: 'Gulp! You swallow, and the food slides down a long tube, all the way to your tummy.',
+    narration: 'Gulp! You swallow, and the food slides down a long tube, all the way to your stomach.',
     // History: take 1 failed at the stomach (pipe thinner than the food, so
     // it left the tube, and the closed stomach morphed into a bowl) — fixed
     // by an evenly wide pipe, an already-open stomach and an END frame.
@@ -103,7 +103,7 @@ export const shots = [
     id: 'stomach',
     tag: '04-stomach',
     ref: 'master',
-    narration: 'Your tummy is like a squishy bag. It squeezes and mixes the food with special juices, until it turns into soup!',
+    narration: 'Your stomach is like a squishy bag. It squeezes and mixes the food with special juices, until it turns into soup!',
     // v1 was mirrored (bulge and exit on the wrong sides) and held crisp
     // apple slices with seeds — after chewing it should be mush.
     frame:
@@ -126,7 +126,7 @@ export const shots = [
     tag: '10-pass',
     ref: 'master',
     seconds: 8,
-    narration: 'When the soup is ready, your tummy squeezes it out, a little at a time, into the small intestine.',
+    narration: 'When the soup is ready, your stomach squeezes it out, a little at a time, into the small intestine.',
     frame:
       'Keep the reference picture exactly: the same organs in the same places, the same framing and the same colors. ' +
       'Do NOT darken or recolour anything. Change only this: the front wall of the STOMACH is a clean cutaway window ' +
@@ -224,7 +224,7 @@ export const shots = [
     id: 'outro',
     tag: '08-outro',
     ref: ['outro@3', 'master'],
-    narration: 'That’s your digestive system. Great job, tummy!',
+    narration: 'That’s your digestive system. Great job, stomach!',
     frame:
       'Keep the FIRST reference picture exactly: the same child, the same pose with both hands on the belly, the same ' +
       'framing and the same warm background. Change only the organs inside the see-through belly: redraw them to ' +

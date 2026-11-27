@@ -54,7 +54,7 @@ export const shots = [
 // keep, as fractions of the still: [left, top, size]. No crop = all of it.
 export const pictures = {
   teeth: { from: 'digestive-explainer/02-chew-frame-v2.png', crop: [0.32, 0.3, 0.6] },
-  tummy: { from: 'digestive-explainer/04-stomach-frame-v3.png' },
+  stomach: { from: 'digestive-explainer/04-stomach-frame-v3.png' },
   'small-intestine': { from: 'digestive-explainer/00-master-frame-v1.png', crop: [0.17, 0.33, 0.66] },
   potty: { from: 'digestive-explainer/07-potty-frame-v2.png' },
   kitchen: { from: 'digestive-explainer/01-bite-frame-v3.png' },
