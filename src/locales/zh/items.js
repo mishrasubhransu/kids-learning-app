@@ -623,6 +623,7 @@ export default {
   'circulatory-system': { name: '循环系统' },
   'nervous-system': { name: '神经系统' },
   'skeletal-system': { name: '骨骼系统' },
+  'respiratory-system': { name: '呼吸系统' },
   'taj-mahal': { name: '泰姬陵' },
   pyramids: { name: '金字塔' },
   sphinx: { name: '狮身人面像' },

@@ -35,6 +35,10 @@ export const quizPictures = {
   ribs: 'Ribs',
   backbone: 'Backbone',
   block: 'Block',
+  windpipe: 'Windpipe',
+  // the breathing film's own lungs: the heart film's `lungs` picture has the heart in front
+  'two-lungs': 'Lungs',
+  bubbles: 'Bubbles',
 };
 
 export const filmQuizzes = {
@@ -61,6 +65,12 @@ export const filmQuizzes = {
     { id: 'helmet', question: 'Which bone is like a helmet for your brain?', answer: 'head-bone', wrong: ['ribs', 'backbone'] },
     { id: 'hug', question: 'Which bones hug your heart and your lungs?', answer: 'ribs', wrong: ['head-bone', 'backbone'] },
     { id: 'grow', question: 'What helps your bones grow strong?', answer: 'milk', wrong: ['ice-cube', 'block'] },
+  ],
+  'respiratory-system': [
+    { id: 'in', question: 'Where does the air go in?', answer: 'nose', wrong: ['ears', 'eyes'] },
+    { id: 'tube', question: 'Which one is your windpipe?', answer: 'windpipe', wrong: ['small-intestine', 'backbone'] },
+    { id: 'balloons', question: 'Which ones fill up with air, like two balloons?', answer: 'two-lungs', wrong: ['stomach', 'brain'] },
+    { id: 'blow', question: 'What did you blow with your breath?', answer: 'bubbles', wrong: ['apple', 'block'] },
   ],
 };
 

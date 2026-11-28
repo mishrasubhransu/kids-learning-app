@@ -76,4 +76,7 @@ export const pictures = {
   ribs: { from: 'skeletal-explainer/05-ribs-frame-v1.png' },
   backbone: { from: 'skeletal-explainer/06-spine-frame-v1.png', crop: [0.24, 0.2, 0.52] },
   block: { from: 'skeletal-explainer/08-lift-frame-v1.png', crop: [0.31, 0.5, 0.38] },
+  windpipe: { from: 'respiratory-explainer/00-master-frame-v2.png', crop: [0.29, 0, 0.42] },
+  'two-lungs': { from: 'respiratory-explainer/00-master-frame-v2.png', crop: [0.06, 0.12, 0.88] },
+  bubbles: { from: 'respiratory-explainer/01-bubbles-frame-v1.png' },
 };

@@ -17,7 +17,7 @@
 //   node scripts/generate_body_explainer.mjs quiz pictures  [id…]        # cut every test picture → public/science/body/quiz
 //   node scripts/generate_body_explainer.mjs quiz questions [--redo]     # record the question clips → public/films/body/quiz
 //
-// <system> is digestive | circulatory | nervous | skeletal (digestive when left out); each has its
+// <system> is digestive | circulatory | nervous | skeletal | respiratory (digestive when left out); each has its
 // shot list in scripts/body-explainers/<system>.mjs. A shot is named by its
 // id, or by its 1-based position in that list.
 //
@@ -44,10 +44,11 @@ import * as digestive from './body-explainers/digestive.mjs';
 import * as circulatory from './body-explainers/circulatory.mjs';
 import * as nervous from './body-explainers/nervous.mjs';
 import * as skeletal from './body-explainers/skeletal.mjs';
+import * as respiratory from './body-explainers/respiratory.mjs';
 import * as quiz from './body-explainers/quiz.mjs';
 import { filmQuizzes, quizPictureFile, quizClipFile } from '../src/data/filmQuizzes.js';
 
-const SYSTEMS = { digestive, circulatory, nervous, skeletal, quiz };
+const SYSTEMS = { digestive, circulatory, nervous, skeletal, respiratory, quiz };
 const argv = process.argv.slice(2);
 const SYSTEM = SYSTEMS[argv[0]] ? argv.shift() : 'digestive';
 const { name: NAME, shots: SHOTS, slug: SLUG } = SYSTEMS[SYSTEM];
@@ -134,9 +135,15 @@ const framePath = (i) => {
   const v = latest(`${tag(i)}-frame-v`, '.png', PICKS[SHOTS[i].id]?.frame);
   return v ? path.join(OUT, `${tag(i)}-frame-v${v}.png`) : null;
 };
+// A shot's `clip: { of, from, to }` shows part of a take instead of a whole
+// one: `of` borrows another shot's take (one long clip can carry two
+// lines), `from`/`to` are seconds into it.
 const takePath = (i) => {
-  const t = latest(`${tag(i)}-take-`, '.mp4', PICKS[SHOTS[i].id]?.take);
-  return t ? path.join(OUT, `${tag(i)}-take-${t}.mp4`) : null;
+  const of = SHOTS[i].clip?.of;
+  const k = of ? SHOTS.findIndex((x) => x.id === of) : i;
+  if (k < 0) throw new Error(`${SHOTS[i].id}: clip.of "${of}" is not a shot`);
+  const t = latest(`${tag(k)}-take-`, '.mp4', PICKS[SHOTS[k].id]?.take);
+  return t ? path.join(OUT, `${tag(k)}-take-${t}.mp4`) : null;
 };
 // A shot's end frame is an edit of one start-frame version, and carries
 // that version's number
@@ -179,7 +186,8 @@ async function makeFrame(i) {
   fs.writeFileSync(`${file}.json`, JSON.stringify({ model, ...logged, url }, null, 2));
   ff(['-i', file, '-vf', 'scale=640:-1', file.replace('.png', '-preview.jpg')]);
   console.log(`${tag(i)}: frame v${v}`);
-  if (shot.endFrame) await makeEnd(i);
+  // NO_END=1 redraws a start frame alone (when its end frame is already right)
+  if (shot.endFrame && !process.env.NO_END) await makeEnd(i);
 }
 
 // Where a shot must land: its current start frame, edited. Also its own
@@ -287,13 +295,15 @@ function assemble() {
   const segs = FILM.map((i) => {
     const voice = probe(voicePath(i));
     const clip = takePath(i);
-    const clipLen = clip ? probe(clip) : 0;
+    const from = SHOTS[i].clip?.from ?? 0;
+    const to = clip ? SHOTS[i].clip?.to ?? probe(clip) : 0;
+    const clipLen = to - from;
     const len = Math.max(clipLen, LEAD + voice + TAIL);
     const seg = path.join(OUT, `seg-${tag(i)}.mp4`);
     const fit = `scale=${SIZE}:${SIZE}:force_original_aspect_ratio=increase,crop=${SIZE}:${SIZE},fps=30,format=yuv420p`;
     const fades = `fade=t=in:st=0:d=${FADE},fade=t=out:st=${(len - FADE).toFixed(2)}:d=${FADE}`;
     const picture = clip
-      ? ['-i', clip]
+      ? ['-ss', from.toFixed(3), '-to', to.toFixed(3), '-i', clip]
       : ['-loop', '1', '-framerate', '30', '-i', framePath(i)];
     // A clip a little shorter than its narration is slowed down to fit (up
     // to 25%, invisible on slow organ motion) rather than frozen on its last

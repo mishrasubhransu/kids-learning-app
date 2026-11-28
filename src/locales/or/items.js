@@ -660,6 +660,7 @@ export default {
   'circulatory-system': { name: 'ରକ୍ତ ସଞ୍ଚାଳନ ପ୍ରଣାଳୀ' },
   'nervous-system': { name: 'ସ୍ନାୟୁ ପ୍ରଣାଳୀ' },
   'skeletal-system': { name: 'କଙ୍କାଳ' },
+  'respiratory-system': { name: 'ଶ୍ୱାସ ପ୍ରଣାଳୀ' },
   // Monuments — foreign names are transliterations. Leaning Tower
   // "ପିସାର ହେଲା ଟାୱାର", Louvre "ଲୁଭ୍ର" and Christ the Redeemer
   // "କ୍ରାଇଷ୍ଟ ଦ ରିଡିମର" are low-confidence.

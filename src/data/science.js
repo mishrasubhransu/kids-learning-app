@@ -28,5 +28,6 @@ export const scienceItems = {
     { id: 1, name: 'Circulatory System', image: '/science/body/circulatory-system.webp', film: bodyFilm('circulatory-system') },
     { id: 2, name: 'Nervous System', image: '/science/body/nervous-system.webp', film: bodyFilm('nervous-system') },
     { id: 3, name: 'Skeletal System', image: '/science/body/skeletal-system.webp', film: bodyFilm('skeletal-system') },
+    { id: 4, name: 'Respiratory System', image: '/science/body/respiratory-system.webp', film: bodyFilm('respiratory-system') },
   ],
 };
