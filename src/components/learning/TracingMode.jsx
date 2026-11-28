@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { ChevronLeft, ChevronRight, Volume2, RotateCcw } from 'lucide-react';
 import useVoice from '../../hooks/useVoice';
 import { recordingCategoryFor } from '../../lib/recordings';
@@ -12,6 +12,9 @@ const brushColors = [
   '#e74c3c', '#3498db', '#2ecc71', '#f1c40f',
   '#9b59b6', '#e67e22', '#1abc9c', '#ff0066',
 ];
+
+// Arrows and arrow keys stay deaf this long after the last touch on the board
+const NAV_QUIET_MS = 1500;
 
 const TracingMode = ({ items, category }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -46,12 +49,30 @@ const TracingMode = ({ items, category }) => {
     setAttempt((n) => n + 1);
   };
 
-  const goNext = () => {
+  // A child reaching for the screen leans on the laptop: a wrist on the
+  // arrow keys or the touchpad, the other hand on an on-screen arrow. While a
+  // finger is on the board — and for a moment after — those must not flip
+  // the page and throw the half-traced character away. A finished character
+  // moves on at once.
+  const boardTouchRef = useRef({ down: false, at: -Infinity });
+  const touchBoard = (down) => (e) => {
+    const state = boardTouchRef.current;
+    state.at = e.timeStamp;
+    if (down !== null) state.down = down;
+  };
+  const navLocked = (e) => {
+    const state = boardTouchRef.current;
+    return !completed && (state.down || e.timeStamp - state.at < NAV_QUIET_MS);
+  };
+
+  const goNext = (e) => {
+    if (navLocked(e)) return;
     setCompleted(false);
     setCurrentIndex((prev) => (prev < items.length - 1 ? prev + 1 : 0));
   };
 
-  const goPrev = () => {
+  const goPrev = (e) => {
+    if (navLocked(e)) return;
     setCompleted(false);
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : items.length - 1));
   };
@@ -60,8 +81,8 @@ const TracingMode = ({ items, category }) => {
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.repeat || ownedByFocusedControl(e)) return;
-      if (e.key === 'ArrowRight') goNext();
-      else if (e.key === 'ArrowLeft') goPrev();
+      if (e.key === 'ArrowRight') goNext(e);
+      else if (e.key === 'ArrowLeft') goPrev(e);
       else if (e.key === ' ') {
         e.preventDefault();
         speakItem(currentItem.name);
@@ -69,7 +90,7 @@ const TracingMode = ({ items, category }) => {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIndex, items.length, speakItem, currentItem]);
+  }, [currentIndex, items.length, speakItem, currentItem, completed]);
 
   return (
     <div className="flex-1 flex flex-col items-center justify-center p-4 relative">
@@ -99,7 +120,13 @@ const TracingMode = ({ items, category }) => {
       </div>
 
       {/* Guided tracing board — start dot, arrow and guide dots per stroke */}
-      <div className="relative w-full max-w-lg aspect-square bg-white rounded-2xl shadow-lg">
+      <div
+        className="relative w-full max-w-lg aspect-square bg-white rounded-2xl shadow-lg"
+        onPointerDownCapture={touchBoard(true)}
+        onPointerMoveCapture={touchBoard(null)}
+        onPointerUpCapture={touchBoard(false)}
+        onPointerCancelCapture={touchBoard(false)}
+      >
         <TraceBoard
           key={`${currentIndex}-${displayText}-${attempt}`}
           text={displayText}
