@@ -644,4 +644,18 @@ export default {
   'mount-rushmore': { name: '拉什莫尔山' },
   'konark-sun-temple': { name: '科纳克太阳神庙' },
   'saint-basil-s-cathedral': { name: '圣瓦西里大教堂' },
+  // Materials (stone reuses the nature entry above)
+  wood: { name: '木头' },
+  gold: { name: '金子' },
+  steel: { name: '钢' },
+  plastic: { name: '塑料' },
+  clay: { name: '黏土' },
+  fabric: { name: '布' },
+  glass: { name: '玻璃' },
+  paper: { name: '纸' },
+  rubber: { name: '橡胶' },
+  wool: { name: '羊毛' },
+  leather: { name: '皮革' },
+  cardboard: { name: '纸板' },
+  wax: { name: '蜡' },
 };

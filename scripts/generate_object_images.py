@@ -31,9 +31,17 @@ from google.genai import types
 from PIL import Image
 from io import BytesIO
 
-client = genai.Client(
-    api_key=os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
-)
+# Built on first Gemini use, so OpenAI-only runs don't need a Gemini key.
+_gemini_client = None
+
+
+def get_gemini_client():
+    global _gemini_client
+    if _gemini_client is None:
+        _gemini_client = genai.Client(
+            api_key=os.environ.get("GOOGLE_API_KEY") or os.environ.get("GEMINI_API_KEY")
+        )
+    return _gemini_client
 
 MODEL = "gemini-3-pro-image-preview"
 #MODEL = "gemini-3.1-flash-image-preview"  # cheaper
@@ -305,6 +313,17 @@ STYLE_PROMPTS = {
         "frame, and is instantly recognizable at a glance. "
         "Captured as if by a professional product photographer, sharp focus on the object, "
         "softly blurred garden background. "
+        "No brand logos, no text, no labels, no watermarks. Square 1:1 composition."
+    ),
+    # Materials (concepts/materials): the lesson is WHAT IT'S MADE OF, so the
+    # texture is the hero — grain, shine, weave, gloss — on a plain backdrop
+    # that is not itself a competing material.
+    "materials": (
+        "A beautiful, high-quality close-up photograph of {subject}. "
+        "Photorealistic, bright soft natural light. The material's surface is the star: "
+        "its texture, grain, shine or weave is crisp and easy to see. "
+        "The object is centered, fills most of the frame, and is instantly recognizable at a glance. "
+        "Plain, softly blurred neutral background with nothing else in the picture. "
         "No brand logos, no text, no labels, no watermarks. Square 1:1 composition."
     ),
     # My Day / daily routine (concepts/routine): ONE recurring family — the
@@ -1081,6 +1100,53 @@ ITEMS = {
         "snow-blower": "a red snow blower clearing a snowy driveway, a big arc of snow shooting out of its chute",
         "pressure-washer": "a yellow pressure washer spraying a powerful jet of water that cleans a stripe across a dirty patio",
     },
+    # Materials — three looks each (base, -2, -3). Where it's natural the
+    # FIRST look is a cup, so wood/gold/steel/plastic/clay/glass line up as
+    # the same object in different stuff: the material is the only change.
+    "materials": {
+        "wood": "a simple cup carved from light-colored wood, the wood grain clearly visible",
+        "wood-2": "a stack of freshly cut wooden logs, their round tree rings showing on the cut ends",
+        "wood-3": "a little pile of plain unpainted wooden toy building blocks with visible wood grain",
+        "gold": "a shiny gold cup, gleaming and reflective",
+        "gold-2": "a heap of shiny gold coins",
+        "gold-3": "a pair of shiny gold bangles and a gold necklace on a plain cloth",
+        "steel": "a shiny stainless steel drinking tumbler, the kind used in Indian homes, with soft reflections",
+        "steel-2": "a shiny stainless steel cooking pot with a lid",
+        "steel-3": "a shiny stainless steel spoon and fork side by side",
+        "plastic": "a bright red plastic cup, glossy and smooth",
+        "plastic-2": "a clear plastic water bottle with a blue plastic cap",
+        "plastic-3": "a bright yellow plastic toy bucket and a blue plastic spade on sand",
+        "clay": "a small unglazed terracotta clay cup (a kulhad) filled with tea",
+        "clay-2": "a terracotta clay flower pot with a small green plant in it",
+        "clay-3": "a potter's hands shaping a wet clay pot on a spinning potter's wheel",
+        "fabric": "a neat stack of folded fabrics in different colors and patterns, the weave visible",
+        "fabric-2": "a soft cotton t-shirt hanging on a wooden hanger",
+        "fabric-3": "a needle and thread sewing two pieces of colorful fabric together, close up",
+        "glass": "a clear drinking glass full of water, sparkling in the light",
+        "glass-2": "a handful of colorful glass marbles, see-through and shiny",
+        "glass-3": "a house window with clear glass panes, a garden visible through the glass",
+        "paper": "an open picture book with its paper pages fanning out",
+        "paper-2": "a folded white paper boat",
+        "paper-3": "a crumpled ball of white paper next to a flat sheet of paper",
+        "stone": "a pile of smooth round grey pebbles",
+        "stone-2": "an old garden wall built from big rough stones",
+        "stone-3": "a carved grey stone statue of a sitting lion",
+        "rubber": "a loose pile of colorful stretchy rubber bands, one of them stretched between two fingers",
+        "rubber-2": "a pair of shiny yellow rubber rain boots standing in a puddle",
+        "rubber-3": "a black rubber car tyre standing upright, its tread pattern clearly visible",
+        "wool": "a cozy knitted wool sweater, the knit stitches clearly visible",
+        "wool-2": "a few soft fluffy balls of colorful wool yarn",
+        "wool-3": "hands knitting wool yarn on two knitting needles, a half-finished scarf hanging down",
+        "leather": "a pair of polished brown leather shoes",
+        "leather-2": "a brown leather belt with a metal buckle, loosely coiled",
+        "leather-3": "a brown leather handbag with stitched seams",
+        "cardboard": "a brown cardboard delivery box, its flaps open",
+        "cardboard-2": "a few brown cardboard tubes from toilet paper rolls",
+        "cardboard-3": "a happy toddler peeking out of a playhouse fort made from big brown cardboard boxes",
+        "wax": "an empty golden beeswax honeycomb, its six-sided wax cells clearly visible",
+        "wax-2": "a lit white wax candle with melted wax dripping down its side",
+        "wax-3": "a handful of colorful wax crayons, some with their paper wrappers",
+    },
     # My Day — ordered morning-to-night. Pajamas before Get Dressed and after
     # Play Time; the yellow t-shirt for the whole day between.
     "routine": {
@@ -1161,7 +1227,7 @@ def _save_webp(image, output_path):
 
 
 def _generate_gemini(prompt, output_path):
-    response = client.models.generate_content(
+    response = get_gemini_client().models.generate_content(
         model=MODEL,
         contents=[prompt],
         config=types.GenerateContentConfig(

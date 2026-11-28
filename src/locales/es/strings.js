@@ -55,6 +55,7 @@ export default {
   'cat.concepts.buildings': 'Edificios',
   'cat.concepts.garden': 'Jardín',
   'cat.concepts.monuments': 'Monumentos',
+  'cat.concepts.materials': 'Materiales',
 
   // Category page chrome
   'mode.scroll': 'Deslizar',

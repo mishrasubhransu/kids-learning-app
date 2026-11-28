@@ -145,6 +145,11 @@ export const intros = {
     '[gasps] Towers, temples and pyramids — so many wonders!',
     "Pack your bags — let's go see the world!",
   ],
+  'concepts-materials': [
+    "What is it made of? Let's find out!",
+    '[gasps] Shiny, soft, hard and bendy — so many materials!',
+    'Touch and see — wood, glass, rubber and more!',
+  ],
   'science-body': [
     "Let's peek inside your body!",
     '[gasps] Bones, blood and brains — what a busy body!',

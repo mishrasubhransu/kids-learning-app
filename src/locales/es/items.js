@@ -660,4 +660,18 @@ export default {
   'mount-rushmore': { name: 'Monte Rushmore', ref: 'el monte Rushmore' },
   'konark-sun-temple': { name: 'Templo del Sol de Konark', ref: 'el Templo del Sol de Konark' },
   'saint-basil-s-cathedral': { name: 'Catedral de San Basilio', ref: 'la catedral de San Basilio' },
+  // Materials (Stone reuses the nature entry above)
+  wood: { name: 'Madera', ref: 'la madera' },
+  gold: { name: 'Oro', ref: 'el oro' },
+  steel: { name: 'Acero', ref: 'el acero' },
+  plastic: { name: 'Plástico', ref: 'el plástico' },
+  clay: { name: 'Barro', ref: 'el barro' },
+  fabric: { name: 'Tela', ref: 'la tela' },
+  glass: { name: 'Vidrio', ref: 'el vidrio' },
+  paper: { name: 'Papel', ref: 'el papel' },
+  rubber: { name: 'Goma', ref: 'la goma' },
+  wool: { name: 'Lana', ref: 'la lana' },
+  leather: { name: 'Cuero', ref: 'el cuero' },
+  cardboard: { name: 'Cartón', ref: 'el cartón' },
+  wax: { name: 'Cera', ref: 'la cera' },
 };

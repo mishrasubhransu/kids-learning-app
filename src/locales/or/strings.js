@@ -51,6 +51,7 @@ export default {
   'cat.concepts.buildings': 'କୋଠା',
   'cat.concepts.garden': 'ବଗିଚା',
   'cat.concepts.monuments': 'ସ୍ମାରକୀ',
+  'cat.concepts.materials': 'ଉପାଦାନ',
   'cat.concepts.indian-food': 'ଆମ ଖାଦ୍ୟ',
 
   // Category page chrome

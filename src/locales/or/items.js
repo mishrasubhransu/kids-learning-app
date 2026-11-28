@@ -684,4 +684,19 @@ export default {
   'mount-rushmore': { name: 'ମାଉଣ୍ଟ ରସମୋର' },
   'konark-sun-temple': { name: 'କୋଣାର୍କ ସୂର୍ଯ୍ୟ ମନ୍ଦିର' },
   'saint-basil-s-cathedral': { name: 'ସେଣ୍ଟ ବାସିଲ କାଥେଡ୍ରାଲ' },
+  // Materials (stone reuses the nature entry above). cardboard
+  // "କାର୍ଡବୋର୍ଡ" is a loanword — check it against what the family says.
+  wood: { name: 'କାଠ' },
+  gold: { name: 'ସୁନା' },
+  steel: { name: 'ଷ୍ଟିଲ' },
+  plastic: { name: 'ପ୍ଲାଷ୍ଟିକ' },
+  clay: { name: 'ମାଟି' },
+  fabric: { name: 'କପଡ଼ା' },
+  glass: { name: 'କାଚ' },
+  paper: { name: 'କାଗଜ' },
+  rubber: { name: 'ରବର' },
+  wool: { name: 'ଉଲ' },
+  leather: { name: 'ଚମଡ଼ା' },
+  cardboard: { name: 'କାର୍ଡବୋର୍ଡ' },
+  wax: { name: 'ମହମ' },
 };

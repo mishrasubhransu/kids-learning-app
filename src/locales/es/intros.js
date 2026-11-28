@@ -139,6 +139,11 @@ export default {
     '[gasps] Torres, templos y pirámides — ¡cuántas maravillas!',
     '¡Prepara la maleta — vamos a ver el mundo!',
   ],
+  'concepts-materials': [
+    '¿De qué está hecho? ¡Vamos a ver!',
+    '[gasps] Brillante, suave, duro y elástico — ¡cuántos materiales!',
+    'Mira y toca — ¡madera, vidrio, goma y más!',
+  ],
   'science-body': [
     '¡Vamos a mirar dentro de tu cuerpo!',
     '[gasps] Huesos, sangre y cerebro — ¡qué cuerpo tan ocupado!',

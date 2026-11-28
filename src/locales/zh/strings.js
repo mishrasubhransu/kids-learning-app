@@ -51,6 +51,7 @@ export default {
   'cat.concepts.buildings': '建筑',
   'cat.concepts.garden': '花园',
   'cat.concepts.monuments': '名胜古迹',
+  'cat.concepts.materials': '材料',
 
   // Category page chrome
   'mode.scroll': '滑动',

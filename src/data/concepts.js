@@ -44,6 +44,7 @@ export const conceptCategories = [
   { id: 'leisure', name: 'Leisure', emoji: '🏂', color: 'bg-teal-600', hoverColor: 'hover:bg-teal-700' },
   { id: 'buildings', name: 'Buildings', emoji: '🏢', color: 'bg-stone-500', hoverColor: 'hover:bg-stone-600' },
   { id: 'garden', name: 'Garden', emoji: '🌱', color: 'bg-lime-600', hoverColor: 'hover:bg-lime-700' },
+  { id: 'materials', name: 'Materials', emoji: '🧱', color: 'bg-amber-700', hoverColor: 'hover:bg-amber-800' },
   { id: 'monuments', name: 'Monuments', emoji: '🗽', color: 'bg-amber-600', hoverColor: 'hover:bg-amber-700' },
   { id: 'routine', name: 'Routine', emoji: '🌞', color: 'bg-orange-400', hoverColor: 'hover:bg-orange-500' },
   // Region-specific lesson: audio plays in a FIXED language the parent picks
@@ -551,6 +552,26 @@ export const conceptItems = {
     { id: 11, name: 'Trowel', image: '/concepts/garden/trowel.webp' },
     { id: 12, name: 'Snow Blower', image: '/concepts/garden/snow-blower.webp' },
     { id: 13, name: 'Pressure Washer', image: '/concepts/garden/pressure-washer.webp' },
+  ],
+  // What things are made of. Three looks per material (the variant picker
+  // rotates them); the first look is a cup where that's natural, so the
+  // same object in different stuff shows the material is the point.
+  // Stone shares its voice slug with nature's Stone (same word, same clip).
+  materials: [
+    { id: 0, name: 'Wood', images: ['/concepts/materials/wood.webp', '/concepts/materials/wood-2.webp', '/concepts/materials/wood-3.webp'] },
+    { id: 1, name: 'Gold', images: ['/concepts/materials/gold.webp', '/concepts/materials/gold-2.webp', '/concepts/materials/gold-3.webp'] },
+    { id: 2, name: 'Steel', images: ['/concepts/materials/steel.webp', '/concepts/materials/steel-2.webp', '/concepts/materials/steel-3.webp'] },
+    { id: 3, name: 'Plastic', images: ['/concepts/materials/plastic.webp', '/concepts/materials/plastic-2.webp', '/concepts/materials/plastic-3.webp'] },
+    { id: 4, name: 'Clay', images: ['/concepts/materials/clay.webp', '/concepts/materials/clay-2.webp', '/concepts/materials/clay-3.webp'] },
+    { id: 5, name: 'Fabric', images: ['/concepts/materials/fabric.webp', '/concepts/materials/fabric-2.webp', '/concepts/materials/fabric-3.webp'] },
+    { id: 6, name: 'Glass', images: ['/concepts/materials/glass.webp', '/concepts/materials/glass-2.webp', '/concepts/materials/glass-3.webp'] },
+    { id: 7, name: 'Paper', images: ['/concepts/materials/paper.webp', '/concepts/materials/paper-2.webp', '/concepts/materials/paper-3.webp'] },
+    { id: 8, name: 'Stone', images: ['/concepts/materials/stone.webp', '/concepts/materials/stone-2.webp', '/concepts/materials/stone-3.webp'] },
+    { id: 9, name: 'Rubber', images: ['/concepts/materials/rubber.webp', '/concepts/materials/rubber-2.webp', '/concepts/materials/rubber-3.webp'] },
+    { id: 10, name: 'Wool', images: ['/concepts/materials/wool.webp', '/concepts/materials/wool-2.webp', '/concepts/materials/wool-3.webp'] },
+    { id: 11, name: 'Leather', images: ['/concepts/materials/leather.webp', '/concepts/materials/leather-2.webp', '/concepts/materials/leather-3.webp'] },
+    { id: 12, name: 'Cardboard', images: ['/concepts/materials/cardboard.webp', '/concepts/materials/cardboard-2.webp', '/concepts/materials/cardboard-3.webp'] },
+    { id: 13, name: 'Wax', images: ['/concepts/materials/wax.webp', '/concepts/materials/wax-2.webp', '/concepts/materials/wax-3.webp'] },
   ],
   // Famous landmarks around the world. Real photos from Wikimedia Commons
   // (not generated) — authors and licenses in data/photoCredits.js.
