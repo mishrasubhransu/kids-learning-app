@@ -23,6 +23,7 @@ const KEEP = 9; // paint from a hold shorter than this is wiped if the finger wa
 const LOOKAHEAD = 16; // paint can only advance this far per check — no skipping
 const DEMO_SPEED = 75; // units per second for the "watch me" dot
 const DEMO_DELAY = 700;
+const PIP_VOLUME = 0.45; // 0–1; loudness of the progress pips
 
 const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
 
@@ -63,7 +64,7 @@ const TraceBoard = ({ text, color, soundOn = true, onComplete }) => {
         osc.frequency.value = freq;
         const now = ctx.currentTime;
         const length = long ? 0.3 : 0.09;
-        gain.gain.setValueAtTime(0.12, now);
+        gain.gain.setValueAtTime(PIP_VOLUME, now);
         gain.gain.exponentialRampToValueAtTime(0.001, now + length);
         osc.connect(gain).connect(ctx.destination);
         osc.start(now);
